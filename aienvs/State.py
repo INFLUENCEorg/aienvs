@@ -12,6 +12,7 @@ class State(ABC):
         """
         pass
 
+    @abstractmethod
     def getPercepts(self) -> dict:
         """
         @return: a dictionary of the currently available percepts. 
