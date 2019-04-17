@@ -13,6 +13,20 @@ class Environment(ABC):
         """
         pass
     
+        """
+    Abstract base class of the state of an environment
+    """
+    @abstractmethod
+    def getActionMap(self) -> dict:
+        """
+        @return:  a dictionary of the currently possible actions. 
+        Keys are the entity names, values are 
+        the possible actions that that entity can do. 
+        TODO refine values with parameters, 
+        to avoid too many variants of each possible action?
+        """
+        pass
+    
     @abstractmethod
     def step(self, actions: dict) -> EnvironmentState:
         """
