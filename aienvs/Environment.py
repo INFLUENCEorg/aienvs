@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from EnvironmentState import EnvironmentState
 
 class Environment(ABC):
     """
