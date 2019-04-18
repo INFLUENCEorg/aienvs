@@ -169,7 +169,7 @@ class SumoGymAdapter(gym.Env):
 		"""
 		lane_coordinates = ldm.getLaneShape(lane)
 		# if the x coordinates of the begin and end point of a lane are the same, the lane is vertical
-		return lane_coordinates[0][0] == lane_coordinates[1][0]
+		return lane_coordinates[0][1] == lane_coordinates[1][1]
 
 # This is simplistic but the way our code works everywhere.
 LIGHTS={
