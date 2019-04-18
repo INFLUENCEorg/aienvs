@@ -1,8 +1,7 @@
 import unittest
 from  SumoGymAdapter import SumoGymAdapter
-import random
 
-class testGymEnvAdapter(unittest.TestCase):
+class testSumoGymAdapter(unittest.TestCase):
         
     def test_smoke(self):
         env = SumoGymAdapter()

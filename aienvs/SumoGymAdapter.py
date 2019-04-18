@@ -1,9 +1,9 @@
 import gym
 from gym import spaces
 import os
-from sumolib import checkBinary
-from .LDM import ldm
+from LDM import ldm
 import time
+from sumolib import checkBinary
 
 class SumoGymAdapter(gym.Env):
 	"""
@@ -12,7 +12,7 @@ class SumoGymAdapter(gym.Env):
 	trafficlights as keys.
 	"""
 
-	def __init__(self,  parameters:dict={'gui':True, 'scenario':'scenarios/four_grid'}):
+	def __init__(self,  parameters:dict={'gui':True, 'scenario':os.path.join(os.path.realpath("."),'scenarios/four_grid/')}):
 		"""
 		@param path where results go, like "Experiment ID"
 		@param parameters the configuration parameters.
