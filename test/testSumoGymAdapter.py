@@ -12,4 +12,7 @@ class testSumoGymAdapter(unittest.TestCase):
             result = env.step(env.action_space.sample())
         env.close()
         print(result)
+
+if __name__ == '__main__':
+    unittest.main()
     

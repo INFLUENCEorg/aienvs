@@ -15,3 +15,5 @@ class testGymEnvAdapter(unittest.TestCase):
         print(result)
         
     
+if __name__ == '__main__':
+    unittest.main()

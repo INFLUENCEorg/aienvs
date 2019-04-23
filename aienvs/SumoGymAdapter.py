@@ -12,7 +12,7 @@ class SumoGymAdapter(gym.Env):
 	trafficlights as keys.
 	"""
 
-	def __init__(self,  parameters:dict={'gui':True, 'scenario':os.path.join(os.path.realpath("."),'scenarios/four_grid/')}):
+	def __init__(self,  parameters:dict={'gui':True, 'scenario':os.path.join('$AIENVS_HOME','scenarios/four_grid/')}):
 		"""
 		@param path where results go, like "Experiment ID"
 		@param parameters the configuration parameters.
@@ -89,7 +89,7 @@ class SumoGymAdapter(gym.Env):
 		the needed files exist.
 		@raise  Exception if required files not in specified scenario path: 
 		"""
-		scenario_path = self.parameters['scenario']
+		scenario_path = os.path.expandvars(self.parameters['scenario'])
 		if not os.path.isdir(scenario_path):
 			raise Exception ("Scenario path is not a directory:"+scenario_path)
 		if not os.path.exists(scenario_path):
