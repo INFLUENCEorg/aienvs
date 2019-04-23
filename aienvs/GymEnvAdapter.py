@@ -1,7 +1,7 @@
 import gym
 import string
-from Environment import Environment 
-from EnvironmentState import EnvironmentState
+from aienvs.Environment import Environment 
+from aienvs.EnvironmentState import EnvironmentState
 
 class GymEnvAdapter(Environment):
     """

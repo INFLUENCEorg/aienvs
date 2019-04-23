@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from EnvironmentState import EnvironmentState
+from aienvs.EnvironmentState import EnvironmentState
 
 class Environment(ABC):
     """

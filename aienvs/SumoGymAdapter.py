@@ -1,7 +1,7 @@
 import gym
 from gym import spaces
 import os
-from LDM import ldm
+from aienvs.LDM import ldm
 import time
 from sumolib import checkBinary
 

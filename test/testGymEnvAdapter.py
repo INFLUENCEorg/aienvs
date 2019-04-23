@@ -1,5 +1,5 @@
 import unittest
-from  GymEnvAdapter import  GymEnvAdapter
+from aienvs.GymEnvAdapter import GymEnvAdapter
 import random
 
 class testGymEnvAdapter(unittest.TestCase):

@@ -1,5 +1,6 @@
 import unittest
-from  SumoGymAdapter import SumoGymAdapter
+import aienvs
+from aienvs.SumoGymAdapter import SumoGymAdapter
 
 class testSumoGymAdapter(unittest.TestCase):
         
