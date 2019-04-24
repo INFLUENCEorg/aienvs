@@ -29,6 +29,7 @@ class LDM(SUMO_client.StepListener):
         print("LDM initialized")
         # should be added once only, otherwise multiple step listeners are created
         SUMO_client.addStepListener(self)
+        self._lightids={}
 
     def init(self, waitingPenalty, new_reward, verbose=0):
         ''' LDM()
@@ -50,11 +51,11 @@ class LDM(SUMO_client.StepListener):
         self._waitingPenalty = waitingPenalty
         self.new_reward = new_reward
 
-    def start(self, sumoCmd:list):
+    def start(self, sumoCmd:list, PORT):
         """
         @param sumoCmd the sumo command for the start, list of init arguments
         """
-        SUMO_client.start(sumoCmd)
+        SUMO_client.start(sumoCmd, port=PORT)
         
         
     def step(self, t=0):
