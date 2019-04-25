@@ -10,7 +10,7 @@ class SumoGymAdapter(gym.Env):
     """
     An adapter that makes Sumo behave as a proper Gym environment.
     At top level, the actionspace and percepts are in a Dict with the
-    trafficlights as keys.
+    trafficPHASES as keys.
     """
 
     def __init__(self,  parameters:dict={'gui':True, 'scenario':os.path.join('$AIENVS_HOME','scenarios/four_grid/')}):
@@ -101,57 +101,47 @@ class SumoGymAdapter(gym.Env):
 
     def _act(self, action:spaces.Dict):
         """
-        Set all lights as asked
+        Set all PHASES as asked
         """
         for intersectionId,lightPhaseId in action.items():
-            ldm.setRedYellowGreenState(intersectionId, self._intToLightsString(intersectionId, lightPhaseId))
+            ldm.setRedYellowGreenState(intersectionId, self._intToPHASESString(intersectionId, lightPhaseId))
     
-    def _intToLightsString(self, intersectionId:str, lightPhaseId: int):
+    def _intToPHASESString(self, intersectionId:str, lightPhaseId: int):
         """
         @param intersectionid the intersection(light) id
-        @param lightvalue the LIGHTS value
-        @return the intersection lights string eg 'rrGr' or 'GGrG'
+        @param lightvalue the PHASES value
+        @return the intersection PHASES string eg 'rrGr' or 'GGrG'
         """
-        return LIGHTS.get(lightPhaseId)
+        return PHASES.get(lightPhaseId)
         
                 
     def _observe(self): 
         """
         Fetches the ldm(sumo) observations and converts in a proper gym observation.
-        The keys of the dict are the intersection IDs (roughly, the trafficlights)
+        The keys of the dict are the intersection IDs (roughly, the trafficPHASES)
         The values are the state of the TLs
         """
-        #tlstates={id:self._lightStateToInt(id) for id in ldm.getTrafficLights()}
+        #tlstates={id:self._PHASEStateToInt(id) for id in ldm.getTrafficPHASES()}
         return None
     
 
     def _getActionSpace(self):
         """
         @returns the actionspace:
-         two possible actions for each lightid: see LIGHTS variable
+         two possible actions for each lightid: see PHASES variable
         """
-        print(spaces.Dict({id:spaces.Discrete(2) for id in ldm.getTrafficLights()}))
-        return spaces.Dict({id:spaces.Discrete(2) for id in ldm.getTrafficLights()})
+        return spaces.Dict({id:spaces.Discrete(len(PHASES.keys())) for id in ldm.getTrafficPHASES()})
     
     def _getObservationSpace(self):
         """
         @returns the observation:
-         one observation for each lightid: see LIGHTS variable
+         one observation for each lightid: see PHASES variable
         """
-        return spaces.Dict({id:spaces.Discrete(2) for id in ldm.getTrafficLights()})
+        return spaces.Dict({id:spaces.Discrete(2) for id in ldm.getTrafficPHASES()})
     
-    def _isHorizontal(self, lane:str):
-        """
-        Assumes the lane is a straight simple line from start to end. 
-        @param  lane the lane id
-        @return true iff the given lane id is a horizontal lane
-        """
-        lane_coordinates = ldm.getLaneShape(lane)
-        # if the x coordinates of the begin and end point of a lane are the same, the lane is vertical
-        return lane_coordinates[0][1] == lane_coordinates[1][1]
 
-# This should be read from a config file
-LIGHTS={
+# This should be read from a config file and different for each intersection ID
+PHASES={
     0: "GGrr",
     1: "rrGG"
 }
