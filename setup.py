@@ -8,7 +8,7 @@ setup(name='aienvs',
     author='Influence TEAM',
     author_email='author@example.com',
     license='Example',
-    packages=['aienvs'],
+    packages=['aienvs', 'aienvs/Sumo'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
