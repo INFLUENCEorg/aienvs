@@ -3,9 +3,13 @@ import aienvs
 import logging
 import yaml
 import sys
+from LoggedTestCase import LoggedTestCase
 from aienvs.SumoGymAdapter import SumoGymAdapter
 
-class testSumoGymAdapter(unittest.TestCase):
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+class testSumoGymAdapter(LoggedTestCase):
     
     def test_new_traffic(self):
         with open("configs/new_traffic_loop_ppo.yaml", 'r') as stream:
@@ -22,6 +26,8 @@ class testSumoGymAdapter(unittest.TestCase):
         
     def test_smoke(self):
         env = SumoGymAdapter()
+
+        logging.info("INFO")
         for _ in range(1000):
             result = env.step(env.action_space.sample())
         env.close()
@@ -29,7 +35,5 @@ class testSumoGymAdapter(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
-    logging.info("Logging initialized")
     unittest.main()
     

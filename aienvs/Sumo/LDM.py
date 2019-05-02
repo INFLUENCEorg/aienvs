@@ -24,7 +24,6 @@ class LDM(SUMO_client.StepListener):
         else:
             raise ValueError("Environment variable SUMO_HOME is not set, "
                              "please declare it (e.g. in ~/.bashrc).")
-        logging.info("LDM initialized")
         # should be added once only, otherwise multiple step listeners are created
         SUMO_client.addStepListener(self)
         self._lightids={}
