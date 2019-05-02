@@ -20,7 +20,8 @@ class SumoGymAdapter(gym.Env):
             'box_bottom_corner':(0,0), 
             'box_top_corner':(10,10),
             'resolutionInPixelsPerMeterX': 1,
-            'resolutionInPixelsPerMeterY': 1
+            'resolutionInPixelsPerMeterY': 1,
+            'y_t': 6
             }):
         """
         @param path where results go, like "Experiment ID"
@@ -31,16 +32,17 @@ class SumoGymAdapter(gym.Env):
         self.parameters = parameters
 
         self._checkScenario()
-       # self.observation_space = self._getObservationSpace()
         self.reset()
+        self._takenActions = {}
+        self._yellowTimer = {}
 
     
-    def step(self, action:spaces.Dict):
+    def step(self, actions:spaces.Dict):
         # Ask SUMO the number of vehicles which are in the net plus the
         # ones still waiting to start. This number may be smaller than
         # the actual number of vehicles still to come because of delayed
         # route file parsing.
-        self._act(action)
+        self._set_lights(actions)
         ldm.simulationStep()
         obs = self._observe()
         done = ldm.getMinExpectedNumber() <= 0
@@ -110,13 +112,6 @@ class SumoGymAdapter(gym.Env):
                 raise Exception("The scenario is missing file '{}' in {}, please add it and "
                       "try again.".format(n_file, scenario_path))
 
-    def _act(self, action:spaces.Dict):
-        """
-        Set all PHASES as asked
-        """
-        for intersectionId,lightPhaseId in action.items():
-            ldm.setRedYellowGreenState(intersectionId, self._intToPhaseString(intersectionId, lightPhaseId))
-    
     def _intToPhaseString(self, intersectionId:str, lightPhaseId: int):
         """
         @param intersectionid the intersection(light) id
@@ -148,39 +143,32 @@ class SumoGymAdapter(gym.Env):
         return spaces.Dict({id:spaces.Discrete(len(PHASES.keys())) for id in ldm.getTrafficLights()})
 
 
-    def _set_actions(self, actions):
+    def _set_lights(self, actions:spaces.Dict):
         """
         Take the specified actions in the environment
         @param actions a list of
         """
-        actions = self._index_to_action(actions)
-
-        for factor_i in range(self.n_factors):
-            # action_i is the "local joint action" for the subset
-            # of agents that participate in this component
-            action_i = actions[factor_i]
+        for intersectionId in actions.keys():
+            action = self._intToPhaseString(intersectionId, actions.get(intersectionId))
             # Retrieve the action that was taken the previous step
             try:
-                previous_action = self.taken_action[factor_i]
+                prev_action = self._takenActions[intersectionId][-1]
             except KeyError:
-                # If KeyError, this is the first time an action has been taken
-                previous_action = action_i
+                # If KeyError, this is the first time any action was taken for this intersection
+                prev_action = action
+                self._takenActions.update( {intersectionId:[]} )
+                self._yellowTimer.update( {intersectionId:0} )
 
-            agents_i = self.factor_graph.getFactors()[factor_i].getAgentIds()
-            take_act = []
-            for k, agent_j in enumerate(agents_i):
-                take_act.append(action_i[k])
-                # Check if the given action is different from the previous action
-                if previous_action[k] != take_act[k]:
-                    # Either the this is a true switch or coming grom yellow
-                    take_act[k], self.yellow_dict[factor_i][agent_j] = self._get_action(previous_action[k],
-                                                         take_act[k], self.yellow_dict[factor_i][agent_j], factor_i)
-                # Set traffic lights 
-                ldm.setRedYellowGreenState(agent_j, take_act[k])
+            # Check if the given action is different from the previous action
+            if prev_action != action:
+                # Either the this is a true switch or coming grom yellow
+                action, self._yellowTimer[intersectionId] = self._correct_action(prev_action, action, self._yellowTimer[intersectionId])
 
-            self.taken_action[factor_i] = take_act
+            # Set traffic lights 
+            ldm.setRedYellowGreenState(intersectionId, action)
+            self._takenActions[intersectionId].append(action)
 
-    def _get_action(self, prev_action, action, timer, factor):
+    def _correct_action(self, prev_action, action, timer):
         """
         Check what we are going to do with the given action based on the
         previous action.
@@ -193,17 +181,19 @@ class SumoGymAdapter(gym.Env):
                 timer -= 1
             # Otherwise we can get out of the yellow state
             else:
-                new_action = prev_action.replace('r', 'G')
-                new_action = new_action.replace('y', 'r')
+                new_action = action
         # We are switching from green to red, initialize the yellow state
         else:
+            print("Prev action=" + prev_action)
             new_action = prev_action.replace('G', 'y')
+            print("New action=" + new_action)
+            print("Prev action=" + prev_action)
             timer = self.parameters['y_t'] - 1
 
         return new_action, timer
 
 
-# TODO: Wouter: This should be read from a config file and different for each intersection ID
+# TODO: Wouter: This should be read from 
 PHASES={
     0: "GGrr",
     1: "rrGG"
