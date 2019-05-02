@@ -1,11 +1,30 @@
 import gym
+import logging
 from gym import spaces
 import os
 from aienvs.Sumo.LDM import ldm
+from aienvs.Sumo.SumoHelper import SumoHelper
 from aienvs.Sumo.state_representation import *
 import time
 from sumolib import checkBinary
 import random
+from aienvs.Sumo.SumoHelper import SumoHelper
+
+DEFAULT_PARAMETERS = {'gui':True, 
+            'scene':'four_grid', 
+            'box_bottom_corner':(0,0), 
+            'box_top_corner':(10,10),
+            'resolutionInPixelsPerMeterX': 1,
+            'resolutionInPixelsPerMeterY': 1,
+            'y_t': 6,
+            'car_pr': 0.5,
+            'car_tm': 2,
+            'route_starts' : [],
+            'route_min_segments' : 0,
+            'route_max_segments' : 0,
+            'route_ends' : [],
+            'seed' : 42
+            }
 
 class SumoGymAdapter(gym.Env):
     """
@@ -14,28 +33,20 @@ class SumoGymAdapter(gym.Env):
     trafficPHASES as keys.
     """
 
-    def __init__(self,  parameters:dict=
-            {'gui':True, 
-            'scenario':os.path.join('$AIENVS_HOME','scenarios/four_grid/'), 
-            'box_bottom_corner':(0,0), 
-            'box_top_corner':(10,10),
-            'resolutionInPixelsPerMeterX': 1,
-            'resolutionInPixelsPerMeterY': 1,
-            'y_t': 6
-            }):
+    def __init__(self, parameters:dict={}):
         """
         @param path where results go, like "Experiment ID"
         @param parameters the configuration parameters.
         gui: whether we show a GUI. 
         scenario: the path to the scenario to use
         """
-        self.parameters = parameters
-
-        self._checkScenario()
-        self.reset()
+        self._parameters = DEFAULT_PARAMETERS
+        self._parameters.update(parameters)
+        logging.debug(parameters)
         self._takenActions = {}
         self._yellowTimer = {}
-
+        self.seed()
+        self.reset()
     
     def step(self, actions:spaces.Dict):
         # Ask SUMO the number of vehicles which are in the net plus the
@@ -45,16 +56,18 @@ class SumoGymAdapter(gym.Env):
         self._set_lights(actions)
         ldm.simulationStep()
         obs = self._observe()
-        done = ldm.getMinExpectedNumber() <= 0
+        done = ldm.isSimulationFinished()
         global_reward = self._computeGlobalReward()
 
+        # as in openai gym, last one is info list
         return obs, global_reward, done, []
     
     def reset(self):
-        print("Starting SUMO environment...")
+        logging.info("Starting SUMO environment...")
         self._startSUMO()
         self.action_space = self._getActionSpace()
-        self._state = LdmMatrixState(ldm,[self.parameters['box_bottom_corner'], self.parameters['box_top_corner']], "byCorners")
+        # TODO: Wouter: make state configurable ("state factory")
+        self._state = LdmMatrixState(ldm,[self._parameters['box_bottom_corner'], self._parameters['box_top_corner']], "byCorners")
         
     def render(self):
         pass # enabled anwyay if parameter 'gui'=True
@@ -62,7 +75,8 @@ class SumoGymAdapter(gym.Env):
     def close(self):
         ldm.close()
 
-    def seed(self):
+    def seed(self, seed=42):
+        self._seed = seed
         pass # TODO: Wouter: add seed (pass to LDM)
 
     ########## Private functions ##########################
@@ -71,17 +85,18 @@ class SumoGymAdapter(gym.Env):
         Start the connection with SUMO as a subprocess and initialize
         the traci port, generate route file.
         """
-        val='sumo-gui' if self.parameters['gui'] else 'gui'
+        val='sumo-gui' if self._parameters['gui'] else 'sumo'
         sumo_binary = checkBinary(val)
-        
+
         # Try repeatedly to connect
         while True:
             try:
-                scenario=os.path.expandvars(os.path.join(self.parameters['scenario'], 'scenario.sumocfg'))
-                self.port = random.SystemRandom().choice(list(range(10000,20000)))
-                sumoCmd=[sumo_binary, "-c", scenario]
+                self._port = random.SystemRandom().choice(list(range(10000,20000)))
+                self._sumo_helper = SumoHelper(self._parameters, self._port)
+                conf_file = self._sumo_helper.generate_route_file(self._seed)
+                sumoCmd=[sumo_binary, "-c", conf_file]
                 time.sleep(.500) 
-                ldm.start(sumoCmd, self.port)
+                ldm.start(sumoCmd, self._port)
             except Exception as e:
                 if str(e) == "connection closed by SUMO":
                     continue
@@ -91,7 +106,7 @@ class SumoGymAdapter(gym.Env):
                 break
 
         ldm.init(waitingPenalty=0,new_reward=0) # ignore reward for now
-        ldm.setResolutionInPixelsPerMeter(self.parameters['resolutionInPixelsPerMeterX'], self.parameters['resolutionInPixelsPerMeterY'])
+        ldm.setResolutionInPixelsPerMeter(self._parameters['resolutionInPixelsPerMeterX'], self._parameters['resolutionInPixelsPerMeterY'])
             
     def _checkScenario(self):
         """
@@ -99,7 +114,7 @@ class SumoGymAdapter(gym.Env):
         the needed files exist.
         @raise  Exception if required files not in specified scenario path: 
         """
-        scenario_path = os.path.expandvars(self.parameters['scenario'])
+        scenario_path = os.path.expandvars(self._parameters['scenario'])
         if not os.path.isdir(scenario_path):
             raise Exception ("Scenario path is not a directory:"+scenario_path)
         if not os.path.exists(scenario_path):
@@ -184,11 +199,8 @@ class SumoGymAdapter(gym.Env):
                 new_action = action
         # We are switching from green to red, initialize the yellow state
         else:
-            print("Prev action=" + prev_action)
             new_action = prev_action.replace('G', 'y')
-            print("New action=" + new_action)
-            print("Prev action=" + prev_action)
-            timer = self.parameters['y_t'] - 1
+            timer = self._parameters['y_t'] - 1
 
         return new_action, timer
 

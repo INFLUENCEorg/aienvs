@@ -1,7 +1,6 @@
-#!/usr/bin/env python
 import os
 import sys
-
+import logging
 import traci as SUMO_client
 import numpy as np
 import string
@@ -25,12 +24,13 @@ class LDM(SUMO_client.StepListener):
         else:
             raise ValueError("Environment variable SUMO_HOME is not set, "
                              "please declare it (e.g. in ~/.bashrc).")
-            
-        print("LDM initialized")
+        logging.info("LDM initialized")
         # should be added once only, otherwise multiple step listeners are created
         SUMO_client.addStepListener(self)
         self._lightids={}
 
+
+    #TODO: Wouter: change all verbose prints to logging
     def init(self, waitingPenalty, new_reward, verbose=0):
         ''' LDM()
 
@@ -42,6 +42,7 @@ class LDM(SUMO_client.StepListener):
         self.netBoundaryMetersLL=list([self.netBoundaryMeters[0][0]-10, self.netBoundaryMeters[0][1]-10])
         self.netBoundaryMetersUR=list([self.netBoundaryMeters[1][0]+10, self.netBoundaryMeters[1][1]+10])
         self.netBoundaryMeters=list( [tuple(self.netBoundaryMetersLL), tuple(self.netBoundaryMetersUR)] )
+
 
         self._verbose=verbose
         self._lightids=SUMO_client.trafficlight.getIDList()
@@ -55,6 +56,7 @@ class LDM(SUMO_client.StepListener):
         """
         @param sumoCmd the sumo command for the start, list of init arguments
         """
+        print("Sumo command:" + str(sumoCmd))
         SUMO_client.start(sumoCmd, port=PORT)
         
         
@@ -91,11 +93,11 @@ class LDM(SUMO_client.StepListener):
         """
         SUMO_client.close()
 
-    def getMinExpectedNumber(self) -> int:
+    def isSimulationFinished(self):
         """
         @return minimum number of vehicles that are still expected to leave the net (id 0x7d) 
         """
-        return SUMO_client.simulation.getMinExpectedNumber()
+        return (SUMO_client.simulation.getMinExpectedNumber() <= 0)
 
 
 
@@ -294,7 +296,7 @@ class LDM(SUMO_client.StepListener):
     ########################## private functions ##############################
 
     def _subscribeToTrafficLights(self):
-        print(self._lightids)
+        logging.info("LightID subscriptions" + str(self._lightids))
         for lightid in self._lightids:
             SUMO_client.trafficlight.subscribe(lightid, (SUMO_client.constants.TL_RED_YELLOW_GREEN_STATE, SUMO_client.constants.TL_CURRENT_PHASE))
 
@@ -444,7 +446,7 @@ class LDM(SUMO_client.StepListener):
         clear()
         move_cursor(100,100)
         """
-        print (mapSlice)
+        logging.debug(mapSlice)
 
     def _checkOptimize(self):
         if self.__optimize:
