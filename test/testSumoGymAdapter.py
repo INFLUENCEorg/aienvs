@@ -12,6 +12,7 @@ logger.setLevel(logging.INFO)
 class testSumoGymAdapter(LoggedTestCase):
     
     def test_new_traffic(self):
+        logging.info("Starting test_new_traffic")
         with open("configs/new_traffic_loop_ppo.yaml", 'r') as stream:
             try:
                 parameters=yaml.safe_load(stream)['parameters']
@@ -25,7 +26,8 @@ class testSumoGymAdapter(LoggedTestCase):
         env.close()
         
     def test_smoke(self):
-        env = SumoGymAdapter()
+        logging.info("Starting test_smoke")
+        env = SumoGymAdapter(parameters={'generate_conf':False})
 
         logging.info("INFO")
         for _ in range(1000):

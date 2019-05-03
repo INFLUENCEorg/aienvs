@@ -11,7 +11,7 @@ class SumoHelper(object):
     Object that holds helper functions + information for generating routes
     and scenarios for SUMO
     """
-    def __init__(self, parameters, port=9001):
+    def __init__(self, parameters, port=9000, seed=42):
         """
         Initializes SUMOHelper object and checks 1) if the proper types are
         being used for the parameters and 2) if the scenario has the proper
@@ -24,8 +24,10 @@ class SumoHelper(object):
         assert(type(self.parameters['car_pr']) == float)
         assert(type(self.parameters['car_tm']) == int)
 
-        self.sumocfg_name = str(self._port) + "_scenario.sumocfg"
-        self.generate_sumocfg_file()
+        if(self.parameters['generate_conf']):
+            self.sumocfg_name = str(self._port) + "_scenario.sumocfg"
+            self._generate_sumocfg_file()
+            self._generate_route_file(seed)
 
     def scenario_check(self, scenario):
         """
@@ -34,11 +36,18 @@ class SumoHelper(object):
         """
         sumoai_home = os.environ['AIENVS_HOME']
         self.scenario_path = os.path.join(sumoai_home, 'scenarios/Sumo', scenario)
-        self._net_file = os.path.basename(glob.glob(self.scenario_path+'/*.net.xml')[0])
-        needed_files = [self._net_file]
+
+        if(self.parameters['generate_conf']):
+            self._net_file = os.path.basename(glob.glob(self.scenario_path+'/*.net.xml')[0])
+            self._needed_files = [os.path.basename(self._net_file)]
+        else:
+            self.sumocfg_file = glob.glob(self.scenario_path+'/*.sumocfg')[0]
+            print(self.sumocfg_file)
+            self._needed_files = [os.path.basename(self.sumocfg_file)]
+
 
         scenario_files = os.listdir(self.scenario_path)
-        for n_file in needed_files:
+        for n_file in self._needed_files:
             if n_file not in scenario_files:
                 print(("The scenario is missing file '{}' in {}, please add it and "
                       "try again.".format(n_file, self.scenario_path)))
@@ -72,11 +81,11 @@ class SumoHelper(object):
                     f.write(car_string)
             f.write('\n</routes>')
 
-    def generate_sumocfg_file(self):
-        self._sumocfg_file = os.path.join(self.scenario_path, self.sumocfg_name)
+    def _generate_sumocfg_file(self):
+        self.sumocfg_file = os.path.join(self.scenario_path, self.sumocfg_name)
         self.routefile_name = str(self._port) + '_routes.rou.xml'
         self._route_file = os.path.join(self.scenario_path, self.routefile_name)
-        with open(self._sumocfg_file, 'w') as f:
+        with open(self.sumocfg_file, 'w') as f:
             f.write('<?xml version="1.0" encoding="UTF-8"?>\n'
                     + '<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">\n'
                     + '    <input>\n'
@@ -110,7 +119,7 @@ class SumoHelper(object):
             route = route[:-1]
         return route
 
-    def generate_route_file(self, seed):
+    def _generate_route_file(self, seed):
         """
         Generates vehicles for each possible route in the scenario and writes
         them to file. Returns the location of the sumocfg file.
@@ -143,8 +152,8 @@ class SumoHelper(object):
                           "actual number of cars is {}, which may indicate"
                           " a bug.".format(expected_value, car_sum))
 
-        return os.path.join(self.scenario_path, self.sumocfg_name)
 
     def __del__(self): 
-        os.remove(self._sumocfg_file)
-        os.remove(self._route_file)
+        if(self.parameters['generate_conf']):
+            os.remove(self.sumocfg_file)
+            os.remove(self._route_file)

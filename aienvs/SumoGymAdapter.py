@@ -23,7 +23,8 @@ DEFAULT_PARAMETERS = {'gui':True,
             'route_min_segments' : 0,
             'route_max_segments' : 0,
             'route_ends' : [],
-            'seed' : 42
+            'seed' : 42,
+            'generate_conf' : True
             }
 
 class SumoGymAdapter(gym.Env):
@@ -93,7 +94,8 @@ class SumoGymAdapter(gym.Env):
             try:
                 self._port = random.SystemRandom().choice(list(range(10000,20000)))
                 self._sumo_helper = SumoHelper(self._parameters, self._port)
-                conf_file = self._sumo_helper.generate_route_file(self._seed)
+                conf_file = self._sumo_helper.sumocfg_file
+                logging.info( "Configuration: " + str(conf_file) )
                 sumoCmd=[sumo_binary, "-c", conf_file]
                 time.sleep(.500) 
                 ldm.start(sumoCmd, self._port)
@@ -108,25 +110,6 @@ class SumoGymAdapter(gym.Env):
         ldm.init(waitingPenalty=0,new_reward=0) # ignore reward for now
         ldm.setResolutionInPixelsPerMeter(self._parameters['resolutionInPixelsPerMeterX'], self._parameters['resolutionInPixelsPerMeterY'])
             
-    def _checkScenario(self):
-        """
-        Checks if the scenario is well-defined and usable by seeing if all
-        the needed files exist.
-        @raise  Exception if required files not in specified scenario path: 
-        """
-        scenario_path = os.path.expandvars(self._parameters['scenario'])
-        if not os.path.isdir(scenario_path):
-            raise Exception ("Scenario path is not a directory:"+scenario_path)
-        if not os.path.exists(scenario_path):
-            raise Exception ("Scenario path does not exist:"+scenario_path)
-        # TODO: remove route_file.txt, add *.sumocfg, *.rou.xml
-        needed_files = ['route_file.txt', 'scenario.sumocfg']
-        scenario_files = os.listdir(scenario_path)
-        for n_file in needed_files:
-            if n_file not in scenario_files:
-                raise Exception("The scenario is missing file '{}' in {}, please add it and "
-                      "try again.".format(n_file, scenario_path))
-
     def _intToPhaseString(self, intersectionId:str, lightPhaseId: int):
         """
         @param intersectionid the intersection(light) id
