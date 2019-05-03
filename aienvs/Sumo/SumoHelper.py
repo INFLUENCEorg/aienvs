@@ -42,14 +42,13 @@ class SumoHelper(object):
             self._needed_files = [os.path.basename(self._net_file)]
         else:
             self.sumocfg_file = glob.glob(self.scenario_path+'/*.sumocfg')[0]
-            print(self.sumocfg_file)
             self._needed_files = [os.path.basename(self.sumocfg_file)]
 
 
         scenario_files = os.listdir(self.scenario_path)
         for n_file in self._needed_files:
             if n_file not in scenario_files:
-                print(("The scenario is missing file '{}' in {}, please add it and "
+                logging.error(("The scenario is missing file '{}' in {}, please add it and "
                       "try again.".format(n_file, self.scenario_path)))
                 return False
 

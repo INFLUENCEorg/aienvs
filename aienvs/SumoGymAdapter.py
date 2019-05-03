@@ -9,23 +9,7 @@ import time
 from sumolib import checkBinary
 import random
 from aienvs.Sumo.SumoHelper import SumoHelper
-
-DEFAULT_PARAMETERS = {'gui':True, 
-            'scene':'four_grid', 
-            'box_bottom_corner':(0,0), 
-            'box_top_corner':(10,10),
-            'resolutionInPixelsPerMeterX': 1,
-            'resolutionInPixelsPerMeterY': 1,
-            'y_t': 6,
-            'car_pr': 0.5,
-            'car_tm': 2,
-            'route_starts' : [],
-            'route_min_segments' : 0,
-            'route_max_segments' : 0,
-            'route_ends' : [],
-            'seed' : 42,
-            'generate_conf' : True
-            }
+import copy
 
 class SumoGymAdapter(gym.Env):
     """
@@ -33,6 +17,22 @@ class SumoGymAdapter(gym.Env):
     At top level, the actionspace and percepts are in a Dict with the
     trafficPHASES as keys.
     """
+    DEFAULT_PARAMETERS = {'gui':True, 
+                'scene':'four_grid', 
+                'box_bottom_corner':(0,0), 
+                'box_top_corner':(10,10),
+                'resolutionInPixelsPerMeterX': 1,
+                'resolutionInPixelsPerMeterY': 1,
+                'y_t': 6,
+                'car_pr': 0.5,
+                'car_tm': 2,
+                'route_starts' : [],
+                'route_min_segments' : 0,
+                'route_max_segments' : 0,
+                'route_ends' : [],
+                'seed' : 42,
+                'generate_conf' : True
+                }
 
     def __init__(self, parameters:dict={}):
         """
@@ -41,7 +41,7 @@ class SumoGymAdapter(gym.Env):
         gui: whether we show a GUI. 
         scenario: the path to the scenario to use
         """
-        self._parameters = DEFAULT_PARAMETERS
+        self._parameters = copy.deepcopy(self.DEFAULT_PARAMETERS)
         self._parameters.update(parameters)
         logging.debug(parameters)
         self._takenActions = {}
@@ -87,13 +87,16 @@ class SumoGymAdapter(gym.Env):
         the traci port, generate route file.
         """
         val='sumo-gui' if self._parameters['gui'] else 'sumo'
+        print(self._parameters['gui'])
+        print(val)
         sumo_binary = checkBinary(val)
+        print("SUMO binary = " + str(sumo_binary))
 
         # Try repeatedly to connect
         while True:
             try:
                 self._port = random.SystemRandom().choice(list(range(10000,20000)))
-                self._sumo_helper = SumoHelper(self._parameters, self._port)
+                self._sumo_helper = SumoHelper(self._parameters, self._port, self._seed)
                 conf_file = self._sumo_helper.sumocfg_file
                 logging.info( "Configuration: " + str(conf_file) )
                 sumoCmd=[sumo_binary, "-c", conf_file]

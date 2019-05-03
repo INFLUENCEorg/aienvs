@@ -21,7 +21,7 @@ class testSumoGymAdapter(LoggedTestCase):
 
         env = SumoGymAdapter(parameters)
         for i in range(1000):
-            logging.info("Step " + str(i))
+            logging.debug("Step " + str(i))
             result = env.step(env.action_space.sample())
         env.close()
         
@@ -29,7 +29,6 @@ class testSumoGymAdapter(LoggedTestCase):
         logging.info("Starting test_smoke")
         env = SumoGymAdapter(parameters={'generate_conf':False})
 
-        logging.info("INFO")
         for _ in range(1000):
             result = env.step(env.action_space.sample())
         env.close()
