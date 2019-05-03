@@ -7,17 +7,6 @@ class Environment(ABC):
     """
     
     @abstractmethod
-    def initialize(self, parameters:dict):
-        """
-        Initializes the environment, resets it to its initial state, using the parameters
-        @param parameters: a dictionary with environment-specific configuration values 
-        """
-        pass
-    
-        """
-    Abstract base class of the state of an environment
-    """
-    @abstractmethod
     def getActionMap(self) -> dict:
         """
         @return:  a dictionary of the currently possible actions. 
@@ -44,13 +33,4 @@ class Environment(ABC):
         """
         pass
 
-    @abstractmethod
-    def close(self):
-        """
-        Closes the environment, close windows and GUIs, release all resources,
-        save final information and de-initializes the environment.
-        initialize can be called to re-initialize the environment after a close.
-        """
-        pass
-    
-    
+   

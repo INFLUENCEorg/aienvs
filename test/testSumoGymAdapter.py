@@ -1,10 +1,11 @@
 import unittest
 import aienvs
+import aiagents
 import logging
 import yaml
 import sys
 from LoggedTestCase import LoggedTestCase
-from aienvs.SumoGymAdapter import SumoGymAdapter
+from aienvs.Sumo.SumoGymAdapter import SumoGymAdapter
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -23,16 +24,25 @@ class testSumoGymAdapter(LoggedTestCase):
         for i in range(1000):
             logging.debug("Step " + str(i))
             result = env.step(env.action_space.sample())
-        env.close()
         
     def test_smoke(self):
         logging.info("Starting test_smoke")
-        env = SumoGymAdapter(parameters={'generate_conf':False})
+        env = SumoGymAdapter(parameters={'generate_conf':False, 'gui': False})
+        
+        done = False
+        i=0
+ 
+        while(not done):
+            logging.debug("Step " + str(i))
+            i+=1
+            obs, global_reward, done, info = env.step(env.action_space.sample())
+
+    def test_random_agent(self):
+        logging.info("Starting test_random_agent")
+        env = SumoGymAdapter(parameters={'generate_conf':False, 'gui':False})
 
         for _ in range(1000):
             result = env.step(env.action_space.sample())
-        env.close()
-        logging.info(result)
 
 
 if __name__ == '__main__':

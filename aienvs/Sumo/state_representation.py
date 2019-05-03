@@ -1,7 +1,7 @@
 import copy
 import numpy as np
 from gettext import _current_domain
-from aienvs.Sumo.LDM import LDM
+from aienvs.Sumo.LDM import ldm
 
 class State:
     """
@@ -9,7 +9,7 @@ class State:
     @param ldm the LDM connection with sumo
     @param agents the list of traffic light IDs (strings)
     """
-    def __init__(self, ldm: LDM, agents:list):
+    def __init__(self, ldm, agents:list):
         """
         @param agents list of traffic light ids
         """
@@ -64,7 +64,7 @@ class LinearFeatureState(State):
     as described in elise's master thesis
     only support one-agent scenario
     """
-    def __init__(self, ldm: LDM):
+    def __init__(self, ldm):
         State.__init__(self, ldm,["0"])
         self._prev_speed = {}
         self._actions = ['GrGr', 'ryry', 'rGrG', 'yryr']
@@ -265,7 +265,7 @@ class DenseState(State):
     '3' is a one-hot vector for three light status (red, yellow, green)
 
     """
-    def __init__(self, agents, width, frames, ldm: LDM):
+    def __init__(self, agents, width, frames, ldm):
         State.__init__(self, ldm, agents)
 
         # get width
@@ -805,7 +805,7 @@ class LdmMatrixState(State):
     """
     TODO document how this state works and achieves
     """
-    def __init__(self, ldm: LDM, data, type="byCorners"):
+    def __init__(self, ldm, data, type="byCorners"):
         State.__init__(self, ldm,["0"])
 
         if type == "byCorners":

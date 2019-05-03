@@ -41,6 +41,7 @@ class SumoGymAdapter(gym.Env):
         gui: whether we show a GUI. 
         scenario: the path to the scenario to use
         """
+        self.ldm=ldm()
         self._parameters = copy.deepcopy(self.DEFAULT_PARAMETERS)
         self._parameters.update(parameters)
         logging.debug(parameters)
@@ -55,42 +56,46 @@ class SumoGymAdapter(gym.Env):
         # the actual number of vehicles still to come because of delayed
         # route file parsing.
         self._set_lights(actions)
-        ldm.simulationStep()
+        self.ldm.step()
         obs = self._observe()
-        done = ldm.isSimulationFinished()
+        done = self.ldm.isSimulationFinished()
         global_reward = self._computeGlobalReward()
 
         # as in openai gym, last one is info list
         return obs, global_reward, done, []
     
     def reset(self):
+        try:
+            logging.debug("LDM closed by resetting")
+            self.ldm.close()
+        except:
+            logging.error("LDM cannot be closed")
+
         logging.info("Starting SUMO environment...")
         self._startSUMO()
         self.action_space = self._getActionSpace()
         # TODO: Wouter: make state configurable ("state factory")
-        self._state = LdmMatrixState(ldm,[self._parameters['box_bottom_corner'], self._parameters['box_top_corner']], "byCorners")
+        self._state = LdmMatrixState(self.ldm,[self._parameters['box_bottom_corner'], self._parameters['box_top_corner']], "byCorners")
         
     def render(self):
         pass # enabled anwyay if parameter 'gui'=True
     
-    def close(self):
-        ldm.close()
-
     def seed(self, seed=42):
         self._seed = seed
         pass # TODO: Wouter: add seed (pass to LDM)
 
     ########## Private functions ##########################
+    def __del__(self):
+        logging.debug("LDM closed by destructor")
+        self.ldm.close()
+
     def _startSUMO(self):
         """
         Start the connection with SUMO as a subprocess and initialize
         the traci port, generate route file.
         """
         val='sumo-gui' if self._parameters['gui'] else 'sumo'
-        print(self._parameters['gui'])
-        print(val)
         sumo_binary = checkBinary(val)
-        print("SUMO binary = " + str(sumo_binary))
 
         # Try repeatedly to connect
         while True:
@@ -101,7 +106,7 @@ class SumoGymAdapter(gym.Env):
                 logging.info( "Configuration: " + str(conf_file) )
                 sumoCmd=[sumo_binary, "-c", conf_file]
                 time.sleep(.500) 
-                ldm.start(sumoCmd, self._port)
+                self.ldm.start(sumoCmd, self._port)
             except Exception as e:
                 if str(e) == "connection closed by SUMO":
                     continue
@@ -110,8 +115,8 @@ class SumoGymAdapter(gym.Env):
             else:
                 break
 
-        ldm.init(waitingPenalty=0,new_reward=0) # ignore reward for now
-        ldm.setResolutionInPixelsPerMeter(self._parameters['resolutionInPixelsPerMeterX'], self._parameters['resolutionInPixelsPerMeterY'])
+        self.ldm.init(waitingPenalty=0,new_reward=0) # ignore reward for now
+        self.ldm.setResolutionInPixelsPerMeter(self._parameters['resolutionInPixelsPerMeterX'], self._parameters['resolutionInPixelsPerMeterY'])
             
     def _intToPhaseString(self, intersectionId:str, lightPhaseId: int):
         """
@@ -134,14 +139,14 @@ class SumoGymAdapter(gym.Env):
         """
         Computes the global reward
         """
-        return ldm.getRewardByCorners(bottomLeftCoords=(0,0), topRightCoords=(0,0), local_rewards=False)
+        return self.ldm.getRewardByCorners(bottomLeftCoords=(0,0), topRightCoords=(0,0), local_rewards=False)
     
     def _getActionSpace(self):
         """
         @returns the actionspace:
          two possible actions for each lightid: see PHASES variable
         """
-        return spaces.Dict({id:spaces.Discrete(len(PHASES.keys())) for id in ldm.getTrafficLights()})
+        return spaces.Dict({id:spaces.Discrete(len(PHASES.keys())) for id in self.ldm.getTrafficLights()})
 
 
     def _set_lights(self, actions:spaces.Dict):
@@ -166,7 +171,7 @@ class SumoGymAdapter(gym.Env):
                 action, self._yellowTimer[intersectionId] = self._correct_action(prev_action, action, self._yellowTimer[intersectionId])
 
             # Set traffic lights 
-            ldm.setRedYellowGreenState(intersectionId, action)
+            self.ldm.setRedYellowGreenState(intersectionId, action)
             self._takenActions[intersectionId].append(action)
 
     def _correct_action(self, prev_action, action, timer):
