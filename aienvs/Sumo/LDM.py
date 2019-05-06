@@ -16,7 +16,7 @@ class ldm():
     getMapSliceByCenter( self, centerCoords, widthInMeters, heightInMeters )
     '''
 
-    def __init__(self, using_libsumo=False):
+    def __init__(self, using_libsumo=True):
         if( using_libsumo ):
             import libsumo as SUMO_client
         else:
@@ -55,7 +55,6 @@ class ldm():
         self._tlPositions={}
         self._waitingPenalty = waitingPenalty
         self.new_reward = new_reward
-        self.subscriptionResults={}
         self.subscribedVehs=[]
 
     def start(self, sumoCmd:list, PORT:9001):
@@ -75,16 +74,17 @@ class ldm():
         '''
         This updates the vehicles' states with information from the simulation
         '''
+        self.subscriptionResults={}
 
-        for newID in self.SUMO_client.simulation.getDepartedIDList():
-            if( self._verbose ):
-                print(newID)
-            self._addVehicleSubscription(newID)
-            self.subscribedVehs.append(newID)
- 
         for vehID in self.subscribedVehs:
-            self.subscriptionResults.update({vehID:self.SUMO_client.vehicle.getSubscriptionResults(vehID)})
-        
+            subscriptionResult = self.SUMO_client.vehicle.getSubscriptionResults(vehID)
+            logging.debug("Subscription result: veh: " + vehID + str(subscriptionResult))
+            if( subscriptionResult and vehID in self.SUMO_client.vehicle.getIDList() ):
+                self.subscriptionResults.update({vehID:subscriptionResult})
+            else:
+                self.subscribedVehs.remove(vehID)
+
+     
         if( len(self.subscriptionResults.keys())>0 ):
             self._updateMapWithVehicles( self._getVehiclePositions(self.subscriptionResults) )
 
@@ -99,15 +99,15 @@ class ldm():
                 if(self._tlPositions.get(lightid) != None):
                     self._add_stop_lights(self._lightstate[lightid], list(self._tlPositions.get(lightid)) )
 
-
-        print(str(self.subscriptionResults))
         try:
             self.SUMO_client.simulationStep()
-        except:
-            # LIBSUMO WILL COMPLAIN ABOUT NON-EXISTING VEHICLES
-            pass
+        except self.SUMO_client.TraCIException as exc: 
+            logging.error(str(exc) + str(" This is some problem of libsumo, but everything still seems to work correctly"))
 
- 
+        self.subscribedVehs = list(self.SUMO_client.vehicle.getIDList())
+        for vehID in self.subscribedVehs:
+            self._addVehicleSubscription(vehID)
+
         return True
 
     
@@ -354,6 +354,10 @@ class ldm():
     # vehicles are a subset of all subscription results
     def _computeReward( self, vehicles ):
         result = 0
+        if not vehicles:
+            logging.debug("No vehicles, returning 0 reward")
+            return 0
+
         for vehID in vehicles:
             if self.new_reward:
                 waitingTime = vehicles.get(vehID).get(self.SUMO_client.constants.VAR_WAITING_TIME)
