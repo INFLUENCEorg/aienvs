@@ -1,6 +1,7 @@
 import unittest
 import aienvs
-import aiagents
+from aiagents.multi.ComplexAgentComponent import ComplexAgentComponent
+from aiagents.single.RandomAgent import RandomAgent
 import logging
 import yaml
 import sys
@@ -39,11 +40,35 @@ class testSumoGymAdapter(LoggedTestCase):
 
     def test_random_agent(self):
         logging.info("Starting test_random_agent")
-        env = SumoGymAdapter(parameters={'generate_conf':False, 'gui':False})
+        env = SumoGymAdapter(parameters={'generate_conf':False, 'gui':True})
+
+        randomAgents = []
+        for intersectionId in env.action_space.spaces.keys():
+            randomAgents.append(RandomAgent(intersectionId, env.action_space.spaces.get(intersectionId)))
+
+        complexAgent=ComplexAgentComponent(randomAgents)
 
         for _ in range(1000):
-            result = env.step(env.action_space.sample())
+            actions = complexAgent.select_actions()
+            obs, global_reward, done, info = env.step(actions)
+            complexAgent.observe(obs)
 
+    def test_PPO_agent(self):
+        logging.info("Starting test_PPO_agent")
+        """
+        env = SumoGymAdapter(parameters={'generate_conf':False, 'gui':True})
+
+        randomAgents = []
+        for intersectionId in env.action_space.spaces.keys():
+            randomAgents.append(RandomAgent(intersectionId, env.action_space.spaces.get(intersectionId)))
+
+        complexAgent=ComplexAgentComponent(randomAgents)
+
+        for _ in range(1000):
+            actions = complexAgent.select_actions()
+            obs, global_reward, done, info = env.step(actions)
+            complexAgent.observe(obs)
+        """
 
 if __name__ == '__main__':
     unittest.main()

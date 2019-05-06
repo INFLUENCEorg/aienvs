@@ -2,18 +2,29 @@ import gym
 from gym import spaces
 from aienvs.FactoryFloorRobot import FactoryFloorRobot
 from aienvs.FactoryFloorTask import FactoryFloorTask
+import numpy as np
+from np import array
+from np import vstack
 
 
-class FactoryFloorAdapter(gym.Env):
+class FactoryFloor(gym.Env):
     """
     An adapter for the factory floor environment
     """
+    DEFAULT_PARAMETERS = {'steps':1000, 
+                'n_robots':2, 
+                'n_tasks':5, 
+                'x_size':10,
+                'y_size':15,
+                'task_prob':0.3
+                }
 
-    def __init__(self, parameters:dict={'steps':1000, 'n_robots':2, 'n_tasks':5, 'x_size':10, 'y_size':15}):
+    def __init__(self, parameters:dict={}):
         """
         TBA
         """
-        self.parameters = parameters
+        self._parameters = copy.deepcopy(self.DEFAULT_PARAMETERS)
+        self._parameters.update(parameters)
 
         self._robots = []
         while len(self._robots) < parameters['n_robots']:
@@ -23,7 +34,7 @@ class FactoryFloorAdapter(gym.Env):
         while len(self._tasks) < parameters['n_tasks']:
             self._tasks.append(FactoryFloorTask(id_=len(self._tasks)))
 
-        self.observation_space = spaces.MultiDiscrete([parameters['x_size'], parameters['y_size']])
+        self.observation_space = spaces.MultiDiscrete([2, parameters['x_size'], parameters['y_size']]) # one layer for tasks the second layer for robots
         self.action_space = self._getActionSpace()
         self.reset()
     
@@ -34,7 +45,7 @@ class FactoryFloorAdapter(gym.Env):
         self._newTasksAppear()
         global_reward = self._computePenalty()
         done = (self.parameters['steps'] <= self._step)
-        obs = self.observation_space.sample()
+        obs = self._createBitmap()
         self._step += 1
         
         return obs, global_reward, done, []
@@ -53,22 +64,50 @@ class FactoryFloorAdapter(gym.Env):
 
     ########## Private functions ##########################
 
+    def _createBitmap(self):
+        bitmapRobots = np.array(parameters['x_size'], parameters['y_size'])
+        bitmapTasks = np.array(parameters['x_size'], parameters['y_size'])
+        for robot in self._robots:
+            bitmapRobots(robot.pos_x, robot.pos_y)+=1
+
+        for task in self._tasks:
+            bitmapTasks(task.pos_x, task.pos_y)+=1
+
+        return vstack(bitmapRobots, bitmapTasks)
+
     def _applyAction(self, robot, action):
+        if not self._isActionAllowed( robot, action ):
+            break
+
         if ACTIONS.get(action) == "ACT":
             for task in self._tasks:
                 if (robot.pos_x, robot.pos_y) == (task.pos_x, task.pos_y):
                     self._tasks.pop(task.getId())
+
         elif ACTIONS.get(action) == "UP":
-            return NotImplementedError
+            robot.pos_y=+1
         elif ACTIONS.get(action) == "RIGHT":
-            return NotImplementedError
+            robot.pos_x+=1
         else if ACTIONS.get(action) == "DOWN":
-            return NotImplementedError
+            robot.pos_y-=1
         else if ACTIONS.get(action) == "LEFT":
-            return NotImplementedError
+            robot.pos_x-=1
 
     def _newTasksAppear(self):
+        samplingSpace = 
         pass
+
+    def _isActionAllowed(self, robot, action):
+        if( ACTIONS.get(action) == "UP" && robot.pos_y == self._parameters['y_size'] )
+            return False
+        if( ACTIONS.get(action) == "DOWN" && robot.pos_y == 0 )
+            return False
+        if( ACTIONS.get(action) == "RIGHT" && robot.pos_y == self._parameters['x_size'] )
+            return False
+        if( ACTIONS.get(action) == "LEFT" && robot.pos_x == 0 )
+            return False
+
+        return True
 
     def _computePenalty(self):
         penalty = 0

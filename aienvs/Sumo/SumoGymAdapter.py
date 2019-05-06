@@ -31,7 +31,8 @@ class SumoGymAdapter(gym.Env):
                 'route_max_segments' : 0,
                 'route_ends' : [],
                 'seed' : 42,
-                'generate_conf' : True
+                'generate_conf' : True,
+                'libsumo' : False
                 }
 
     def __init__(self, parameters:dict={}):
@@ -41,9 +42,9 @@ class SumoGymAdapter(gym.Env):
         gui: whether we show a GUI. 
         scenario: the path to the scenario to use
         """
-        self.ldm=ldm()
         self._parameters = copy.deepcopy(self.DEFAULT_PARAMETERS)
         self._parameters.update(parameters)
+        self.ldm=ldm(using_libsumo = self._parameters['libsumo'])
         logging.debug(parameters)
         self._takenActions = {}
         self._yellowTimer = {}
