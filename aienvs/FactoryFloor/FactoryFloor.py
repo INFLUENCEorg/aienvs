@@ -1,15 +1,16 @@
 import gym
 from gym import spaces
-from aienvs.FactoryFloorRobot import FactoryFloorRobot
-from aienvs.FactoryFloorTask import FactoryFloorTask
+from aienvs.FactoryFloor.FactoryFloorRobot import FactoryFloorRobot
+from aienvs.FactoryFloor.FactoryFloorTask import FactoryFloorTask
 import numpy as np
-from np import array
-from np import vstack
+from numpy import array
+from numpy import vstack
+import copy
 
 
 class FactoryFloor(gym.Env):
     """
-    An adapter for the factory floor environment
+    The factory floor environment
     """
     DEFAULT_PARAMETERS = {'steps':1000, 
                 'n_robots':2, 
@@ -19,6 +20,14 @@ class FactoryFloor(gym.Env):
                 'task_prob':0.3
                 }
 
+    ACTIONS={
+        0: "ACT",
+        1: "UP",
+        2: "RIGHT",
+        3: "DOWN",
+        4: "LEFT"
+    }   
+
     def __init__(self, parameters:dict={}):
         """
         TBA
@@ -27,14 +36,15 @@ class FactoryFloor(gym.Env):
         self._parameters.update(parameters)
 
         self._robots = []
-        while len(self._robots) < parameters['n_robots']:
+        while len(self._robots) < self._parameters['n_robots']:
             self._robots.append(FactoryFloorRobot(id_=len(self._robots)))
 
         self._tasks = []
-        while len(self._tasks) < parameters['n_tasks']:
-            self._tasks.append(FactoryFloorTask(id_=len(self._tasks)))
+        samplingSpace = spaces.MultiDiscrete([self._parameters['x_size'], self._parameters['y_size']])
+        while len(self._tasks) < self._parameters['n_tasks']:
+            self._tasks.append(FactoryFloorTask(id_=len(self._tasks), pos_x=samplingSpace.sample()[0], pos_y=samplingSpace.sample()[1]))
 
-        self.observation_space = spaces.MultiDiscrete([2, parameters['x_size'], parameters['y_size']]) # one layer for tasks the second layer for robots
+        self.observation_space = spaces.MultiDiscrete([2, self._parameters['x_size'], self._parameters['y_size']]) # one layer for tasks the second layer for robots
         self.action_space = self._getActionSpace()
         self.reset()
     
@@ -44,7 +54,7 @@ class FactoryFloor(gym.Env):
 
         self._newTasksAppear()
         global_reward = self._computePenalty()
-        done = (self.parameters['steps'] <= self._step)
+        done = (self._parameters['steps'] <= self._step)
         obs = self._createBitmap()
         self._step += 1
         
@@ -65,46 +75,46 @@ class FactoryFloor(gym.Env):
     ########## Private functions ##########################
 
     def _createBitmap(self):
-        bitmapRobots = np.array(parameters['x_size'], parameters['y_size'])
-        bitmapTasks = np.array(parameters['x_size'], parameters['y_size'])
+        bitmapRobots = np.zeros((self._parameters['x_size'], self._parameters['y_size']))
+        bitmapTasks = np.zeros((self._parameters['x_size'], self._parameters['y_size']))
         for robot in self._robots:
-            bitmapRobots(robot.pos_x, robot.pos_y)+=1
+            bitmapRobots[robot.pos_x, robot.pos_y]+=1
 
         for task in self._tasks:
-            bitmapTasks(task.pos_x, task.pos_y)+=1
+            bitmapTasks[task.pos_x, task.pos_y]+=1
 
-        return vstack(bitmapRobots, bitmapTasks)
+        return vstack((bitmapRobots, bitmapTasks))
 
     def _applyAction(self, robot, action):
         if not self._isActionAllowed( robot, action ):
-            break
+            return False
 
-        if ACTIONS.get(action) == "ACT":
+        if self.ACTIONS.get(action) == "ACT":
             for task in self._tasks:
                 if (robot.pos_x, robot.pos_y) == (task.pos_x, task.pos_y):
                     self._tasks.pop(task.getId())
 
-        elif ACTIONS.get(action) == "UP":
+        elif self.ACTIONS.get(action) == "UP":
             robot.pos_y=+1
-        elif ACTIONS.get(action) == "RIGHT":
+        elif self.ACTIONS.get(action) == "RIGHT":
             robot.pos_x+=1
-        else if ACTIONS.get(action) == "DOWN":
+        elif self.ACTIONS.get(action) == "DOWN":
             robot.pos_y-=1
-        else if ACTIONS.get(action) == "LEFT":
+        elif self.ACTIONS.get(action) == "LEFT":
             robot.pos_x-=1
 
     def _newTasksAppear(self):
-        samplingSpace = 
-        pass
+        samplingSpace = spaces.MultiDiscrete([self._parameters['x_size'], self._parameters['y_size']])
+        self._tasks.append(FactoryFloorTask(id_=0, pos_x=samplingSpace.sample()[0], pos_y=samplingSpace.sample()[1]))
 
     def _isActionAllowed(self, robot, action):
-        if( ACTIONS.get(action) == "UP" && robot.pos_y == self._parameters['y_size'] )
+        if( self.ACTIONS.get(action) == "UP" and robot.pos_y == self._parameters['y_size'] ):
             return False
-        if( ACTIONS.get(action) == "DOWN" && robot.pos_y == 0 )
+        if( self.ACTIONS.get(action) == "DOWN" and robot.pos_y == 0 ):
             return False
-        if( ACTIONS.get(action) == "RIGHT" && robot.pos_y == self._parameters['x_size'] )
+        if( self.ACTIONS.get(action) == "RIGHT" and robot.pos_y == self._parameters['x_size'] ):
             return False
-        if( ACTIONS.get(action) == "LEFT" && robot.pos_x == 0 )
+        if( self.ACTIONS.get(action) == "LEFT" and robot.pos_x == 0 ):
             return False
 
         return True
@@ -120,12 +130,5 @@ class FactoryFloor(gym.Env):
         @returns the actionspace:
          two possible actions for each lightid: see PHASES variable
         """
-        return spaces.Dict({robot.getId():spaces.Discrete(len(ACTIONS)) for robot in self._robots})
+        return spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) for robot in self._robots})
 
-ACTIONS={
-    0: "ACT",
-    1: "UP",
-    2: "RIGHT",
-    3: "DOWN",
-    4: "LEFT"
-}   

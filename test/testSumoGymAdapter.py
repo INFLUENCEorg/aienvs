@@ -55,20 +55,19 @@ class testSumoGymAdapter(LoggedTestCase):
 
     def test_PPO_agent(self):
         logging.info("Starting test_PPO_agent")
-        """
         env = SumoGymAdapter(parameters={'generate_conf':False, 'gui':True})
 
-        randomAgents = []
+        ppoAgents = []
         for intersectionId in env.action_space.spaces.keys():
-            randomAgents.append(RandomAgent(intersectionId, env.action_space.spaces.get(intersectionId)))
+            ppoAgents.append(PPOAgent(intersectionId, env.action_space.spaces.get(intersectionId)))
 
-        complexAgent=ComplexAgentComponent(randomAgents)
+        complexAgent=ComplexAgentComponent(PPOAgents)
 
         for _ in range(1000):
             actions = complexAgent.select_actions()
             obs, global_reward, done, info = env.step(actions)
             complexAgent.observe(obs)
-        """
+        
 
 if __name__ == '__main__':
     unittest.main()

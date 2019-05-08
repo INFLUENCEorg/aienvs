@@ -1,11 +1,16 @@
 import unittest
-from aienvs.FactoryFloorAdapter import FactoryFloorAdapter
+import logging
+from LoggedTestCase import LoggedTestCase
+from aienvs.FactoryFloor.FactoryFloor import FactoryFloor
 import random
 
-class testFactoryFloorAdapter(unittest.TestCase):
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+class testFactoryFloorAdapter(LoggedTestCase):
         
     def test_smoke(self):
-        env = FactoryFloorAdapter()
+        env = FactoryFloor()
         env.reset()
         action_space=env.action_space
 

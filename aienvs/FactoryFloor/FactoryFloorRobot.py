@@ -17,10 +17,3 @@ class FactoryFloorRobot():
         """
         return self._id
 
-ACTIONS={
-    0: "ACT",
-    1: "UP",
-    2: "RIGHT",
-    3: "DOWN",
-    4: "LEFT"
-}
