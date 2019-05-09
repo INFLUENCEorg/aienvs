@@ -40,7 +40,7 @@ class testSumoGymAdapter(LoggedTestCase):
 
     def test_random_agent(self):
         logging.info("Starting test_random_agent")
-        env = SumoGymAdapter(parameters={'generate_conf':False, 'gui':True})
+        env = SumoGymAdapter(parameters={'generate_conf':False, 'gui': False})
 
         randomAgents = []
         for intersectionId in env.action_space.spaces.keys():
@@ -53,9 +53,11 @@ class testSumoGymAdapter(LoggedTestCase):
             obs, global_reward, done, info = env.step(actions)
             complexAgent.observe(obs)
 
+        env.close()
+
     def test_PPO_agent(self):
         logging.info("Starting test_PPO_agent")
-        env = SumoGymAdapter(parameters={'generate_conf':False, 'gui':True})
+        env = SumoGymAdapter(parameters={'generate_conf':False, 'gui': False})
 
         ppoAgents = []
         for intersectionId in env.action_space.spaces.keys():

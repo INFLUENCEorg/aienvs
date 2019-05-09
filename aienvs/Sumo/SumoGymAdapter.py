@@ -9,15 +9,16 @@ import time
 from sumolib import checkBinary
 import random
 from aienvs.Sumo.SumoHelper import SumoHelper
+from aienvs.Environment import Env
 import copy
 
-class SumoGymAdapter(gym.Env):
+class SumoGymAdapter(Env):
     """
     An adapter that makes Sumo behave as a proper Gym environment.
     At top level, the actionspace and percepts are in a Dict with the
     trafficPHASES as keys.
     """
-    DEFAULT_PARAMETERS = {'gui':True, 
+    _DEFAULT_PARAMETERS = {'gui':True, 
                 'scene':'four_grid', 
                 'box_bottom_corner':(0,0), 
                 'box_top_corner':(10,10),
@@ -34,6 +35,12 @@ class SumoGymAdapter(gym.Env):
                 'generate_conf' : True,
                 'libsumo' : False
                 }
+    
+    # TODO: Wouter: This should be read from a file
+    _PHASES={
+        0: "GGrr",
+        1: "rrGG"
+    }
 
     def __init__(self, parameters:dict={}):
         """
@@ -42,7 +49,7 @@ class SumoGymAdapter(gym.Env):
         gui: whether we show a GUI. 
         scenario: the path to the scenario to use
         """
-        self._parameters = copy.deepcopy(self.DEFAULT_PARAMETERS)
+        self._parameters = copy.deepcopy(self._DEFAULT_PARAMETERS)
         self._parameters.update(parameters)
         self.ldm=ldm(using_libsumo = self._parameters['libsumo'])
         logging.debug(parameters)
@@ -62,7 +69,7 @@ class SumoGymAdapter(gym.Env):
         done = self.ldm.isSimulationFinished()
         global_reward = self._computeGlobalReward()
 
-        # as in openai gym, last one is info list
+        # as in openai gym, last one is the info list
         return obs, global_reward, done, []
     
     def reset(self):
@@ -70,11 +77,11 @@ class SumoGymAdapter(gym.Env):
             logging.debug("LDM closed by resetting")
             self.ldm.close()
         except:
-            logging.error("LDM cannot be closed")
+            logging.debug("No LDM to close. Perhaps it's the first instance of training")
 
         logging.info("Starting SUMO environment...")
         self._startSUMO()
-        self.action_space = self._getActionSpace()
+        self._action_space = self._getActionSpace()
         # TODO: Wouter: make state configurable ("state factory")
         self._state = LdmMatrixState(self.ldm,[self._parameters['box_bottom_corner'], self._parameters['box_top_corner']], "byCorners")
         
@@ -84,6 +91,18 @@ class SumoGymAdapter(gym.Env):
     def seed(self, seed=42):
         self._seed = seed
         pass # TODO: Wouter: add seed (pass to LDM)
+
+    def close(self):
+        self.__del__()
+
+    # TODO: Wouter: implement this property
+    @property
+    def observation_space(self):
+        raise NotImplementedError
+
+    @property
+    def action_space(self):
+        return self._action_space
 
     ########## Private functions ##########################
     def __del__(self):
@@ -125,7 +144,7 @@ class SumoGymAdapter(gym.Env):
         @param lightvalue the PHASES value
         @return the intersection PHASES string eg 'rrGr' or 'GGrG'
         """
-        return PHASES.get(lightPhaseId)
+        return self._PHASES.get(lightPhaseId)
         
                 
     def _observe(self): 
@@ -147,7 +166,7 @@ class SumoGymAdapter(gym.Env):
         @returns the actionspace:
          two possible actions for each lightid: see PHASES variable
         """
-        return spaces.Dict({id:spaces.Discrete(len(PHASES.keys())) for id in self.ldm.getTrafficLights()})
+        return spaces.Dict({id:spaces.Discrete(len(self._PHASES.keys())) for id in self.ldm.getTrafficLights()})
 
 
     def _set_lights(self, actions:spaces.Dict):
@@ -197,9 +216,4 @@ class SumoGymAdapter(gym.Env):
         return new_action, timer
 
 
-# TODO: Wouter: This should be read from 
-PHASES={
-    0: "GGrr",
-    1: "rrGG"
-}
 
