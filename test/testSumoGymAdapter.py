@@ -2,6 +2,7 @@ import unittest
 import aienvs
 from aiagents.multi.ComplexAgentComponent import ComplexAgentComponent
 from aiagents.single.RandomAgent import RandomAgent
+from aiagents.single.PPO.PPOcontroller import PPOAgent
 import logging
 import yaml
 import sys
@@ -57,18 +58,28 @@ class testSumoGymAdapter(LoggedTestCase):
 
     def test_PPO_agent(self):
         logging.info("Starting test_PPO_agent")
-        env = SumoGymAdapter(parameters={'generate_conf':False, 'gui': False})
 
-        ppoAgents = []
+        with open("configs/new_traffic_loop_ppo.yaml", 'r') as stream:
+            try:
+                parameters=yaml.safe_load(stream)['parameters']
+            except yaml.YAMLError as exc:
+                print(exc)
+
+        env = SumoGymAdapter(parameters)
+        PPOAgents = []
         for intersectionId in env.action_space.spaces.keys():
-            ppoAgents.append(PPOAgent(intersectionId, env.action_space.spaces.get(intersectionId)))
+            PPOAgents.append(PPOAgent(parameters, env.observation_space, env.action_space.spaces.get(intersectionId), intersectionId))
 
         complexAgent=ComplexAgentComponent(PPOAgents)
+        obs=env.observation_space
+        done=False
+        global_reward=0
 
-        for _ in range(1000):
+        for i in range(1000):
+            complexAgent.observe(obs, global_reward, done)
             actions = complexAgent.select_actions()
             obs, global_reward, done, info = env.step(actions)
-            complexAgent.observe(obs)
+            logging.info("Step " + str(i))
         
 
 if __name__ == '__main__':

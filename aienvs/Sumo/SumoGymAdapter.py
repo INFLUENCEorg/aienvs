@@ -95,10 +95,10 @@ class SumoGymAdapter(Env):
     def close(self):
         self.__del__()
 
-    # TODO: Wouter: implement this property
+    # TODO: Wouter: this needs to return a space and be somehow unified with gym.spaces
     @property
     def observation_space(self):
-        raise NotImplementedError
+        return self._state.update_state()
 
     @property
     def action_space(self):
@@ -144,6 +144,7 @@ class SumoGymAdapter(Env):
         @param lightvalue the PHASES value
         @return the intersection PHASES string eg 'rrGr' or 'GGrG'
         """
+        print("lightPhaseId" + str(lightPhaseId))
         return self._PHASES.get(lightPhaseId)
         
                 
