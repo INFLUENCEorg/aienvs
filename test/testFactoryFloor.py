@@ -16,7 +16,7 @@ class testFactoryFloorAdapter(LoggedTestCase):
 
         done=False
         while not done:
-            actions = action_space.sample()
+            actions = action_space().sample()
             observation, reward, done, info=env.step(actions)
             print(observation)
             print(actions[0])

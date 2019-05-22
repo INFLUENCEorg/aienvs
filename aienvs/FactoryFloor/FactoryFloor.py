@@ -7,22 +7,27 @@ import numpy as np
 from numpy import array
 from numpy import vstack
 import copy
-from random import random
-from random import randint
-
+import random 
+from aienvs.FactoryFloor.Map import Map
 
 class FactoryFloor(Env):
     """
     The factory floor environment
     """
     DEFAULT_PARAMETERS = {'steps':1000, 
-                'n_robots':2, 
+                'robots':{'robot1': (3,4), 'robot2': 'random'}, 
                 'n_tasks':5, 
-                'x_size':10,
-                'y_size':15,
-                'task_prob':0.9, # P(ACT will succeed)
+#                'x_size':10,
+#                'y_size':15,
+                'P_action_succeed':0.9, # P(ACT will succeed)
+                'P_task_appears':0.99, # P(new task appears in step) 
                 'allow_robot_overlap':False,
-                'allow_task_overlap':False
+                'allow_task_overlap':False,
+                'map':['..........',
+                       '...8......',
+                       '..3.*.....',
+                       '....*.5...',
+                       '...99999..']
                 }
 
     ACTIONS={
@@ -40,21 +45,21 @@ class FactoryFloor(Env):
         self._parameters = copy.deepcopy(self.DEFAULT_PARAMETERS)
         self._parameters.update(parameters)
         self._taskIdCounter=1 # to generate new task ids
+        self._map = Map(self._parameters['map'])
 
         self._robots = []
-        while len(self._robots) < self._parameters['n_robots']:
+        for robot in self._parameters['robots']:
             self._robots.append(FactoryFloorRobot(id_=len(self._robots)))
 
         self._tasks = []
-        samplingSpace = spaces.MultiDiscrete([self._parameters['x_size'], self._parameters['y_size']])
-        while len(self._tasks) < self._parameters['n_tasks']:
+        for task in range(self._parameters['n_tasks']):
             self._addTask()
 
     def step(self, actions:spaces.Dict):
         for robot in self._robots:
             self._applyAction(robot, actions[robot.getId()])
-
-        self._addTask()
+        if random.random() > self._parameters['P_task_appears']:
+            self._addTask()
         global_reward = self._computePenalty()
         done = (self._parameters['steps'] <= self._step)
         obs = self._createBitmap()
@@ -74,19 +79,17 @@ class FactoryFloor(Env):
     def seed(self):
         pass # todo
 
-    @property
     def observation_space(self):
         return spaces.MultiDiscrete([2, self._parameters['x_size'], self._parameters['y_size']]) # one layer for tasks the second layer for robots
-
-    @property
+ 
     def action_space(self):
         return spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) for robot in self._robots})
 
     ########## Private functions ##########################
 
     def _createBitmap(self):
-        bitmapRobots = np.zeros((self._parameters['x_size'], self._parameters['y_size']))
-        bitmapTasks = np.zeros((self._parameters['x_size'], self._parameters['y_size']))
+        bitmapRobots = np.zeros((self._map.getWidth(), self._map.getHeight()))
+        bitmapTasks = np.zeros((self._map.getWidth(), self._map.getHeight()))
         for robot in self._robots:
             bitmapRobots[robot.pos_x, robot.pos_y]+=1
 
@@ -105,7 +108,7 @@ class FactoryFloor(Env):
         """
         if not self._isActionAllowed( robot, action ):
             return False
-        if random() > self._parameters['task_prob']:
+        if random.random() > self._parameters['P_action_succeed']:
             return False
         
         newpos = pos = robot.getPosition()
@@ -145,11 +148,12 @@ class FactoryFloor(Env):
         """
         Add one new task to the task pool
         """
-        if (len(self._tasks) == self._parameters['x_size'] * self._parameters['y_size']):
+        poslist=self._map.getTaskPositions()
+        if len(self._tasks) >= len(poslist):
             return
         #samplingSpace = spaces.MultiDiscrete([self._parameters['x_size'], self._parameters['y_size']])
         while True: # do until newpos is not yet tasked, or task overlap allowed
-            newpos = (randint(0,self._parameters['x_size']-1 ),randint(0,self._parameters['y_size']-1 ))
+            newpos = random.choice(poslist)
             if self._parameters['allow_task_overlap'] or self._getTask(newpos)==None:
                 break;
             
@@ -168,13 +172,13 @@ class FactoryFloor(Env):
         
         
     def _isActionAllowed(self, robot, action):
-        if( self.ACTIONS.get(action) == "UP" and robot.pos_y == self._parameters['y_size']-1 ):
+        if( self.ACTIONS.get(action) == "UP" and robot.getPosition()[1] == self._map.getHeight()-1 ):
             return False
-        if( self.ACTIONS.get(action) == "DOWN" and robot.pos_y == 0 ):
+        if( self.ACTIONS.get(action) == "DOWN" and robot.getPosition()[1] == 0 ):
             return False
-        if( self.ACTIONS.get(action) == "RIGHT" and robot.pos_x == self._parameters['x_size']-1 ):
+        if( self.ACTIONS.get(action) == "RIGHT" and robot.getPosition()[0] == self._map.getWidth()-1 ):
             return False
-        if( self.ACTIONS.get(action) == "LEFT" and robot.pos_x == 0 ):
+        if( self.ACTIONS.get(action) == "LEFT" and robot.getPosition()[0] == 0 ):
             return False
 
         return True
