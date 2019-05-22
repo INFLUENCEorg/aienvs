@@ -8,6 +8,7 @@ from numpy import array
 from numpy import vstack
 import copy
 from random import random
+from random import randint
 
 
 class FactoryFloor(Env):
@@ -20,7 +21,8 @@ class FactoryFloor(Env):
                 'x_size':10,
                 'y_size':15,
                 'task_prob':0.9, # P(ACT will succeed)
-                'allow_robot_overlap':False
+                'allow_robot_overlap':False,
+                'allow_task_overlap':False
                 }
 
     ACTIONS={
@@ -37,6 +39,7 @@ class FactoryFloor(Env):
         """
         self._parameters = copy.deepcopy(self.DEFAULT_PARAMETERS)
         self._parameters.update(parameters)
+        self._taskIdCounter=1 # to generate new task ids
 
         self._robots = []
         while len(self._robots) < self._parameters['n_robots']:
@@ -45,13 +48,13 @@ class FactoryFloor(Env):
         self._tasks = []
         samplingSpace = spaces.MultiDiscrete([self._parameters['x_size'], self._parameters['y_size']])
         while len(self._tasks) < self._parameters['n_tasks']:
-            self._tasks.append(FactoryFloorTask(id_=len(self._tasks), pos_x=samplingSpace.sample()[0], pos_y=samplingSpace.sample()[1]))
+            self._addTask()
 
     def step(self, actions:spaces.Dict):
         for robot in self._robots:
             self._applyAction(robot, actions[robot.getId()])
 
-        self._newTasksAppear()
+        self._addTask()
         global_reward = self._computePenalty()
         done = (self._parameters['steps'] <= self._step)
         obs = self._createBitmap()
@@ -88,7 +91,8 @@ class FactoryFloor(Env):
             bitmapRobots[robot.pos_x, robot.pos_y]+=1
 
         for task in self._tasks:
-            bitmapTasks[task.pos_x, task.pos_y]+=1
+            pos = task.getPosition()
+            bitmapTasks[pos[0], pos[1]]+=1
 
         return vstack((bitmapRobots, bitmapTasks))
 
@@ -104,13 +108,13 @@ class FactoryFloor(Env):
         if random() > self._parameters['task_prob']:
             return False
         
-        pos = robot.getPosition()
-        newpos = pos
+        newpos = pos = robot.getPosition()
         
         if self.ACTIONS.get(action) == "ACT":
             for task in self._tasks:
                 if pos == task.getPosition():
-                    self._tasks.pop(task.getId())
+                    self._tasks.remove(task)
+                    print("removed ",task)
         elif self.ACTIONS.get(action) == "UP":
             newpos=(pos[0],pos[1]+1)
         elif self.ACTIONS.get(action) == "RIGHT":
@@ -137,10 +141,32 @@ class FactoryFloor(Env):
         return False
         
 
-    def _newTasksAppear(self):
-        samplingSpace = spaces.MultiDiscrete([self._parameters['x_size'], self._parameters['y_size']])
-        self._tasks.append(FactoryFloorTask(id_=0, pos_x=samplingSpace.sample()[0]-1, pos_y=samplingSpace.sample()[1]-1))
+    def _addTask(self):
+        """
+        Add one new task to the task pool
+        """
+        if (len(self._tasks) == self._parameters['x_size'] * self._parameters['y_size']):
+            return
+        #samplingSpace = spaces.MultiDiscrete([self._parameters['x_size'], self._parameters['y_size']])
+        while True: # do until newpos is not yet tasked, or task overlap allowed
+            newpos = (randint(0,self._parameters['x_size']-1 ),randint(0,self._parameters['y_size']-1 ))
+            if self._parameters['allow_task_overlap'] or self._getTask(newpos)==None:
+                break;
+            
+        self._tasks.append(FactoryFloorTask(self._taskIdCounter , newpos))
+        self._taskIdCounter+=1
 
+
+    def _getTask(self, pos:tuple):
+        """
+        @return task at given position, or None if no task at position
+        """
+        for task in self._tasks:
+            if task.getPosition() == pos:
+                return task
+        return None
+        
+        
     def _isActionAllowed(self, robot, action):
         if( self.ACTIONS.get(action) == "UP" and robot.pos_y == self._parameters['y_size']-1 ):
             return False
