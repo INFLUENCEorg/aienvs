@@ -7,6 +7,7 @@ import numpy as np
 from numpy import array
 from numpy import vstack
 import copy
+from random import random
 
 
 class FactoryFloor(Env):
@@ -18,7 +19,7 @@ class FactoryFloor(Env):
                 'n_tasks':5, 
                 'x_size':10,
                 'y_size':15,
-                'task_prob':0.3
+                'task_prob':0.9 # P(ACT will succeed)
                 }
 
     ACTIONS={
@@ -91,9 +92,17 @@ class FactoryFloor(Env):
         return vstack((bitmapRobots, bitmapTasks))
 
     def _applyAction(self, robot, action):
+        """
+        robot tries to execute given action.
+        @param robot a FactoryFloorRobot
+        @param action the ACTION number. If ACT, then the robot executes all
+        tasks that are in the tasks list and at the robot's location 
+        """
         if not self._isActionAllowed( robot, action ):
             return False
-
+        if random() > self._parameters['task_prob']:
+            return False
+        
         if self.ACTIONS.get(action) == "ACT":
             for task in self._tasks:
                 if (robot.pos_x, robot.pos_y) == (task.pos_x, task.pos_y):
