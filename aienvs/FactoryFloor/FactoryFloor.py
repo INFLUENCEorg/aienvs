@@ -19,7 +19,8 @@ class FactoryFloor(Env):
                 'n_tasks':5, 
                 'x_size':10,
                 'y_size':15,
-                'task_prob':0.9 # P(ACT will succeed)
+                'task_prob':0.9, # P(ACT will succeed)
+                'allow_robot_overlap':False
                 }
 
     ACTIONS={
@@ -103,19 +104,38 @@ class FactoryFloor(Env):
         if random() > self._parameters['task_prob']:
             return False
         
+        pos = robot.getPosition()
+        newpos = pos
+        
         if self.ACTIONS.get(action) == "ACT":
             for task in self._tasks:
-                if (robot.pos_x, robot.pos_y) == (task.pos_x, task.pos_y):
+                if pos == task.getPosition():
                     self._tasks.pop(task.getId())
-
         elif self.ACTIONS.get(action) == "UP":
-            robot.pos_y=+1
+            newpos=(pos[0],pos[1]+1)
         elif self.ACTIONS.get(action) == "RIGHT":
-            robot.pos_x+=1
+            newpos=(pos[0]+1,pos[1])
         elif self.ACTIONS.get(action) == "DOWN":
-            robot.pos_y-=1
+            newpos=(pos[0],pos[1]-1)
         elif self.ACTIONS.get(action) == "LEFT":
-            robot.pos_x-=1
+            newpos=(pos[0]-1,pos[1])
+
+        # note, because robot occupies its own position,
+        # setPosition will not be called if newpos=old pos.
+        if self._parameters['allow_robot_overlap'] or not(self.isOccupied(newpos)):
+            robot.setPosition(newpos)
+
+
+    def isOccupied(self,position):
+        """
+        @param position a tuple (x,y) that must be checked
+        @return: true iff a position is occupying position
+        """        
+        for robot in self._robots:
+            if position==robot.getPosition():
+                return True
+        return False
+        
 
     def _newTasksAppear(self):
         samplingSpace = spaces.MultiDiscrete([self._parameters['x_size'], self._parameters['y_size']])

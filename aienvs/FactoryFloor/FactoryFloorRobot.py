@@ -17,3 +17,15 @@ class FactoryFloorRobot():
         """
         return self._id
 
+    def getPosition(self):
+        """
+        @return: (x,y) tuple with current robot position
+        """
+        return (self.pos_x, self.pos_y)
+    
+    def setPosition(self, newpos):
+        """
+        @param newpos: a tuple (x,y) with the new robot position
+        """
+        self.pos_x=newpos[0]
+        self.pos_y=newpos[1]

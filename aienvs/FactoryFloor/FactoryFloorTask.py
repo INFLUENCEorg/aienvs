@@ -17,3 +17,8 @@ class FactoryFloorTask():
         """
         return self._id
 
+    def getPosition(self):
+        """
+        @return: (x,y) tuple with task position
+        """
+        return (self.pos_x, self.pos_y)
