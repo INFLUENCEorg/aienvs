@@ -18,7 +18,7 @@ class Map():
         for line in map:
             if width != len(line):
                 raise ValueError("Map must be square")
-        self._cachedTaskPositions = self._taskPositions()
+        (self._cachedTaskPositions, self._cachedTaskWeights) = self._taskPositions()
 
     def getWidth(self):
         return len(self._map[0])
@@ -39,13 +39,23 @@ class Map():
         """
         return self._cachedTaskPositions
     
+    def getTaskWeights(self):
+        """
+        @return: list of task weights, ordered to match getTaskPositions
+        """
+        return self._cachedTaskWeights
+    
     def _taskPositions(self):
-        result = []
+        poslist = []
+        weightlist = []
         for y in range(self.getHeight()):
             for x in range(self.getWidth()):
-                if self.get((x, y)) in "123456789":
-                    result += [ (x, y) ]
-        return result
+                value = self.get((x, y))
+                if value in "123456789":
+                    poslist += [ (x, y) ]
+                    weightlist += [ int(value)]
+        weightsum = sum(weightlist)
+        return (poslist, [x / weightsum for x in weightlist])
     
     def getRandomPosition(self):
         """

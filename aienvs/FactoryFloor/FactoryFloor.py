@@ -9,7 +9,7 @@ from numpy import vstack
 import copy
 import random 
 from aienvs.FactoryFloor.Map import Map
-from _blake2 import blake2b
+from numpy.random import choice as weightedchoice
 
 
 class FactoryFloor(Env):
@@ -181,7 +181,9 @@ class FactoryFloor(Env):
             return
         # samplingSpace = spaces.MultiDiscrete([self._parameters['x_size'], self._parameters['y_size']])
         while True:  # do until newpos is not yet tasked, or task overlap allowed
-            newpos = random.choice(poslist)
+            # work around numpy bug when list contains tuples
+            i = weightedchoice(list(range(len(poslist))), 1, p=self._map.getTaskWeights())[0]
+            newpos = poslist[i]
             if self._parameters['allow_task_overlap'] or self._getTask(newpos) == None:
                 break;
             
