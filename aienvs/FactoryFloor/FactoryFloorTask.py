@@ -2,13 +2,15 @@ class FactoryFloorTask():
     """
     A task on the factory floor
     """
+    _taskIdCounter = 1  # to generate new task ids
 
-    def __init__(self, id_, newpos:tuple):
+    def __init__(self, newpos:tuple):
         """
         Initializes the task, places it at (0,0)
         """
         self.pos = newpos
-        self._id = id_
+        self._id = FactoryFloorTask._taskIdCounter
+        FactoryFloorTask._taskIdCounter += 1
 
     def getId(self):
         """
@@ -23,4 +25,4 @@ class FactoryFloorTask():
         return self.pos
     
     def __str__(self):
-     return "Task"+str(self._id)
+     return "Task" + str(self._id)

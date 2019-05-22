@@ -43,7 +43,6 @@ class FactoryFloor(Env):
         """
         self._parameters = copy.deepcopy(self.DEFAULT_PARAMETERS)
         self._parameters.update(parameters)
-        self._taskIdCounter = 1  # to generate new task ids
         self._tasks = []
         self._map = Map(self._parameters['map'])
 
@@ -130,7 +129,7 @@ class FactoryFloor(Env):
         """
         @param pos the current (old) position of the robot
         @param action the action to be done in given position
-        Returns what would be the new position if robot did action.
+        @return:  what would be the new position if robot did action.
         This does not check any legality of the new position, so the 
         position may run off the map or on a wall.
         """
@@ -186,8 +185,7 @@ class FactoryFloor(Env):
             if self._parameters['allow_task_overlap'] or self._getTask(newpos) == None:
                 break;
             
-        self._tasks.append(FactoryFloorTask(self._taskIdCounter , newpos))
-        self._taskIdCounter += 1
+        self._tasks.append(FactoryFloorTask(newpos))
 
     def _getTask(self, pos:tuple):
         """
