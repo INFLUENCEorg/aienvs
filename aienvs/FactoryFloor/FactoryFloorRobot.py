@@ -2,14 +2,16 @@ class FactoryFloorRobot():
     """
     A robot on the factory floor
     """
-
-    def __init__(self, id_, pos_x:int=0, pos_y:int=0):
+    idCounter=1; # static, used for ID generation
+    
+    def __init__(self, pos:tuple):
         """
-        Initializes the robot, places it at (0,0)
+        @param pos tuple (x,y) with initial robot position.
+        Initializes the robot
         """
-        self.pos_x = pos_x
-        self.pos_y = pos_y
-        self._id = id_
+        self._pos = pos
+        self._id = "robot"+str(FactoryFloorRobot.idCounter)
+        FactoryFloorRobot.idCounter+=1
 
     def getId(self):
         """
@@ -21,11 +23,12 @@ class FactoryFloorRobot():
         """
         @return: (x,y) tuple with current robot position
         """
-        return (self.pos_x, self.pos_y)
+        return self._pos
     
     def setPosition(self, newpos):
         """
         @param newpos: a tuple (x,y) with the new robot position
         """
-        self.pos_x=newpos[0]
-        self.pos_y=newpos[1]
+        self._pos=newpos
+        
+        

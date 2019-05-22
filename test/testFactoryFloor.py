@@ -7,20 +7,26 @@ import random
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+
 class testFactoryFloorAdapter(LoggedTestCase):
         
     def test_smoke(self):
         env = FactoryFloor()
         env.reset()
-        action_space=env.action_space
+        action_space = env.action_space
 
-        done=False
+        done = False
         while not done:
             actions = action_space().sample()
-            observation, reward, done, info=env.step(actions)
-            print(observation)
-            print(actions[0])
-            print(actions[1])
+            observation, reward, done, info = env.step(actions)
+            # transpose because  observation is a matrix. 
+            # matrix rendering has first 
+            # index (x) in the vertical direction.
+            # after swap, y stil goes down however.
+            print(observation.transpose())
+            print(actions['robot1'])
+            print(actions['robot2'])
+
         
 if __name__ == '__main__':
     unittest.main()
