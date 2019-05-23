@@ -12,19 +12,35 @@ class Map():
     so without moving parts.
     """
 
-    def __init__(self, map:list):
+    def __init__(self, map:list, ptask:float):
         """
         @param map: list of strings. Each string represents one line (x direction) 
         of the map. All lines must have same length.  There must be at least one line.
         The first line represents y=0, the second line y=1, etc.
         The first column of each like represents x=0, the second x=1, etc.
+        There are a number of agreed-on characters on the map:
+        - * indicates a wall
+        - '.' indicates a free floor tile
+        - digit 1..9 indicates a location where a task can appear. The number indicates
+        the weight of the task: the task location is picked by weighted random choice.
+        @param ptask: probability that a task is added in a time step (this is assuming
+        a stepped simulation, rather than a timed one). Ignored if there are no digits
+         on the floor
         """
         self._map = map
+        self._taskProbability = ptask
         width = self.getWidth()
         for line in map:
             if width != len(line):
                 raise ValueError("Map must be square")
-        (self._cachedTaskPositions, self._cachedTaskWeights) = self._taskPositions()
+        self._cachedTaskPositions = Map._getTasksList(map)
+        
+        weights = Map._getWeightsList(map)
+        totalweight = sum(weights)
+        if totalweight == 0:
+            self._cachedTaskWeights = []
+        else:
+            self._cachedTaskWeights = [w / totalweight for w in weights]
 
     def getWidth(self) -> int:
         return len(self._map[0])
@@ -37,6 +53,13 @@ class Map():
         @return: a copy of the original map provided to the constructor
         """
         return copy.deepcopy(self._map)
+    
+    def getTaskProbability(self):
+        """
+        @return: the probability that a task will appear on the map 
+        during a time step
+        """
+        return self._taskProbability
     
     def get(self, pos:ndarray) -> str:
         """
@@ -57,17 +80,32 @@ class Map():
         """
         return self._cachedTaskWeights
     
-    def _taskPositions(self):
+    @staticmethod
+    def _getTasksList(map:list):
+        """
+        @param map the map , see __init__
+        Get list of all task positions on the map, in order of colums / rows.
+        Positions are numpy arrays [x,y].
+        """
         poslist = []
-        weightlist = []
-        for y in range(self.getHeight()):
-            for x in range(self.getWidth()):
-                value = self.get((x, y))
-                if value in "123456789":
+        for y in range(len(map)):
+            for x in range(len(map[0])):
+                if map[y] [x] in "123456789":
                     poslist += [ array([x, y]) ]
-                    weightlist += [ int(value)]
-        weightsum = sum(weightlist)
-        return (poslist, [x / weightsum for x in weightlist])
+        return poslist
+    
+    @staticmethod
+    def _getWeightsList(map:list):
+        """
+        @param map the map , see __init__
+        Get list of all weights on the map, in order of colums / rows
+        """
+        weightlist = []
+        for row in map:
+            for value in row:
+                if value in "123456789":
+                    weightlist += [ int(value) ]
+        return weightlist
     
     def getRandomPosition(self) -> array:
         """
@@ -91,5 +129,9 @@ class Map():
         newmap = []
         for y in range(area[0, 1], area[1, 1] + 1):
             newmap = newmap + [self._map[y][area[0, 0]:area[1, 0] + 1]]
-        return Map(newmap)
+        
+        # use raw original values to compute scalings
+        newtaskp = self._taskProbability * \
+            sum(Map._getWeightsList(newmap)) / sum(Map._getWeightsList(self._map))
+        return Map(newmap, newtaskp)
     

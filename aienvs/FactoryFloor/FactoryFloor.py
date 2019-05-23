@@ -45,7 +45,7 @@ class FactoryFloor(Env):
         self._parameters = copy.deepcopy(self.DEFAULT_PARAMETERS)
         self._parameters.update(parameters)
         self._tasks = []
-        self._map = Map(self._parameters['map'])
+        self._map = Map(self._parameters['map'], self._parameters['P_task_appears'])
         # use "set" to get rid of weird wrappers
         if set(self._parameters['P_action_succeed'].keys()) != set(FactoryFloor.ACTIONS.values()):
             raise ValueError("P_action_succeed must contain values for all actions")
@@ -67,7 +67,7 @@ class FactoryFloor(Env):
     def step(self, actions:spaces.Dict):
         for robot in self._robots:
             self._applyAction(robot, actions[robot.getId()])
-        if random.random() > self._parameters['P_task_appears']:
+        if random.random() > self._map.getTaskProbability():
             self._addTask()
         global_reward = self._computePenalty()
         done = (self._parameters['steps'] <= self._step)
@@ -112,11 +112,13 @@ class FactoryFloor(Env):
         """
         parameters = copy.deepcopy(self._parameters)
         map = self._map
-        parameters['map'] = map.getPart(area).getFullMap()
+        newmap = map.getPart(area)
+        parameters['map'] = newmap.getFullMap()
         parameters['robots'] = [robot.getPosition().tolist() \
             for robot in self._robots if map.isInside(robot.getPosition())]
         parameters['tasks'] = [task.getPosition().tolist() \
             for task in self._tasks if map.isInside(task.getPosition())]
+        parameters['P_task_appears'] = newmap.getTaskProbability()
         return FactoryFloor(parameters)
     
     ########## Private functions ##########################
