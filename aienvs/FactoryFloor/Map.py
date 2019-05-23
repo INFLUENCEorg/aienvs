@@ -1,4 +1,5 @@
 from random import randint
+from numpy import array, ndarray
 
 
 class Map():
@@ -26,7 +27,7 @@ class Map():
     def getHeight(self):
         return len(self._map)
     
-    def get(self, pos:tuple):
+    def get(self, pos:ndarray):
         """
         @param pos the map position as (x,y) tuple 
         @return character at given pos 
@@ -52,19 +53,19 @@ class Map():
             for x in range(self.getWidth()):
                 value = self.get((x, y))
                 if value in "123456789":
-                    poslist += [ (x, y) ]
+                    poslist += [ array([x, y]) ]
                     weightlist += [ int(value)]
         weightsum = sum(weightlist)
         return (poslist, [x / weightsum for x in weightlist])
     
     def getRandomPosition(self):
         """
-        @return: random position on the map. The returned position 
+        @return: numpy array : random position on the map. The returned position 
         will be #isInside but may be on a wall.
         """
-        return (randint(0, self.getWidth() - 1), randint(0, self.getHeight() - 1))
+        return array([randint(0, self.getWidth() - 1), randint(0, self.getHeight() - 1)])
     
-    def isInside(self, pos:tuple):
+    def isInside(self, pos:ndarray):
         """
         @return true iff the position is within the bounds of this map.
         """

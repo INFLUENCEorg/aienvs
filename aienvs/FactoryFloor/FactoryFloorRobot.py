@@ -1,14 +1,19 @@
+from numpy import array, ndarray
+
+
 class FactoryFloorRobot():
     """
     A robot on the factory floor
     """
     idCounter = 1;  # static, used for ID generation
     
-    def __init__(self, pos:tuple):
+    def __init__(self, pos:ndarray):
         """
         @param pos tuple (x,y) with initial robot position.
         Initializes the robot
         """
+        if not isinstance(pos, ndarray):
+            raise ValueError("pos must be numpy array but got " + str(type(pos)))
         self._pos = pos
         self._id = "robot" + str(FactoryFloorRobot.idCounter)
         FactoryFloorRobot.idCounter += 1
@@ -21,13 +26,13 @@ class FactoryFloorRobot():
 
     def getPosition(self):
         """
-        @return: (x,y) tuple with current robot position
+        @return: (x,y) array with current robot position
         """
         return self._pos
     
     def setPosition(self, newpos):
         """
-        @param newpos: a tuple (x,y) with the new robot position
+        @param newpos: an array (x,y) with the new robot position
         """
         self._pos = newpos
     

@@ -4,8 +4,7 @@ from aienvs.FactoryFloor.FactoryFloorRobot import FactoryFloorRobot
 from aienvs.FactoryFloor.FactoryFloorTask import FactoryFloorTask
 from aienvs.Environment import Env
 import numpy as np
-from numpy import array
-from numpy import vstack
+from numpy import array, vstack, ndarray
 import copy
 import random 
 from aienvs.FactoryFloor.Map import Map
@@ -55,7 +54,7 @@ class FactoryFloor(Env):
             if isinstance(pos, list):
                 if len(pos) != 2:
                     raise ValueError("position vector must be length 2 but got " + str(pos))
-                robot = FactoryFloorRobot((pos[0], pos[1]))  # convert to tuple
+                robot = FactoryFloorRobot(array([pos[0], pos[1]]))  # convert to tuple
             elif pos == 'random':
                 robot = FactoryFloorRobot(self._getFreeMapPosition())
             else:
@@ -132,23 +131,23 @@ class FactoryFloor(Env):
             if self._isFree(newpos):
                 robot.setPosition(newpos)
   
-    def _newPos(self, pos:tuple, action):
+    def _newPos(self, pos:ndarray, action):
         """
-        @param pos the current (old) position of the robot
+        @param pos the current (old) position of the robot (numpy array)
         @param action the action to be done in given position
-        @return:  what would be the new position if robot did action.
+        @return:  what would be the new position (ndarray) if robot did action.
         This does not check any legality of the new position, so the 
         position may run off the map or on a wall.
         """
         newpos = pos
         if self.ACTIONS.get(action) == "UP":
-            newpos = (pos[0], pos[1] + 1)
+            newpos = pos + [0, 1]
         elif self.ACTIONS.get(action) == "RIGHT":
-            newpos = (pos[0] + 1, pos[1])
+            newpos = pos + [1, 0]
         elif self.ACTIONS.get(action) == "DOWN":
-            newpos = (pos[0], pos[1] - 1)
+            newpos = pos + [0, -1]
         elif self.ACTIONS.get(action) == "LEFT":
-            newpos = (pos[0] - 1, pos[1])
+            newpos = pos + [-1, 0]
         return newpos
     
     def _getFreeMapPosition(self):
@@ -160,17 +159,17 @@ class FactoryFloor(Env):
             if self._isFree(pos):
                 return pos
 
-    def _isRobot(self, position):
+    def _isRobot(self, position:ndarray):
         """
-        @param position a tuple (x,y) that must be checked
+        @param position a numpy ndarray [x,y] that must be checked
         @return: true iff a robot occupies position
         """        
         for robot in self._robots:
-            if position == robot.getPosition():
+            if (position == robot.getPosition()).all():
                 return True
         return False
 
-    def _isFree(self, pos:tuple):
+    def _isFree(self, pos:ndarray):
         """
         @return true iff the given pos has space for a robot,
         so it must be on the map and not on a wall and possibly
@@ -201,7 +200,7 @@ class FactoryFloor(Env):
         @return task at given position, or None if no task at position
         """
         for task in self._tasks:
-            if task.getPosition() == pos:
+            if (task.getPosition() == pos).all():
                 return task
         return None
 

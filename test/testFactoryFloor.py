@@ -12,6 +12,9 @@ class testFactoryFloorAdapter(LoggedTestCase):
         
     def test_smoke(self):
         env = FactoryFloor()
+        
+    def test_simplerun(self):
+        env = FactoryFloor()
         env.reset()
         action_space = env.action_space()
 
@@ -25,6 +28,7 @@ class testFactoryFloorAdapter(LoggedTestCase):
             # after swap, y stil goes down however.
             print(observation.transpose())
             print(actions)
+            print (reward)
 
     def test_importParametersFromYaml(self):
         import yaml
