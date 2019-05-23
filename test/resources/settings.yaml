@@ -1,0 +1,13 @@
+steps: 1000
+robots: [ [3, 4],random ]
+P_action_succeed: 0.9
+P_task_appears: 0.99
+allow_robot_overlap: False
+allow_task_overlap: False
+map:
+ - ..........
+ - ...8......
+ - ..3.*.....
+ - ....*.5...
+ - ...99999..
+                

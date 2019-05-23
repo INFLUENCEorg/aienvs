@@ -10,7 +10,7 @@ logger.setLevel(logging.INFO)
 
 class testFactoryFloorAdapter(LoggedTestCase):
         
-    def test_smoke(self):
+    def _smoke(self):
         env = FactoryFloor()
         env.reset()
         action_space = env.action_space
@@ -26,6 +26,12 @@ class testFactoryFloorAdapter(LoggedTestCase):
             print(observation.transpose())
             print(actions['robot1'])
             print(actions['robot2'])
+
+    def test_importParametersFromYaml(self):
+        import yaml
+        with open("test/resources/settings.yaml", 'r') as stream:
+                print (yaml.safe_load(stream))
+                print ("succesfully read settings")
 
         
 if __name__ == '__main__':
