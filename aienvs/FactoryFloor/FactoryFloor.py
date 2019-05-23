@@ -6,14 +6,15 @@ from aienvs.Environment import Env
 import numpy as np
 from numpy import array, vstack, ndarray
 import copy
-import random 
+from random import Random
 from aienvs.FactoryFloor.Map import Map
 from numpy.random import choice as weightedchoice
 
 
 class FactoryFloor(Env):
     """
-    The factory floor environment
+    The factory floor environment. This adds all dynamic aspects of the Map:
+    the robots and the tasks.
     """
     DEFAULT_PARAMETERS = {'steps':1000,
                 'robots':[ [3, 4], 'random'],  # initial robot positions
@@ -23,6 +24,7 @@ class FactoryFloor(Env):
                 'P_task_appears':0.99,  # P(new task appears in step) 
                 'allow_robot_overlap':False,
                 'allow_task_overlap':False,
+                'seed':None,
                 'map':['..........',
                        '...8......',
                        '..3.*.....',
@@ -45,7 +47,8 @@ class FactoryFloor(Env):
         self._parameters = copy.deepcopy(self.DEFAULT_PARAMETERS)
         self._parameters.update(parameters)
         self._tasks = []
-        self._map = Map(self._parameters['map'], self._parameters['P_task_appears'])
+        self._random = Random(x=self._parameters['seed'])
+        self._map = Map(self._parameters['map'], self._parameters['P_task_appears'], self._random)
         # use "set" to get rid of weird wrappers
         if set(self._parameters['P_action_succeed'].keys()) != set(FactoryFloor.ACTIONS.values()):
             raise ValueError("P_action_succeed must contain values for all actions")
@@ -67,7 +70,7 @@ class FactoryFloor(Env):
     def step(self, actions:spaces.Dict):
         for robot in self._robots:
             self._applyAction(robot, actions[robot.getId()])
-        if random.random() < self._map.getTaskProbability():
+        if self._random.random() < self._map.getTaskProbability():
             self._addTask()
         global_reward = self._computePenalty()
         done = (self._parameters['steps'] <= self._step)
@@ -144,7 +147,7 @@ class FactoryFloor(Env):
         tasks that are in the tasks list and at the robot's location 
         """
         actstring = self.ACTIONS.get(action)
-        if random.random() > self._parameters['P_action_succeed'][actstring]:
+        if self._random.random() > self._parameters['P_action_succeed'][actstring]:
             return False
         pos = robot.getPosition()
         

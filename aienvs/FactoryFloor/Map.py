@@ -1,4 +1,4 @@
-from random import randint
+from random import Random
 from numpy import array, ndarray
 import copy
 
@@ -12,7 +12,7 @@ class Map():
     so without moving parts.
     """
 
-    def __init__(self, map:list, ptask:float):
+    def __init__(self, map:list, ptask:float, rng:Random=Random()):
         """
         @param map: list of strings. Each string represents one line (x direction) 
         of the map. All lines must have same length.  There must be at least one line.
@@ -26,9 +26,11 @@ class Map():
         @param ptask: probability that a task is added in a time step (this is assuming
         a stepped simulation, rather than a timed one). Ignored if there are no digits
          on the floor
+        @param rng: the random number generator to be used.
         """
         self._map = map
         self._taskProbability = ptask
+        self._random = rng
         width = self.getWidth()
         for line in map:
             if width != len(line):
@@ -112,7 +114,7 @@ class Map():
         @return: numpy array : random position on the map. The returned position 
         will be #isInside but may be on a wall.
         """
-        return array([randint(0, self.getWidth() - 1), randint(0, self.getHeight() - 1)])
+        return array([self._random.randint(0, self.getWidth() - 1), self._random.randint(0, self.getHeight() - 1)])
     
     def isInside(self, pos:ndarray) -> bool:
         """
