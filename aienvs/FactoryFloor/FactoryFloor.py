@@ -17,7 +17,7 @@ class FactoryFloor(Env):
     The factory floor environment
     """
     DEFAULT_PARAMETERS = {'steps':1000,
-                'robots':[ (3, 4), 'random'],
+                'robots':[ [3, 4], 'random'],
                 'P_action_succeed':0.9,  # P(ACT will succeed)
                 'P_task_appears':0.99,  # P(new task appears in step) 
                 'allow_robot_overlap':False,
@@ -48,12 +48,14 @@ class FactoryFloor(Env):
 
         self._robots = []
         for pos in self._parameters['robots']:
-            if isinstance(pos, tuple):
-                robot = FactoryFloorRobot(pos)
+            if isinstance(pos, list):
+                if len(pos) != 2:
+                    raise ValueError("position vector must be length 2 but got " + str(pos))
+                robot = FactoryFloorRobot((pos[0], pos[1]))  # convert to tuple
             elif pos == 'random':
                 robot = FactoryFloorRobot(self._getFreeMapPosition())
             else:
-                raise ValueError("Unknown robot position, expected tuple " + pos)
+                raise ValueError("Unknown robot position, expected tuple but got " + str(pos))
             self._robots.append(robot)
 
     def step(self, actions:spaces.Dict):
