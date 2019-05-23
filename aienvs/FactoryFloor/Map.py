@@ -131,7 +131,10 @@ class Map():
             newmap = newmap + [self._map[y][area[0, 0]:area[1, 0] + 1]]
         
         # use raw original values to compute scalings
-        newtaskp = self._taskProbability * \
-            sum(Map._getWeightsList(newmap)) / sum(Map._getWeightsList(self._map))
+        oldweight = sum(Map._getWeightsList(self._map))
+        if oldweight == 0:
+            newtaskp = 0
+        else:
+            newtaskp = self._taskProbability * sum(Map._getWeightsList(newmap)) / oldweight
         return Map(newmap, newtaskp)
     

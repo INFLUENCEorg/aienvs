@@ -67,7 +67,7 @@ class FactoryFloor(Env):
     def step(self, actions:spaces.Dict):
         for robot in self._robots:
             self._applyAction(robot, actions[robot.getId()])
-        if random.random() > self._map.getTaskProbability():
+        if random.random() < self._map.getTaskProbability():
             self._addTask()
         global_reward = self._computePenalty()
         done = (self._parameters['steps'] <= self._step)
