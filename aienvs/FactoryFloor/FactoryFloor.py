@@ -18,7 +18,8 @@ class FactoryFloor(Env):
     """
     DEFAULT_PARAMETERS = {'steps':1000,
                 'robots':[ [3, 4], 'random'],
-                'P_action_succeed':0.9,  # P(ACT will succeed)
+                # P(ACT will succeed)
+                'P_action_succeed':{'LEFT':0.9, 'RIGHT':0.9, 'ACT':0.5, 'UP':0.9, 'DOWN':0.9},
                 'P_task_appears':0.99,  # P(new task appears in step) 
                 'allow_robot_overlap':False,
                 'allow_task_overlap':False,
@@ -45,6 +46,9 @@ class FactoryFloor(Env):
         self._parameters.update(parameters)
         self._tasks = []
         self._map = Map(self._parameters['map'])
+        # use "set" to get rid of weird wrappers
+        if set(self._parameters['P_action_succeed'].keys()) != set(FactoryFloor.ACTIONS.values()):
+            raise ValueError("P_action_succeed must contain values for all actions")
 
         self._robots = []
         for pos in self._parameters['robots']:
@@ -113,11 +117,12 @@ class FactoryFloor(Env):
         @param action the ACTION number. If ACT, then the robot executes all
         tasks that are in the tasks list and at the robot's location 
         """
-        if random.random() > self._parameters['P_action_succeed']:
+        actstring = self.ACTIONS.get(action)
+        if random.random() > self._parameters['P_action_succeed'][actstring]:
             return False
         pos = robot.getPosition()
         
-        if self.ACTIONS.get(action) == "ACT":
+        if actstring == "ACT":
             task = self._getTask(pos)
             if task != None:
                 self._tasks.remove(task)
