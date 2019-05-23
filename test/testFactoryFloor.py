@@ -10,7 +10,7 @@ logger.setLevel(logging.INFO)
 
 class testFactoryFloorAdapter(LoggedTestCase):
         
-    def _smoke(self):
+    def test_smoke(self):
         env = FactoryFloor()
         env.reset()
         action_space = env.action_space
