@@ -16,6 +16,13 @@ class testRandom(LoggedTestCase):
         randomnrs2 = [rnd2.random() for i in range(10)]
         self.assertEquals(randomnrs1, randomnrs2)
 
+    def test_NoneGivesRandom(self):
+        rnd1 = Random(None)
+        randomnrs1 = [rnd1.random() for i in range(10)]
+        rnd2 = Random(None)
+        randomnrs2 = [rnd2.random() for i in range(10)]
+        self.assertNotEqual(randomnrs1, randomnrs2)
+        
     def test_notinfluenced(self):
         """
         We generate random list, and another one that is made while also

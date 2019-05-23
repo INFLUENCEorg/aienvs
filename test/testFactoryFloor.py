@@ -38,6 +38,17 @@ class testFactoryFloor(LoggedTestCase):
         self.assertEquals(['.8.', '3.*', '..*', '.99'], floor.getMap().getFullMap())                        
         self.assertEquals(.99 * (8 + 3 + 9 + 9) / (8 + 3 + 5 + 9 + 9 + 9 + 9 + 9), floor.getMap().getTaskProbability())
 
+    def test_seed(self):
+        """
+        we test that we are really having deterministic behaviour 
+        """        
+        env = FactoryFloor({'seed':42})
+        # convert to string as array needs equalsAll which is 
+        # not supported by assertEquals FAIK
+        self.assertEquals("[4 1]", str(env._getFreeMapPosition()))
+        self.assertEquals("[3 1]", str(env._getFreeMapPosition()))
+        self.assertEquals("[1 4]", str(env._getFreeMapPosition()))
+        
         
 if __name__ == '__main__':
     unittest.main()
