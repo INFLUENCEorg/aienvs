@@ -1,5 +1,6 @@
 from random import randint
 from numpy import array, ndarray
+import copy
 
 
 class Map():
@@ -30,6 +31,12 @@ class Map():
     
     def getHeight(self) -> int:
         return len(self._map)
+    
+    def getFullMap(self):
+        """
+        @return: a copy of the original map provided to the constructor
+        """
+        return copy.deepcopy(self._map)
     
     def get(self, pos:ndarray) -> str:
         """

@@ -3,6 +3,7 @@ import logging
 from LoggedTestCase import LoggedTestCase
 from aienvs.FactoryFloor.FactoryFloor import FactoryFloor
 import random
+from numpy import array
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -22,13 +23,6 @@ class testFactoryFloor(LoggedTestCase):
         while not done:
             actions = action_space.sample()
             observation, reward, done, info = env.step(actions)
-            # transpose because  observation is a matrix. 
-            # matrix rendering has first 
-            # index (x) in the vertical direction.
-            # after swap, y stil goes down however.
-            print(observation.transpose())
-            print(actions)
-            print (reward)
 
     def test_importParametersFromYaml(self):
         import yaml
@@ -37,6 +31,11 @@ class testFactoryFloor(LoggedTestCase):
                 print ("succesfully read settings", settings)
                 # and proof that the settings are good, quick hack
                 env = FactoryFloor(settings)           
+    
+    def test_getPart(self):
+        env = FactoryFloor()
+        floor = env.getPart(array([[2, 1], [4, 4]]))
+        self.assertEquals(['.8.', '3.*', '..*', '.99'], floor.getMap().getFullMap())                        
 
         
 if __name__ == '__main__':

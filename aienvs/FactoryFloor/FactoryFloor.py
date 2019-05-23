@@ -16,7 +16,8 @@ class FactoryFloor(Env):
     The factory floor environment
     """
     DEFAULT_PARAMETERS = {'steps':1000,
-                'robots':[ [3, 4], 'random'],
+                'robots':[ [3, 4], 'random'],  # initial robot positions
+                'tasks': [ [1, 1] ],  # initial task positions
                 # P(ACT will succeed)
                 'P_action_succeed':{'LEFT':0.9, 'RIGHT':0.9, 'ACT':0.5, 'UP':0.9, 'DOWN':0.9},
                 'P_task_appears':0.99,  # P(new task appears in step) 
@@ -54,12 +55,14 @@ class FactoryFloor(Env):
             if isinstance(pos, list):
                 if len(pos) != 2:
                     raise ValueError("position vector must be length 2 but got " + str(pos))
-                robot = FactoryFloorRobot(array([pos[0], pos[1]]))  # convert to tuple
+                robot = FactoryFloorRobot(array(pos))
             elif pos == 'random':
                 robot = FactoryFloorRobot(self._getFreeMapPosition())
             else:
-                raise ValueError("Unknown robot position, expected tuple but got " + str(pos))
+                raise ValueError("Unknown robot position, expected list but got " + str(type(pos)))
             self._robots.append(robot)
+        for pos in self._parameters['tasks']:
+            self._tasks.append(FactoryFloorTask(array(pos)))
 
     def step(self, actions:spaces.Dict):
         for robot in self._robots:
@@ -94,6 +97,28 @@ class FactoryFloor(Env):
     def action_space(self):
         return spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) for robot in self._robots})
 
+    def getMap(self):
+        """
+        @return: the map of this floor
+        """
+        return copy.deepcopy(self._map)
+
+    def getPart(self, area:ndarray):  # -> FactoryFloor
+        """
+        @param area a numpy array of the form [[xmin,ymin],[xmax,ymax]]. 
+        @return: A new FactoryFloor with same settings as this, but
+        with Map#getPart(area) of this map, and only those bots and tasks that 
+        are in that area. The new factoryfloor is completely independent of this floor.
+        """
+        parameters = copy.deepcopy(self._parameters)
+        map = self._map
+        parameters['map'] = map.getPart(area).getFullMap()
+        parameters['robots'] = [robot.getPosition().tolist() \
+            for robot in self._robots if map.isInside(robot.getPosition())]
+        parameters['tasks'] = [task.getPosition().tolist() \
+            for task in self._tasks if map.isInside(task.getPosition())]
+        return FactoryFloor(parameters)
+    
     ########## Private functions ##########################
 
     def _createBitmap(self):
