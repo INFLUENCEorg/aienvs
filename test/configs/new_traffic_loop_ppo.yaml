@@ -5,7 +5,7 @@ parameters:
     name: '64seqlen'
     algorithm: PPO
     port: 9000
-    gui: false
+    gui: true
     env_type: 'SUMO' # 'atari', 'SUMO', or 'gridworld'
     scene: 'loop_network_dumb' # sumo has 'one_grid' and 'loop_network_dumb'
     max_steps: 1.0e+6
@@ -41,6 +41,7 @@ parameters:
     scaling_factor: 100
     fast: false
     speed_dev: 0.0 # Can be used to vary the speeds of cars, according to a normal distribution with mean 1 and standard deviation speed_dev (SUMOs default is 0.1)
+    lightPositions: {"0": [[37.5,44.16], [39.2,44.16], [32.5,37.5], [32.5,39.16]]}
 
     # scenario 1, cars either loop once or don't make a loop
     # car_pr 0.125

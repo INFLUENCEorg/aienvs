@@ -213,7 +213,6 @@ class ldm():
         @param lightid the id of the traffic light
         @return the lanes controlled by the given lightid
         """
-        self._checkOptimize()
         return self.SUMO_client.trafficlight.getControlledLanes(lightid)
 
     def getLaneMaxSpeed(self, laneid:str):
@@ -221,7 +220,6 @@ class ldm():
         @param lane the id of a lane
         @return the maximum speed on the lane
         """
-        self._checkOptimize()
         self.SUMO_client.lane.getMaxSpeed(laneid)
 
     def getLaneShape(self, laneid:str):
@@ -229,7 +227,6 @@ class ldm():
         @param lane the id of a lane
         @return the shape of the lane
         """
-        self._checkOptimize()
         self.SUMO_client.lane.getShape(laneid)
 
     def getLaneVehicles(self, laneid:str):
@@ -237,7 +234,6 @@ class ldm():
         @param lane the id of a lane
         @return the vehicles on this lane
         """
-        self._checkOptimize()
         return self.SUMO_client.lane.getLastStepVehicleIDs(laneid)
 
     ######## getting vehicle info. Maybe move to Vehicle object #######
@@ -252,7 +248,6 @@ class ldm():
         @param vehicleid the id of the vehicle
         @return  the lane id where the vehicle is at this time
         """
-        self._checkOptimize()
         return self.SUMO_client.vehicle.getLaneID(vehicleid)
 
     def getVehicleWaitingTime(self,vehicleid:str):
@@ -260,7 +255,6 @@ class ldm():
         @param vehicleid the id of the vehicle
         @return  the waiting time of the vehicle
         """
-        self._checkOptimize()
         return self.SUMO_client.vehicle.getWaitingTime(vehicleid)
 
     def getVehicleCO2Emission(self, vehicleid:str):
@@ -268,7 +262,6 @@ class ldm():
         @param vehicleid the id of the vehicle
         @return vehicle co2 emission
         """
-        self._checkOptimize()
         return self.SUMO_client.vehicle.getCO2Emission(vehicleid)
     
     def getFuelConsumption(self, vehicleid):
@@ -276,17 +269,13 @@ class ldm():
         @param vehicleid the id of the vehicle
         @return vehicle fuel consumption
         """
-        self._checkOptimize()
         return self.SUMO_client.vehicle.getFuelConsumption(vehicleid)
-    
-    
     
     def getSpeed(self, vehicleid):
         """
         @param vehicleid the id of the vehicle
         @return  the current speed of the vehicle
         """
-        self._checkOptimize()
         return self.SUMO_client.vehicle.getSpeed(vehicleid)
 
     def getVehicleMaxSpeed(self, vehicleid):
@@ -294,7 +283,6 @@ class ldm():
         @param vehicleid the id of the vehicle
         @return  the maximum speed of the vehicle
         """
-        self._checkOptimize()
         return self.SUMO_client.vehicle.getMaxSpeed(vehicleid)
 
     def getVehicleAllowedSpeed(self, vehicleid):
@@ -309,7 +297,6 @@ class ldm():
         @param vehicleid the id of the vehicle
         @return  the position of the vehicle, unscaled, as in the sumo map
         """
-        self._checkOptimize()
         return self.SUMO_client.vehicle.getPosition(vehicleid)
 
     def getStartingTeleportNumber(self) :
@@ -451,7 +438,6 @@ class ldm():
             index += 1
             
     def setRedYellowGreenState(self, agent:string, state:string ):
-        self._checkOptimize()
         """
         set new state for a traffic  light
         @param agent the agent id
@@ -474,10 +460,6 @@ class ldm():
         move_cursor(100,100)
         """
         logging.debug(mapSlice)
-
-    def _checkOptimize(self):
-        if self.__optimize:
-            raise Exception("optimized/cached code not yet implemented. Turn off optimize as workaround")
 
     def __del__(self):
         """

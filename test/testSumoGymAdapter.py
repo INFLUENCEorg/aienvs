@@ -79,7 +79,9 @@ class testSumoGymAdapter(LoggedTestCase):
             complexAgent.observe(obs, global_reward, done)
             actions = complexAgent.select_actions()
             obs, global_reward, done, info = env.step(actions)
-            logging.info("Step " + str(i))
+            logging.debug("Step " + str(i))
+            # rendering the part of the image (optional parameters)
+            env.render(centerCoord=(37.,37.), width=12, height=17.)
         
 
 if __name__ == '__main__':

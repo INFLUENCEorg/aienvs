@@ -815,10 +815,6 @@ class LdmMatrixState(State):
             self.bottomLeftCoords = (data[0][0] - data[1] / 2., data[0][1] - data[2] / 2.)
             self.topRightCoords = (data[0][0] + data[1] / 2., data[0][1] + data[2] / 2.)
 
-    def get_action_space(self):
-        # TODO change to not hardcoded
-        return ['rrGG', 'GGrr']
-
     def update_reward(self, local_rewards=True):
         return (self._ldm.getRewardByCorners(self.bottomLeftCoords, self.topRightCoords, local_rewards))
 

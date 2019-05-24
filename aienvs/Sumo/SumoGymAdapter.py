@@ -85,8 +85,18 @@ class SumoGymAdapter(Env):
         # TODO: Wouter: make state configurable ("state factory")
         self._state = LdmMatrixState(self.ldm,[self._parameters['box_bottom_corner'], self._parameters['box_top_corner']], "byCorners")
         
-    def render(self):
-        pass # enabled anwyay if parameter 'gui'=True
+        #TODO: change the defaults to something sensible
+    def render(self, centerCoord = (510., 475.), width = 10., height=70. ):
+        mapSlice=str(self.ldm.getMapSliceByCenter( centerCoord, width, height ))
+        import colorama
+        colorama.init()
+        def move_cursor(x,y):
+            print ("\x1b[{};{}H".format(y+1,x+1))
+        def clear():
+            print ("\x1b[2J")
+        clear()
+        move_cursor(100,100)
+        print(mapSlice)
     
     def seed(self, seed=42):
         self._seed = seed
@@ -137,6 +147,7 @@ class SumoGymAdapter(Env):
 
         self.ldm.init(waitingPenalty=0,new_reward=0) # ignore reward for now
         self.ldm.setResolutionInPixelsPerMeter(self._parameters['resolutionInPixelsPerMeterX'], self._parameters['resolutionInPixelsPerMeterY'])
+        self.ldm.setPositionOfTrafficLights(self._parameters['lightPositions'])
             
     def _intToPhaseString(self, intersectionId:str, lightPhaseId: int):
         """
@@ -144,7 +155,7 @@ class SumoGymAdapter(Env):
         @param lightvalue the PHASES value
         @return the intersection PHASES string eg 'rrGr' or 'GGrG'
         """
-        print("lightPhaseId" + str(lightPhaseId))
+        logging.debug("lightPhaseId" + str(lightPhaseId))
         return self._PHASES.get(lightPhaseId)
         
                 
