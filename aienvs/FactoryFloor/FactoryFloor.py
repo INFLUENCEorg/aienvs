@@ -96,7 +96,8 @@ class FactoryFloor(Env):
         Returns 2 layers: first is for the robot positions, second for the task positions
         """
         return spaces.MultiDiscrete([2, self._map.getWidth(), self._map.getHeight()]) 
- 
+
+    @property
     def action_space(self):
         return spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) for robot in self._robots})
 

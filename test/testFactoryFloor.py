@@ -2,7 +2,10 @@ import unittest
 import logging
 from LoggedTestCase import LoggedTestCase
 from aienvs.FactoryFloor.FactoryFloor import FactoryFloor
+from aiagents.single.PPO.PPOAgent import PPOAgent
+from aiagents.multi.ComplexAgentComponent import ComplexAgentComponent
 import random
+import yaml
 from numpy import array
 
 logger = logging.getLogger()
@@ -48,7 +51,37 @@ class testFactoryFloor(LoggedTestCase):
         self.assertEquals("[4 1]", str(env._getFreeMapPosition()))
         self.assertEquals("[3 1]", str(env._getFreeMapPosition()))
         self.assertEquals("[1 4]", str(env._getFreeMapPosition()))
-        
+
+
+    def test_PPO_agent(self):
+        logging.info("Starting test_PPO_agent")
+
+        with open("configs/factory_floor.yaml", 'r') as stream:
+            try:
+                parameters=yaml.safe_load(stream)['parameters']
+            except yaml.YAMLError as exc:
+                logging.error(exc)
+
+        env = FactoryFloor(parameters)
+        PPOAgents = []
+        for robotId in env.action_space.spaces.keys():
+            PPOAgents.append(PPOAgent(parameters, env.observation_space, env.action_space.spaces.get(robotId), robotId))
+
+        complexAgent=ComplexAgentComponent(PPOAgents)
+        steps=0
+
+        while steps < parameters["max_steps"]:
+            actions=env.action_space.sample()
+            env.reset()
+            done=False
+
+            while not done:
+                obs, global_reward, done, info = env.step(actions)
+                complexAgent.observe(obs, global_reward, done)
+                actions = complexAgent.select_actions()
+                # rendering the part of the image
+                #env.render()
+                steps+=1
         
 if __name__ == '__main__':
     unittest.main()
