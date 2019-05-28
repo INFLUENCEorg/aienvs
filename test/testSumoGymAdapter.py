@@ -2,7 +2,7 @@ import unittest
 import aienvs
 from aiagents.multi.ComplexAgentComponent import ComplexAgentComponent
 from aiagents.single.RandomAgent import RandomAgent
-from aiagents.single.PPO.PPOcontroller import PPOAgent
+from aiagents.single.PPO.PPOAgent import PPOAgent
 import logging
 import yaml
 import sys
@@ -63,7 +63,7 @@ class testSumoGymAdapter(LoggedTestCase):
             try:
                 parameters=yaml.safe_load(stream)['parameters']
             except yaml.YAMLError as exc:
-                print(exc)
+                logging.error(exc)
 
         env = SumoGymAdapter(parameters)
         PPOAgents = []
@@ -80,7 +80,7 @@ class testSumoGymAdapter(LoggedTestCase):
             actions = complexAgent.select_actions()
             obs, global_reward, done, info = env.step(actions)
             logging.debug("Step " + str(i))
-            # rendering the part of the image (optional parameters)
+            # rendering the part of the image
             env.render()
         
 
