@@ -81,7 +81,7 @@ class testSumoGymAdapter(LoggedTestCase):
             obs, global_reward, done, info = env.step(actions)
             logging.debug("Step " + str(i))
             # rendering the part of the image (optional parameters)
-            env.render(centerCoord=(37.,37.), width=12, height=17.)
+            env.render()
         
 
 if __name__ == '__main__':
