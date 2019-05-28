@@ -71,19 +71,21 @@ class testSumoGymAdapter(LoggedTestCase):
             PPOAgents.append(PPOAgent(parameters, env.observation_space, env.action_space.spaces.get(intersectionId), intersectionId))
 
         complexAgent=ComplexAgentComponent(PPOAgents)
-        obs=env.observation_space
-        done=False
-        global_reward=0
+        steps=0
 
-        for i in range(1000):
-            complexAgent.observe(obs, global_reward, done)
-            actions = complexAgent.select_actions()
-            obs, global_reward, done, info = env.step(actions)
-            logging.debug("Step " + str(i))
-            # rendering the part of the image
-            env.render()
+        while steps < parameters["max_steps"]:
+            actions=env.action_space.sample()
+            env.reset()
+            done=False
+
+            while not done:
+                obs, global_reward, done, info = env.step(actions)
+                complexAgent.observe(obs, global_reward, done)
+                actions = complexAgent.select_actions()
+                # rendering the part of the image
+                #env.render()
+                steps+=1
         
-
 if __name__ == '__main__':
     unittest.main()
     

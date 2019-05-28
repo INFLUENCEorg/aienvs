@@ -2,16 +2,16 @@ parameters:
     # Common hyperparameters
     mode: 'train'
     load: false
-    name: '64seqlen'
+    name: 'model5_6cars'
     algorithm: PPO
-    port: 9000
-    gui: true
+    port: 8000
+    gui: false
     env_type: 'SUMO' # 'atari', 'SUMO', or 'gridworld'
-    scene: 'loop_network_dumb' # sumo has 'one_grid' and 'loop_network_dumb'
-    max_steps: 1.0e+6
+    scene: 'loop_network_dumb'
+    max_steps: 2.0e+6
     max_episode_steps: 5.0e+3
-    frame_height: 24
-    frame_width: 24
+    frame_height: 14
+    frame_width: 14
     num_frames: 1
     skip_frames: 1
     num_epoch: 4
@@ -22,34 +22,22 @@ parameters:
     memory_size: 4096
     train_frequency: 1
     save_frequency: 5.0e+4
-    summary_frequency: 3072
+    summary_frequency: 1.0e+4
     tensorboard: true
     iteration: -1
     episode: 0
 
     # SUMO settings
-    waiting_penalty: false
-    new_reward: false
-    local_rewards: false
-    box_bottom_corner: [26, 26]
-    box_top_corner: [50, 50]
-    y_t: 4 # Yellow (traffic light) time
-    resolutionInPixelsPerMeterX: 1.0
-    resolutionInPixelsPerMeterY: 1.0
-    car_tm: 10
+    box_bottom_corner: [9, 13]
+    box_top_corner: [65, 69]
+    y_t: 6 # Yellow (traffic light) time
+    resolutionInPixelsPerMeterX: 0.25
+    resolutionInPixelsPerMeterY: 0.25
+    car_tm: 6
     state_type: 'ldm_state' # The type of state to use as input for the network. ('bin' (Position Matrix), 'bin_light' (Position Light Matrix), 'value' (Value Matrix))
-    scaling_factor: 100
+    scaling_factor: 10
     fast: false
     speed_dev: 0.0 # Can be used to vary the speeds of cars, according to a normal distribution with mean 1 and standard deviation speed_dev (SUMOs default is 0.1)
-    lightPositions: {"0": [[37.5,44.16], [39.2,44.16], [32.5,37.5], [32.5,39.16]]}
-
-    # scenario 1, cars either loop once or don't make a loop
-    # car_pr 0.125
-    # route_segments ['L61 L62 L63 L64 L65 L66 L67 L68', 'L65 L66 L67 L68 L61 L62 L63 L64']
-    # route_starts ['L63 L64', 'L67 L68']
-    # route_ends ['L61 L62', 'L65 L66']
-    # route_max_segments 1
-    # scenario 2, cars drive a lot more randomly, but some will still do loops
     car_pr: 1.0
     route_segments: ['L67 L68 L61 L62 L63 L64 L65 L66 L67 L68 L61 L62 L63 L64 L65 L66 L67 L68 L61 L62 L63 L64 L65 L66 L67 L68 L61 L62 L63 L64 L65 L66 L67 L68 L61 L62',
 'L63 L64 L65 L66 L67 L68 L61 L62 L63 L64 L65 L66 L67 L68 L61 L62 L63 L64 L65 L66 L67 L68 L61 L62 L63 L64 L65 L66 L67 L68 L61 L62 L63 L64 L65 L66 L67 L68 L61 L62 L63 L64 L65 L66']
@@ -57,43 +45,46 @@ parameters:
     route_ends: []
     route_max_segments: 1
     route_min_segments: 1
+    local_rewards: True
+    waiting_penalty: False
+    new_reward: True
+    lightPositions: {"0": [[37.5,44.16], [39.2,44.16], [32.5,37.5], [32.5,39.16]]}
 
     # MAIN MODEL
     # Fully connected module
-    fully_connected: false
+    fully_connected: true
     num_fc_layers: 1
-    num_fc_units: [128]
+    num_fc_units: [256]
     # Convolutional module
     convolutional: true
     num_conv_layers: 2
     num_filters: [16, 32]
-    kernel_sizes: [8, 4]
-    strides: [4, 2]
+    kernel_sizes: [4, 2]
+    strides: [2, 1]
     # Recurrent module
-    recurrent: true
-    num_rec_units: 64
-    seq_len: 32
+    recurrent: false
+    num_rec_units: 512
+    seq_len: 4
 
     # INFLUENCE MODEL
     influence: false
-    # This boxes now refer to the output of the last conv layer (Check how to manually compute this)
-    inf_box_height: 4
-    inf_box_width: 6
-    # Center refers to the top left corner of the inf_box
-    # The top left of the image is 0,0
-    # The first number refers to the y-axis, e.g. if we have [5,3], the y-axis value is 5
-    # Left box [13, 0], top box [0, 12], right box [13, 24], bottom box [26, 12]
-    inf_box_center: [[13, 0],[0,12],[13,24],[26,12]]
-    inf_num_predictors: 4
+    inf_box_height: 84
+    inf_box_width: 84
+    inf_box_center: [[0, 0]]
+    inf_frame_height: 84
+    inf_frame_width: 84
+    inf_num_frames: 1
+    inf_num_predictors: 1
     # Influence fully connected module
-    inf_num_fc_layers: 1
+    inf_num_fc_layers: 0
     inf_num_fc_units: [128]
+
     # Influence recurrent module
-    inf_num_rec_units: 64
-    inf_seq_len: 8
+    inf_num_rec_units: 512
+    inf_seq_len: 4
 
     # PPO only
-    beta: 1.0e-2
-    epsilon: 0.1
+    beta: 5.0e-3
+    epsilon: 0.2
     time_horizon: 128
     c1: 0.5

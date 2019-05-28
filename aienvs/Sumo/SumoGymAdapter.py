@@ -146,7 +146,7 @@ class SumoGymAdapter(Env):
             else:
                 break
 
-        self.ldm.init(waitingPenalty=0,new_reward=0) # ignore reward for now
+        self.ldm.init(waitingPenalty=self._parameters['waiting_penalty'],new_reward=self._parameters['new_reward']) # ignore reward for now
         self.ldm.setResolutionInPixelsPerMeter(self._parameters['resolutionInPixelsPerMeterX'], self._parameters['resolutionInPixelsPerMeterY'])
         self.ldm.setPositionOfTrafficLights(self._parameters['lightPositions'])
             
@@ -172,7 +172,7 @@ class SumoGymAdapter(Env):
         """
         Computes the global reward
         """
-        return self.ldm.getRewardByCorners(bottomLeftCoords=(0,0), topRightCoords=(0,0), local_rewards=False)
+        return self._state.update_reward()
     
     def _getActionSpace(self):
         """
