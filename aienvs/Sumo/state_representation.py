@@ -7,19 +7,20 @@ class State:
     """
     Abstract superclass for the concrete states
     @param ldm the LDM connection with sumo
-    @param agents the list of traffic light IDs (strings)
+    @param lights the list of traffic light IDs (strings)
     """
-    def __init__(self, ldm, agents:list):
+    def __init__(self, ldm, lights:list):
         """
-        @param agents list of traffic light ids
+        @param lights list of traffic light ids
         """
         self._ldm=ldm
             # get height - the number of lanes in total
         self._lanes = []
-        self._agents = agents
-        for lightid in agents:
-            lanes = self._ldm.getControlledLanes(lightid)
-            self._lanes += lanes
+        if( lights ):
+            self._lights = lights
+            for lightid in lights:
+                lanes = self._ldm.getControlledLanes(lightid)
+                self._lanes += lanes
 
         self._max_speeds = {}
 
@@ -62,7 +63,7 @@ class LinearFeatureState(State):
     number of halted, average speed, average acceleration, 
     number of emergency stop] combined with action
     as described in elise's master thesis
-    only support one-agent scenario
+    only support one-light scenario
     """
     def __init__(self, ldm):
         State.__init__(self, ldm,["0"])
@@ -265,8 +266,8 @@ class DenseState(State):
     '3' is a one-hot vector for three light status (red, yellow, green)
 
     """
-    def __init__(self, agents, width, frames, ldm):
-        State.__init__(self, ldm, agents)
+    def __init__(self, lights, width, frames, ldm):
+        State.__init__(self, ldm, lights)
 
         # get width
         self.width = width
@@ -384,18 +385,18 @@ class MatrixState():
     This is the super class that describes some basic functions
     of a matrix respresentation of a state
     """
-    def __init__(self, agents, width, height, frames, traci):
+    def __init__(self, lights, width, height, frames, traci):
         """
         This class stores the lanes it represents and calculates everything
         it needs to rescale the information to a matrix
         """
 
-        self._agents = agents
+        self._lights = lights
         self._lanes = []
         # The orientation of the lanes, 0 for vertical, 1 for horizontal
         self.vertical_horizon = []
-        for agent_i in agents:
-            lanes = traci.trafficlight.getControlledLanes(agent_i)
+        for light_i in lights:
+            lanes = traci.trafficlight.getControlledLanes(light_i)
             self._lanes += lanes
         self.width = width
         self.height = height
@@ -528,12 +529,12 @@ class PositionMatrix(MatrixState):
     WARNING THIS CLASS HAS NOT BEEN FIXED YET (does not extend State)
     TODO document what this is and does
     """
-    def __init__(self, agents, width, height, frames, traci):
+    def __init__(self, lights, width, height, frames, traci):
         """
         This class stores the state as a binary position matrix as used
         by the DQN networks.
         """
-        MatrixState.__init__(self, agents, width, height, frames, traci)
+        MatrixState.__init__(self, lights, width, height, frames, traci)
 
         # Tensorflow expects the input of convolution to be
         # of shape [batch, in_height, in_width, in_channels]
@@ -593,11 +594,11 @@ class PositionLightMatrix(MatrixState):
     This class contains the positions of the cars and the current states
     of the traffic lights.
     """
-    def __init__(self, agents, width, height, frames, traci):
+    def __init__(self, lights, width, height, frames, traci):
         """
         This class is an instance of MatrixState
         """
-        MatrixState.__init__(self, agents, width, height, frames, traci)
+        MatrixState.__init__(self, lights, width, height, frames, traci)
 
         self._current_state = np.zeros((width, height, frames))
 
@@ -620,8 +621,8 @@ class PositionLightMatrix(MatrixState):
                 # Vehicle location
                 state_matrix[x][y] = 1
 
-        for agent_i in self._agents:
-            light_color = traci.trafficlight.getRedYellowGreenState(agent_i)
+        for light_i in self._lights:
+            light_color = traci.trafficlight.getRedYellowGreenState(light_i)
             # Set traffic lights to corresponding colors
             # This is very much hard-coded, needs fixing for
             # other scenarios
@@ -683,11 +684,11 @@ class ValueMatrix(MatrixState):
     This class contains the positions of the cars, the speed of the cars,
     the acceleration of the cars and the states of the traffic lights.
     """
-    def __init__(self, agents, width, height, frames, traci, y_t=4):
+    def __init__(self, lights, width, height, frames, traci, y_t=4):
         """
         This class is an instance of MatrixState
         """
-        MatrixState.__init__(self, agents, width, height, frames, traci)
+        MatrixState.__init__(self, lights, width, height, frames, traci)
 
         if frames < 4:
             raise ValueError(("The number of frames need to be 3 for \
@@ -700,14 +701,14 @@ class ValueMatrix(MatrixState):
         # if the yellow time is four seconds, the last four traffic
         # light matrices are added to the state.
         self.last_colors_dict = {}
-        for agent_i in self._agents:
+        for light_i in self._lights:
             if y_t == 0:
                 # In the special case that no static yellow time is employed,
                 # a single traffic light matrix is still used, since the
                 # current traffic light configuration is part of the state.
-                self.last_colors_dict[agent_i] = [traci.trafficlight.getRedYellowGreenState(agent_i)]
+                self.last_colors_dict[light_i] = [traci.trafficlight.getRedYellowGreenState(light_i)]
             else:
-                self.last_colors_dict[agent_i] = [traci.trafficlight.getRedYellowGreenState(agent_i) for x in range(y_t)]
+                self.last_colors_dict[light_i] = [traci.trafficlight.getRedYellowGreenState(light_i) for x in range(y_t)]
 
     def update_state(self, traci, rotation=0.):
         """
@@ -744,13 +745,13 @@ class ValueMatrix(MatrixState):
                 # Update speed dictionary
                 self.state_speed[vehicle] = current_speed
 
-        for agent_i in self._agents:
-            light_color = traci.trafficlight.getRedYellowGreenState(agent_i)
-            self.update_last_colors(light_color, agent_i)
+        for light_i in self._lights:
+            light_color = traci.trafficlight.getRedYellowGreenState(light_i)
+            self.update_last_colors(light_color, light_i)
             # Set traffic lights to corresponding colors
             # This is very much hard-coded, needs fixing for
             # other scenarios
-            for i, light_color in enumerate(self.last_colors_dict[agent_i]):
+            for i, light_color in enumerate(self.last_colors_dict[light_i]):
                 state_matrix = self.stop_light_locations(state_matrix, i, light_color, traci)
 
         if rotation > 0:
@@ -806,7 +807,7 @@ class LdmMatrixState(State):
     TODO document how this state works and achieves
     """
     def __init__(self, ldm, data, type="byCorners"):
-        State.__init__(self, ldm,["0"])
+        State.__init__(self, ldm, None)
 
         if type == "byCorners":
             self.bottomLeftCoords = data[0]
