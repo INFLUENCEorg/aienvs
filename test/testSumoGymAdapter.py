@@ -10,7 +10,7 @@ from LoggedTestCase import LoggedTestCase
 from aienvs.Sumo.SumoGymAdapter import SumoGymAdapter
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(50)
 
 class testSumoGymAdapter(LoggedTestCase):
     
@@ -41,7 +41,7 @@ class testSumoGymAdapter(LoggedTestCase):
 
     def test_random_agent(self):
         logging.info("Starting test_random_agent")
-        env = SumoGymAdapter(parameters={'generate_conf':False, 'gui': False})
+        env = SumoGymAdapter(parameters={'generate_conf':False, 'gui': True})
 
         randomAgents = []
         for intersectionId in env.action_space.spaces.keys():
@@ -72,11 +72,13 @@ class testSumoGymAdapter(LoggedTestCase):
 
         complexAgent=ComplexAgentComponent(PPOAgents)
         steps=0
+        episode=0
 
         while steps < parameters["max_steps"]:
             actions=env.action_space.sample()
             env.reset()
             done=False
+            cumulative_reward=0
 
             while not done:
                 obs, global_reward, done, info = env.step(actions)
@@ -85,6 +87,10 @@ class testSumoGymAdapter(LoggedTestCase):
                 # rendering the part of the image
                 #env.render()
                 steps+=1
+                cumulative_reward += global_reward
+
+            episode+=1
+            print("Episode " + str(episode) + " cumulative reward" + str(cumulative_reward))
         
 if __name__ == '__main__':
     unittest.main()

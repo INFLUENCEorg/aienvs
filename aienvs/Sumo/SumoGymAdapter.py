@@ -33,7 +33,11 @@ class SumoGymAdapter(Env):
                 'route_ends' : [],
                 'seed' : 42,
                 'generate_conf' : True,
-                'libsumo' : False
+                'libsumo' : False,
+                'waiting_penalty' : 1,
+                'new_reward': False,
+                'lightPositions' : {},
+                'scaling_factor' : 1.0
                 }
     
     # TODO: Wouter: This should be read from a file
@@ -136,7 +140,6 @@ class SumoGymAdapter(Env):
                 conf_file = self._sumo_helper.sumocfg_file
                 logging.info( "Configuration: " + str(conf_file) )
                 sumoCmd=[sumo_binary, "-c", conf_file]
-                time.sleep(.500) 
                 self.ldm.start(sumoCmd, self._port)
             except Exception as e:
                 if str(e) == "connection closed by SUMO":
@@ -172,7 +175,7 @@ class SumoGymAdapter(Env):
         """
         Computes the global reward
         """
-        return self._state.update_reward()
+        return self._state.update_reward()/self._parameters['scaling_factor']
     
     def _getActionSpace(self):
         """

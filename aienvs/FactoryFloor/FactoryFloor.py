@@ -91,6 +91,7 @@ class FactoryFloor(Env):
     def seed(self):
         pass  # todo
 
+    @property
     def observation_space(self):
         """
         Returns 2 layers: first is for the robot positions, second for the task positions
@@ -101,6 +102,8 @@ class FactoryFloor(Env):
     def action_space(self):
         return spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) for robot in self._robots})
 
+    ########## Getters ###############################
+    
     def getMap(self):
         """
         @return: the map of this floor
@@ -115,13 +118,12 @@ class FactoryFloor(Env):
         are in that area. The new factoryfloor is completely independent of this floor.
         """
         parameters = copy.deepcopy(self._parameters)
-        map = self._map
-        newmap = map.getPart(area)
+        newmap = self._map.getPart(area)
         parameters['map'] = newmap.getFullMap()
         parameters['robots'] = [robot.getPosition().tolist() \
-            for robot in self._robots if map.isInside(robot.getPosition())]
+            for robot in self._robots if self._map.isInside(robot.getPosition())]
         parameters['tasks'] = [task.getPosition().tolist() \
-            for task in self._tasks if map.isInside(task.getPosition())]
+            for task in self._tasks if self._map.isInside(task.getPosition())]
         parameters['P_task_appears'] = newmap.getTaskProbability()
         return FactoryFloor(parameters)
     

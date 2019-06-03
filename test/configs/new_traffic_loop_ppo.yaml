@@ -5,7 +5,7 @@ parameters:
     name: 'model5_6cars'
     algorithm: PPO
     port: 8000
-    gui: false
+    gui: true
     env_type: 'SUMO' # 'atari', 'SUMO', or 'gridworld'
     scene: 'loop_network_dumb'
     max_steps: 2.0e+6
