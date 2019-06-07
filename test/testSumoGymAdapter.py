@@ -41,19 +41,42 @@ class testSumoGymAdapter(LoggedTestCase):
 
     def test_random_agent(self):
         logging.info("Starting test_random_agent")
-        env = SumoGymAdapter(parameters={'generate_conf':False, 'gui': True})
+        with open("configs/new_traffic_loop_ppo.yaml", 'r') as stream:
+            try:
+                parameters=yaml.safe_load(stream)['parameters']
+            except yaml.YAMLError as exc:
+                logging.error(exc)
+
+        env = SumoGymAdapter(parameters)
 
         randomAgents = []
         for intersectionId in env.action_space.spaces.keys():
             randomAgents.append(RandomAgent(intersectionId, env.action_space.spaces.get(intersectionId)))
 
         complexAgent=ComplexAgentComponent(randomAgents)
+ 
+        steps=0
+        episode=0
+        while steps < parameters["max_steps"]:
+            #actions=env.action_space.sample()
+            actions={'0': 0}
+            print(actions)
+            env.reset()
+            done=False
+            cumulative_reward=0
 
-        for _ in range(1000):
-            actions = complexAgent.select_actions()
-            obs, global_reward, done, info = env.step(actions)
-            complexAgent.observe(obs)
+            while not done:
+                obs, global_reward, done, info = env.step(actions)
+                complexAgent.observe(obs, global_reward, done)
+                actions = complexAgent.select_actions()
+                # rendering the part of the image
+                #env.render()
+                steps+=1
+                cumulative_reward += global_reward
 
+            episode+=1
+            print("Episode " + str(episode) + " cumulative reward" + str(cumulative_reward))
+                
         env.close()
 
     def test_PPO_agent(self):
@@ -75,7 +98,9 @@ class testSumoGymAdapter(LoggedTestCase):
         episode=0
 
         while steps < parameters["max_steps"]:
-            actions=env.action_space.sample()
+            #actions=env.action_space.sample()
+            actions={'0': 0}
+            print(actions)
             env.reset()
             done=False
             cumulative_reward=0
