@@ -12,6 +12,8 @@ from random import Random
 from aienvs.FactoryFloor.Map import Map
 from numpy.random import choice as weightedchoice
 import time
+import random
+from gym.spaces.space import Space
 
 
 class FactoryFloor(Env):
@@ -129,7 +131,7 @@ class FactoryFloor(Env):
     @property
     def action_space(self):
         return spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) 
-                            for robot in self._state.robots})
+            for robot in self._state.robots})
 
     ########## Getters ###############################
     
@@ -292,3 +294,27 @@ class FactoryFloor(Env):
             penalty += 1
         return penalty
 
+
+class PossibleActionsSpace(Space):
+    """
+    A gym space that returns the possible actions at this moment
+    on the factory floor for some robot.
+    REQUIREMENT: at all times, at least one action must be possible.
+    If not, sample() may raise an exception
+    NOTE this class is very tightly coupled to FactoryFloor.
+    @param thefloor: the FactoryFloor
+    @param bot: the FactoryFloorRobot
+    """
+
+    def __init__(self, fl:FactoryFloor, bot:FactoryFloorRobot):
+        super().__init__()
+        self._floor = fl
+        self._robot = bot
+    
+    # override
+    def sample(self):
+        return random.choice(self._floor.getPossibleActions(self._robot))
+        
+    def contains(self, act):
+        return self._floor.isPossible(self._robot, act)
+    

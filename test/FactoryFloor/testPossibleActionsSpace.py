@@ -1,4 +1,4 @@
-from aienvs.FactoryFloor.PossibleActionsSpace import PossibleActionsSpace
+from aienvs.FactoryFloor.FactoryFloor import PossibleActionsSpace
 from aienvs.FactoryFloor.FactoryFloor import FactoryFloor
 from unittest.mock import Mock
 from test.LoggedTestCase import LoggedTestCase
