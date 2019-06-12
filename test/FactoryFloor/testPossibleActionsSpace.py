@@ -7,30 +7,27 @@ from test.LoggedTestCase import LoggedTestCase
 class testPossibleActionsSpace(LoggedTestCase):
 
     def test_sample(self):
+        bot = Mock()  # FactoryFloorRobot
         state = Mock()
-        state.getRobots.return_value = ['robota', 'robotb', 'robotc']
         factory = Mock()
         factory.getState.return_value = state
         factory.getPossibleActions.return_value = ['act1', 'act2']
-        space = PossibleActionsSpace(factory)
+        space = PossibleActionsSpace(factory, bot)
         sample = space.sample()
         print (sample)
-        self.assertEqual(3, len(sample))
+        self.assertTrue(sample in ['act1', 'act2'])
 
     def test_contains(self):
+        bot = Mock()  # FactoryFloorRobot
         state = Mock()
-        state.getRobots.return_value = ['robota', 'robotb', 'robotc']
         factory = Mock()
-        factory.getState.return_value = state
 
-        def myPossible(*args, **kwargs):
-            return (args[0] == 'robota' and args[1] == 'act1') or \
-                (args[0] == 'robotb' and args[1] == 'act2') or \
-                (args[0] == 'robotc' and args[1] == 'act1')
+        def myPossible(*args, **kwargs): 
+            return args[1] == 'act1'
 
         factory.isPossible.side_effect = myPossible
-        space = PossibleActionsSpace(factory)
+        space = PossibleActionsSpace(factory, bot)
         
-        self.assertTrue(space.contains(['act1', 'act2', 'act1']))
-        self.assertFalse(space.contains(['act0', 'act2', 'act1']))
+        self.assertTrue(space.contains('act1'))
+        self.assertFalse(space.contains('act0'))
         

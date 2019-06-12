@@ -156,7 +156,7 @@ class FactoryFloor(Env):
         parameters['P_task_appears'] = newmap.getTaskProbability()
         return FactoryFloor(parameters)
   
-    def isPossible(self, robot, action):
+    def isPossible(self, robot:FactoryFloorRobot, action):
         """
         @param robot a FactoryFloorRobot
         @param action (integer) the action to be performed
@@ -168,7 +168,7 @@ class FactoryFloor(Env):
             return self._getTask(pos) != None
         return self._isFree(self._newPos(pos, action))
         
-    def getPossibleActions(self, robot):
+    def getPossibleActions(self, robot:FactoryFloorRobot):
         """
         @return the possible actions for the given robot on the floor
         """
