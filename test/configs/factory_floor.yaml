@@ -8,7 +8,7 @@ parameters:
     gui: false
     env_type: 'SUMO' # 'atari', 'SUMO', or 'gridworld'
     scene: 'loop_network_dumb'
-    max_steps: 2.0e+6
+    max_steps: 3000
     max_episode_steps: 5.0e+3
     frame_height: 26
     frame_width: 10

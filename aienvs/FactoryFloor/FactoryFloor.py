@@ -52,7 +52,7 @@ class FactoryFloor(Env):
         self._random = Random(x=self._parameters['seed'])
         self._map = Map(self._parameters['map'], self._parameters['P_task_appears'], self._random)
         # use "set" to get rid of weird wrappers
-        #if set(self._parameters['P_action_succeed'].keys()) != set(FactoryFloor.ACTIONS.values()):
+        # if set(self._parameters['P_action_succeed'].keys()) != set(FactoryFloor.ACTIONS.values()):
         #    raise ValueError("P_action_succeed must contain values for all actions")
 
         robots = []
@@ -93,15 +93,18 @@ class FactoryFloor(Env):
         if overlay:
             import colorama
             colorama.init()
-            def move_cursor(x,y):
-                print ("\x1b[{};{}H".format(y+1,x+1))
+
+            def move_cursor(x, y):
+                print ("\x1b[{};{}H".format(y + 1, x + 1))
+
             def clear():
                 print ("\x1b[2J")
+
             clear()
-            move_cursor(100,100)
+            move_cursor(100, 100)
             np.set_printoptions(linewidth=100)
-        bitmap=self._createBitmap()
-        print(np.transpose(bitmap[:,:,0]-bitmap[:,:,1]))
+        bitmap = self._createBitmap()
+        print(np.transpose(bitmap[:, :, 0] - bitmap[:, :, 1]))
         time.sleep(delay)
 
     def close(self):
@@ -110,7 +113,7 @@ class FactoryFloor(Env):
     def seed(self):
         pass  # todo
 
-    def getState(self):
+    def getState(self) -> FactoryFloorState:
         return self._state
 
     def setState(self, newState):
@@ -125,7 +128,8 @@ class FactoryFloor(Env):
 
     @property
     def action_space(self):
-        return spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) for robot in self._state.robots})
+        return spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) 
+                            for robot in self._state.robots})
 
     ########## Getters ###############################
     
@@ -151,7 +155,25 @@ class FactoryFloor(Env):
             for task in self._state.tasks if self._map.isInside(task.getPosition())]
         parameters['P_task_appears'] = newmap.getTaskProbability()
         return FactoryFloor(parameters)
-    
+  
+    def isPossible(self, robot, action):
+        """
+        @param robot a FactoryFloorRobot
+        @param action (integer) the action to be performed
+        @return: true iff the action will be possible (can succeed) at this point.
+        ACT is considered possible if there is a task at the current position.
+        """
+        pos = robot.getPosition()
+        if action == 0:  # ACT
+            return self._getTask(pos) != None
+        return self._isFree(self._newPos(pos, action))
+        
+    def getPossibleActions(self, robot):
+        """
+        @return the possible actions for the given robot on the floor
+        """
+        return [action for action in self.ACTIONS if self._isPossible(robot, action)]
+
     ########## Private functions ##########################
 
     def _createBitmap(self):
@@ -165,7 +187,7 @@ class FactoryFloor(Env):
             pos = task.getPosition()
             bitmapTasks[pos[0], pos[1]] += 1
 
-        return dstack((9*bitmapRobots, bitmapTasks))
+        return dstack((9 * bitmapRobots, bitmapTasks))
 
     def _applyAction(self, robot, action):
         """

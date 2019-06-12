@@ -1,3 +1,4 @@
+import sys
 import unittest
 import logging
 from LoggedTestCase import LoggedTestCase
@@ -15,14 +16,18 @@ logger.setLevel(logging.INFO)
 
 
 class testFactoryFloor(LoggedTestCase):
-        
+    """
+    This is an integration test that also tests aiagents.
+    aiagents project must be installed 
+    """
+
     def test_smoke(self):
         env = FactoryFloor()
         
     def test_simplerun(self):
         env = FactoryFloor()
         env.reset()
-        action_space = env.action_space()
+        action_space = env.action_space
 
         done = False
         while not done:
@@ -57,9 +62,9 @@ class testFactoryFloor(LoggedTestCase):
     def test_mcts_agent(self):
         logging.info("Starting test_mcts_agent")
 
-        with open("configs/factory_floor_simple.yaml", 'r') as stream:
+        with open("test/configs/factory_floor_simple.yaml", 'r') as stream:
             try:
-                parameters=yaml.safe_load(stream)['parameters']
+                parameters = yaml.safe_load(stream)['parameters']
             except yaml.YAMLError as exc:
                 logging.error(exc)
 
@@ -70,12 +75,12 @@ class testFactoryFloor(LoggedTestCase):
         for robotId in env.action_space.spaces.keys():
             mctsAgents.append(mctsAgent(agentId=robotId, environment=env, timeLimit=None, iterationLimit=5000))
 
-        complexAgent=ComplexAgentComponent(mctsAgents)
-        steps=0
-        global_reward=0
+        complexAgent = ComplexAgentComponent(mctsAgents)
+        steps = 0
+        global_reward = 0
 
-        done=False
-        actions=None
+        done = False
+        actions = None
         env.render(delay=0.0, overlay=False)
 
         while not done:
@@ -83,17 +88,16 @@ class testFactoryFloor(LoggedTestCase):
             env.render(delay=0.0, overlay=False)
             complexAgent.observe(obs, global_reward, done)
             actions = complexAgent.select_actions()
-            print("env step: " + str(steps) + " action: " + env.ACTIONS.get(actions.get("robot1")) +  " reward " + str(global_reward))
+            # print("env step: " + str(steps) + " action: " + env.ACTIONS.get(actions.get("robot1")) + " reward " + str(global_reward))
             # rendering the part of the image
-            steps+=1
-
+            steps += 1
 
     def test_random_agent(self):
         logging.info("Starting test_PPO_agent")
 
-        with open("configs/factory_floor.yaml", 'r') as stream:
+        with open("test/configs/factory_floor.yaml", 'r') as stream:
             try:
-                parameters=yaml.safe_load(stream)['parameters']
+                parameters = yaml.safe_load(stream)['parameters']
             except yaml.YAMLError as exc:
                 logging.error(exc)
 
@@ -102,29 +106,29 @@ class testFactoryFloor(LoggedTestCase):
         for robotId in env.action_space.spaces.keys():
             randomAgents.append(RandomAgent(robotId, env.action_space.spaces.get(robotId)))
 
-        complexAgent=ComplexAgentComponent(randomAgents)
-        steps=0
+        complexAgent = ComplexAgentComponent(randomAgents)
+        steps = 0
 
         while steps < parameters["max_steps"]:
-            actions=env.action_space.sample()
+            actions = env.action_space.sample()
             env.reset()
-            done=False
+            done = False
 
             while not done:
                 obs, global_reward, done, info = env.step(actions)
                 complexAgent.observe(obs, global_reward, done)
                 actions = complexAgent.select_actions()
-                env.render(delay=1)
+                env.render(delay=0)
                 # rendering the part of the image
-                #env.render()
-                steps+=1
+                # env.render()
+                steps += 1
 
     def test_PPO_agent(self):
         logging.info("Starting test_PPO_agent")
 
-        with open("configs/factory_floor.yaml", 'r') as stream:
+        with open("test/configs/factory_floor.yaml", 'r') as stream:
             try:
-                parameters=yaml.safe_load(stream)['parameters']
+                parameters = yaml.safe_load(stream)['parameters']
             except yaml.YAMLError as exc:
                 logging.error(exc)
 
@@ -133,21 +137,22 @@ class testFactoryFloor(LoggedTestCase):
         for robotId in env.action_space.spaces.keys():
             PPOAgents.append(PPOAgent(parameters, env.observation_space, env.action_space.spaces.get(robotId), robotId))
 
-        complexAgent=ComplexAgentComponent(PPOAgents)
-        steps=0
+        complexAgent = ComplexAgentComponent(PPOAgents)
+        steps = 0
 
         while steps < parameters["max_steps"]:
-            actions=env.action_space.sample()
+            actions = env.action_space.sample()
             env.reset()
-            done=False
+            done = False
 
             while not done:
                 obs, global_reward, done, info = env.step(actions)
                 complexAgent.observe(obs, global_reward, done)
                 actions = complexAgent.select_actions()
                 # rendering the part of the image
-                #env.render()
-                steps+=1
+                # env.render()
+                steps += 1
+
         
 if __name__ == '__main__':
     unittest.main()
