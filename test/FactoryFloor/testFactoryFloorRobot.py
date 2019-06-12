@@ -1,5 +1,5 @@
 from numpy import array
-from LoggedTestCase import LoggedTestCase
+from test.LoggedTestCase import LoggedTestCase
 from aienvs.FactoryFloor.FactoryFloorRobot import FactoryFloorRobot
 
 

@@ -1,7 +1,7 @@
 import sys
 import unittest
 import logging
-from LoggedTestCase import LoggedTestCase
+from test.LoggedTestCase import LoggedTestCase
 from aienvs.FactoryFloor.FactoryFloor import FactoryFloor
 from aiagents.single.PPO.PPOAgent import PPOAgent
 from aiagents.single.RandomAgent import RandomAgent
