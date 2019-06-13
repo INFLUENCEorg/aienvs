@@ -108,6 +108,18 @@ class testFactoryFloor(LoggedTestCase):
             steps += self._loopTillDone(complexAgent, env, env.action_space.sample())
                 
     ################# PRIVATE UTIL FUNCS #####################
+    def _runExperiment(self, agent:AgentComponent, env: Env, maxSteps:int, render:bool=False):
+        """
+        Resets env. Loop env.step and agent.select_actions() until number of steps have been made.
+        If an env is done before the number of steps have been reached, the env is reset.
+        @param agent an AgentComponent holding an agent
+        @param env the openai gym Env that we are running in
+        @param render True iff environment must be rendered each step.
+        @return the number of steps it took to reach done state
+        """
+        steps = 0
+        while steps < maxSteps:
+            steps += self._loopTillDone(agent, env, None)
                 
     def _loopTillDone(self, agent:AgentComponent, env: Env, firstActions:ndarray, render:bool=False):
         """
