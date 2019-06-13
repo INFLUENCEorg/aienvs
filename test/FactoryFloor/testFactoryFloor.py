@@ -61,13 +61,7 @@ class testFactoryFloor(LoggedTestCase):
 
     def test_mcts_agent(self):
         logging.info("Starting test_mcts_agent")
-
-        with open("test/configs/factory_floor_simple.yaml", 'r') as stream:
-            try:
-                parameters = yaml.safe_load(stream)['parameters']
-            except yaml.YAMLError as exc:
-                logging.error(exc)
-
+        parameters = self._get_parameters("test/configs/factory_floor_simple.yaml")
         env = FactoryFloor(parameters)
         env.reset()
 
@@ -94,12 +88,7 @@ class testFactoryFloor(LoggedTestCase):
 
     def test_random_agent(self):
         logging.info("Starting test_PPO_agent")
-
-        with open("test/configs/factory_floor.yaml", 'r') as stream:
-            try:
-                parameters = yaml.safe_load(stream)['parameters']
-            except yaml.YAMLError as exc:
-                logging.error(exc)
+        parameters = self._get_parameters("test/configs/factory_floor.yaml")
 
         env = FactoryFloor(parameters)
         randomAgents = []
@@ -125,12 +114,7 @@ class testFactoryFloor(LoggedTestCase):
 
     def test_PPO_agent(self):
         logging.info("Starting test_PPO_agent")
-
-        with open("test/configs/factory_floor.yaml", 'r') as stream:
-            try:
-                parameters = yaml.safe_load(stream)['parameters']
-            except yaml.YAMLError as exc:
-                logging.error(exc)
+        parameters = self._get_parameters("test/configs/factory_floor.yaml")
 
         env = FactoryFloor(parameters)
         PPOAgents = []
@@ -152,6 +136,18 @@ class testFactoryFloor(LoggedTestCase):
                 # rendering the part of the image
                 # env.render()
                 steps += 1
+
+    def _get_parameters(self, filename:str) -> dict:
+        """
+        @param filename yaml file
+        @return: dictionary with parameters in given (yaml) file
+        """
+        with open(filename, 'r') as stream:
+            try:
+                parameters = yaml.safe_load(stream)['parameters']
+            except yaml.YAMLError as exc:
+                logging.error(exc)
+        return parameters
 
         
 if __name__ == '__main__':
