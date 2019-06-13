@@ -13,7 +13,9 @@ from aienvs.FactoryFloor.Map import Map
 from numpy.random import choice as weightedchoice
 import time
 import random
-from gym.spaces.space import Space
+from aiagents.FixedActionsSpace import FixedActionsSpace
+
+USE_PossibleActionsSpace = False
 
 
 class FactoryFloor(Env):
@@ -130,8 +132,12 @@ class FactoryFloor(Env):
 
     @property
     def action_space(self):
-        return spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) 
-            for robot in self._state.robots})
+        if USE_PossibleActionsSpace:
+            return spaces.Dict({robot.getId():PossibleActionsSpace(self, robot) 
+                for robot in self._state.robots})
+        else:        
+            return spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) 
+                for robot in self._state.robots})
 
     ########## Getters ###############################
     
@@ -174,7 +180,7 @@ class FactoryFloor(Env):
         """
         @return the possible actions for the given robot on the floor
         """
-        return [action for action in self.ACTIONS if self._isPossible(robot, action)]
+        return [action for action in self.ACTIONS if self.isPossible(robot, action)]
 
     ########## Private functions ##########################
 
@@ -295,7 +301,7 @@ class FactoryFloor(Env):
         return penalty
 
 
-class PossibleActionsSpace(Space):
+class PossibleActionsSpace(FixedActionsSpace):
     """
     A gym space that returns the possible actions at this moment
     on the factory floor for some robot.
@@ -317,4 +323,7 @@ class PossibleActionsSpace(Space):
         
     def contains(self, act):
         return self._floor.isPossible(self._robot, act)
+    
+    def getAllActions(self):
+        return self._floor.ACTIONS
     
