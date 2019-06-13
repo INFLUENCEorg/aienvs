@@ -1,17 +1,15 @@
-from abc import ABC, abstractmethod
 from aienvs.listener.Listener import Listener
 
 
-class Listenable(ABC):
+# we don't use ABC because python then errs "can't resolve MRO"
+class Listenable():
 
-    @abstractmethod
     def addListener(self, l: Listener):
         """
         @param l a Listener to be added 
         """
         pass
 
-    @abstractmethod
     def removeListener(self, l: Listener):
         """
         @param l a Listener to be removed 

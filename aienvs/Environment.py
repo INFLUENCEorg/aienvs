@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
+from aienvs.listener.Listenable import Listenable
 
-class Env(ABC):
+
+class Env(ABC, Listenable):
     """
     Abstract base class of all Influence environments as in openAI Gym (under the MIT license). Quoting:
     The main OpenAI Gym class. It encapsulates an environment with
@@ -20,7 +22,12 @@ class Env(ABC):
     The methods are accessed publicly as "step", "reset", etc.. The
     non-underscored versions are wrapper methods to which we may add
     functionality over time.
+    
+    The Env should implement a listenable interface and notify listeners about
+    the current #steps and reward when a step is taken, through a data object of the form  
+    {"steps",Nsteps, "reward": Reward} 
     """
+
     # Set this in SOME subclasses
     @property
     def metadata(self):
@@ -125,5 +132,4 @@ class Env(ABC):
               this won't be true if seed=None, for example.
         """
         return
-
    

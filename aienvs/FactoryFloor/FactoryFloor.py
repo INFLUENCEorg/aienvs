@@ -14,11 +14,14 @@ from numpy.random import choice as weightedchoice
 import time
 import random
 from aiagents.FixedActionsSpace import FixedActionsSpace
+from aienvs.listener.Listener import Listener
+import traceback
+from aienvs.listener.DefaultListenable import DefaultListenable
 
 USE_PossibleActionsSpace = False
 
 
-class FactoryFloor(Env):
+class FactoryFloor(Env, DefaultListenable):
     """
     The factory floor environment. This adds all dynamic aspects of the Map:
     the robots and the tasks.
@@ -88,6 +91,7 @@ class FactoryFloor(Env):
         self._state.step += 1
 
         obs = self._state
+        self.notifyChange({'steps':self._state.step, 'reward':global_reward})
         return obs, global_reward, done, []
     
     def reset(self):
@@ -138,7 +142,7 @@ class FactoryFloor(Env):
         else:        
             return spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) 
                 for robot in self._state.robots})
-
+            
     ########## Getters ###############################
     
     def getMap(self):

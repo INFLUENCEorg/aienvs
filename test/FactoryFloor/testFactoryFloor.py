@@ -13,6 +13,7 @@ import yaml
 from numpy import array
 from numpy import ndarray
 from aienvs.Environment import Env
+from unittest.mock import Mock
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -106,7 +107,15 @@ class testFactoryFloor(LoggedTestCase):
 
         while steps < parameters["max_steps"]:
             steps += self._loopTillDone(complexAgent, env, env.action_space.sample())
-                
+    
+    def test_notification(self):
+        parameters = self._get_parameters("test/configs/factory_floor.yaml")
+        env = FactoryFloor(parameters)
+        l = Mock()
+        env.addListener(l)
+        env.step(None)
+        l.notifyChange.assert_called_with({'steps':1, 'reward':-2})
+        
     ################# PRIVATE UTIL FUNCS #####################
     def _runExperiment(self, agent:AgentComponent, env: Env, maxSteps:int, render:bool=False):
         """

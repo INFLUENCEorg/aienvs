@@ -4,6 +4,9 @@ import traceback
 
 
 class DefaultListenable(Listenable):
+    """
+    Default implementation for Listenable
+    """
     _listeners = []
     
     # Override
