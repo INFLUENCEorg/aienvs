@@ -6,10 +6,13 @@ from aienvs.FactoryFloor.FactoryFloor import FactoryFloor
 from aiagents.single.PPO.PPOAgent import PPOAgent
 from aiagents.single.RandomAgent import RandomAgent
 from aiagents.single.mcts.mctsAgent import mctsAgent
+from aiagents.AgentComponent import AgentComponent
 from aiagents.multi.ComplexAgentComponent import ComplexAgentComponent
 import random
 import yaml
 from numpy import array
+from numpy import ndarray
+from aienvs.Environment import Env
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -70,21 +73,9 @@ class testFactoryFloor(LoggedTestCase):
             mctsAgents.append(mctsAgent(agentId=robotId, environment=env, timeLimit=None, iterationLimit=5000))
 
         complexAgent = ComplexAgentComponent(mctsAgents)
-        steps = 0
-        global_reward = 0
 
-        done = False
-        actions = None
         env.render(delay=0.0, overlay=False)
-
-        while not done:
-            obs, global_reward, done, info = env.step(actions)
-            env.render(delay=0.0, overlay=False)
-            complexAgent.observe(obs, global_reward, done)
-            actions = complexAgent.select_actions()
-            # print("env step: " + str(steps) + " action: " + env.ACTIONS.get(actions.get("robot1")) + " reward " + str(global_reward))
-            # rendering the part of the image
-            steps += 1
+        self._loopTillDone(complexAgent, env, None)
 
     def test_random_agent(self):
         logging.info("Starting test_PPO_agent")
@@ -99,18 +90,7 @@ class testFactoryFloor(LoggedTestCase):
         steps = 0
 
         while steps < parameters["max_steps"]:
-            actions = env.action_space.sample()
-            env.reset()
-            done = False
-
-            while not done:
-                obs, global_reward, done, info = env.step(actions)
-                complexAgent.observe(obs, global_reward, done)
-                actions = complexAgent.select_actions()
-                env.render(delay=0)
-                # rendering the part of the image
-                # env.render()
-                steps += 1
+            steps += self._loopTillDone(complexAgent, env, env.action_space.sample(), True)
 
     def test_PPO_agent(self):
         logging.info("Starting test_PPO_agent")
@@ -125,17 +105,33 @@ class testFactoryFloor(LoggedTestCase):
         steps = 0
 
         while steps < parameters["max_steps"]:
-            actions = env.action_space.sample()
-            env.reset()
-            done = False
+            steps += self._loopTillDone(complexAgent, env, env.action_space.sample())
+                
+    ################# PRIVATE UTIL FUNCS #####################
+                
+    def _loopTillDone(self, agent:AgentComponent, env: Env, firstActions:ndarray, render:bool=False):
+        """
+        Resets env. Loop env.step and agent.select_actions() until env is done.
+        @param agent an AgentComponent holding an agent
+        @param env the openai gym Env that we are running in
+        @param firstActions the actions for the first step to be taken by agent, encoded as an ndarray as usual in gym environments
+        @param render True iff environment must be rendered each step.
+        @return the number of steps it took to reach done state
+        """
+        actions = firstActions
+        env.reset()
+        done = False
+        steps = 0
 
-            while not done:
-                obs, global_reward, done, info = env.step(actions)
-                complexAgent.observe(obs, global_reward, done)
-                actions = complexAgent.select_actions()
-                # rendering the part of the image
-                # env.render()
-                steps += 1
+        while not done:
+            obs, global_reward, done, info = env.step(actions)
+            agent.observe(obs, global_reward, done)
+            actions = agent.select_actions()
+            if render:
+                env.render(delay=0)
+            steps += 1
+
+        return steps
 
     def _get_parameters(self, filename:str) -> dict:
         """
