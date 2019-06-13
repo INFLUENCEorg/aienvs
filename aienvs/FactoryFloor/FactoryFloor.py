@@ -317,13 +317,15 @@ class PossibleActionsSpace(FixedActionsSpace):
         self._floor = fl
         self._robot = bot
     
-    # override
+    # Override
     def sample(self):
         return random.choice(self._floor.getPossibleActions(self._robot))
-        
+ 
+    # Override       
     def contains(self, act):
         return self._floor.isPossible(self._robot, act)
     
-    def getAllActions(self):
+    # Override
+    def getAllActions(self) -> dict:
         return self._floor.ACTIONS
     
