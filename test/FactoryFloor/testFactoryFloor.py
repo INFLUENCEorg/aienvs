@@ -18,7 +18,7 @@ from aienvs.runners.Episode import Episode
 from aienvs.runners.Experiment import Experiment
 from aienvs.utils import getParameters
 from unittest.mock import Mock
-from aienvs.loggers.EpisodeResultsJsonLogger import EpisodeResultsJsonLogger
+from aienvs.loggers.JsonLogger import JsonLogger
 import io
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -85,7 +85,7 @@ class testFactoryFloor(LoggedTestCase):
         complexAgent = ComplexAgentComponent(mctsAgents)
 
         episode = Episode(complexAgent, env, None, render=True)
-        episode.addListener(EpisodeResultsJsonLogger(logoutput))
+        episode.addListener(JsonLogger(logoutput))
         episode.run()
         print(logoutput.getvalue())
 

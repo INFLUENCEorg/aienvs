@@ -3,10 +3,10 @@ import json
 from _pyio import TextIOBase
 
 
-class EpisodeResultsJsonLogger(Listener):
+class JsonLogger(Listener):
     
     """
-    Logs episode final results to a json file
+    Logs final results coming from a DefaultRunner to a json file
     """
     
     def __init__(self, outstream: TextIOBase):
