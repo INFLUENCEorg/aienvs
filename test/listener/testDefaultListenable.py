@@ -14,7 +14,7 @@ class testDefaultListenable(LoggedTestCase):
         listenable.addListener(l)
 
         l.notifyChange.assert_not_called()
-        listenable.notifyChange("hello")
+        listenable.notifyAll("hello")
         l.notifyChange.assert_called_with("hello")
         
     def test_unsubscribe(self):
@@ -24,6 +24,6 @@ class testDefaultListenable(LoggedTestCase):
         listenable.removeListener(l)
 
         l.notifyChange.assert_not_called()
-        listenable.notifyChange("hello")
+        listenable.notifyAll("hello")
         l.notifyChange.assert_not_called()
         
