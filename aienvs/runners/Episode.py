@@ -25,9 +25,19 @@ class Episode(DefaultRunner, DefaultListenable):
         self._render = render
         self._renderDelay = renderDelay
 
+    def step(self, actions):
+        """
+        One step of the RL loop
+        """
+        obs, globalReward, done, info = self._env.step(actions)
+        self.notifyAll({'reward':globalReward, 'done':done, 'actions':actions})
+        actions = self._agent.step(obs, globalReward, done)
+
+        return globalReward, done, actions
+
     def run(self):
         """
-        Resets env. Loop env.step and agent.select_actions() until env is done.
+        Resets env. Loop env.step and agent.step() until env is done.
         @return the number of steps it took to reach done state, total reward
         """
         actions = self._firstActions
@@ -35,14 +45,15 @@ class Episode(DefaultRunner, DefaultListenable):
         steps = 0
         totalReward = 0
     
-        while not done:
-            obs, globalReward, done, info = self._env.step(actions)
-            self.notifyAll({'steps':steps, 'reward':globalReward, 'done':done, 'actions':actions})
-            self._agent.observe(obs, globalReward, done)
+        while True:
+            steps += 1
+            globalReward, done, actions = self.step(actions)
             totalReward += globalReward
-            actions = self._agent.select_actions()
+
+            if done:
+                break
+
             if self._render:
                 self._env.render(self._renderDelay)
-            steps += 1
-    
+
         return steps, totalReward

@@ -45,7 +45,9 @@ class testFactoryFloor(LoggedTestCase):
             observation, reward, done, info = env.step(actions)
 
     def test_importParametersFromYaml(self):
-        with open("test/resources/settings.yaml", 'r') as stream:
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, "../resources/settings.yaml")
+        with open(filename, 'r') as stream:
                 settings = yaml.safe_load(stream)
                 print ("succesfully read settings", settings)
                 # and proof that the settings are good, quick hack

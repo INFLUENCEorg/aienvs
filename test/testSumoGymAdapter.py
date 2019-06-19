@@ -1,4 +1,5 @@
 import sys
+import os
 import unittest
 import aienvs
 from aiagents.multi.ComplexAgentComponent import ComplexAgentComponent
@@ -21,7 +22,10 @@ class testSumoGymAdapter(LoggedTestCase):
 
     def test_new_traffic(self):
         logging.info("Starting test_new_traffic")
-        with open("configs/new_traffic_loop_ppo.yaml", 'r') as stream:
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, "configs/new_traffic_loop_ppo.yaml")
+
+        with open(filename, 'r') as stream:
             try:
                 parameters = yaml.safe_load(stream)['parameters']
             except yaml.YAMLError as exc:
@@ -46,7 +50,10 @@ class testSumoGymAdapter(LoggedTestCase):
 
     def test_random_agent(self):
         logging.info("Starting test_random_agent")
-        with open("configs/new_traffic_loop_ppo.yaml", 'r') as stream:
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, "configs/new_traffic_loop_ppo.yaml")
+
+        with open(filename, 'r') as stream:
             try:
                 parameters = yaml.safe_load(stream)['parameters']
             except yaml.YAMLError as exc:
@@ -72,8 +79,7 @@ class testSumoGymAdapter(LoggedTestCase):
 
             while not done:
                 obs, global_reward, done, info = env.step(actions)
-                complexAgent.observe(obs, global_reward, done)
-                actions = complexAgent.select_actions()
+                actions = complexAgent.step(obs, global_reward, done)
                 # rendering the part of the image
                 # env.render()
                 steps += 1
@@ -86,8 +92,10 @@ class testSumoGymAdapter(LoggedTestCase):
 
     def test_PPO_agent(self):
         logging.info("Starting test_PPO_agent")
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, "configs/new_traffic_loop_ppo.yaml")
 
-        with open("test/configs/new_traffic_loop_ppo.yaml", 'r') as stream:
+        with open(filename, 'r') as stream:
             try:
                 parameters = yaml.safe_load(stream)['parameters']
             except yaml.YAMLError as exc:
@@ -112,8 +120,7 @@ class testSumoGymAdapter(LoggedTestCase):
 
             while not done:
                 obs, global_reward, done, info = env.step(actions)
-                complexAgent.observe(obs, global_reward, done)
-                actions = complexAgent.select_actions()
+                actions = complexAgent.step(obs, global_reward, done)
                 # rendering the part of the image
                 # env.render()
                 steps += 1

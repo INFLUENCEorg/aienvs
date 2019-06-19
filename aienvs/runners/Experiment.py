@@ -28,7 +28,7 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
         
     def run(self):
         """
-        Resets env. Loop env.step and agent.select_actions() until number of steps have been made.
+        Resets env. Loop env.step and agent.step() until number of steps have been made.
         If an env is done before the number of steps have been reached, the env is reset.
         @return the total reward divided by the total number of episodes 
         """

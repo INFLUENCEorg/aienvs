@@ -1,3 +1,4 @@
 #!/bin/sh
-pip3 uninstall -y aienvs
 export PYTHONPATH=$PYTHONPATH:$PWD
+export PYTHONPATH=$PYTHONPATH:$PWD/../aiagents
+pip3 uninstall -y aienvs
