@@ -7,7 +7,9 @@ class DefaultListenable(Listenable):
     """
     Default implementation for Listenable
     """
-    _listeners = []
+
+    def __init__(self):
+        self._listeners = []
     
     # Override
     def addListener(self, l:Listener):

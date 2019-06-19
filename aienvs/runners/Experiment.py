@@ -19,6 +19,7 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
         @param env the openai gym Env that we are running in
         @param render True iff environment must be rendered each step.
         """
+        super().__init__()
         self._agent = agent
         self._env = env
         self._maxSteps = maxSteps
@@ -49,5 +50,4 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
 
     def notifyChange(self, data):
         self.notifyAll(data)
-
     

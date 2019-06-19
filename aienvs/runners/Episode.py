@@ -18,6 +18,7 @@ class Episode(DefaultRunner, DefaultListenable):
         @param firstActions the actions for the first step to be taken by agent
         @param render True iff environment must be rendered each step.
         """
+        super().__init__()
         self._agent = agent
         self._env = env
         self._firstActions = firstActions
