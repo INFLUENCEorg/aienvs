@@ -21,7 +21,7 @@ from aienvs.listener.DefaultListenable import DefaultListenable
 USE_PossibleActionsSpace = False
 
 
-class FactoryFloor(Env, DefaultListenable):
+class FactoryFloor(Env):
     """
     The factory floor environment. This adds all dynamic aspects of the Map:
     the robots and the tasks.
@@ -91,7 +91,6 @@ class FactoryFloor(Env, DefaultListenable):
         self._state.step += 1
 
         obs = self._state
-        self.notifyChange({'steps':self._state.step, 'reward':global_reward})
         return obs, global_reward, done, []
     
     def reset(self):

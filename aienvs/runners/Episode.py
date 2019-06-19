@@ -2,9 +2,11 @@ from aiagents.AgentComponent import AgentComponent
 from aienvs.Environment import Env
 from gym import spaces
 import yaml
+from aienvs.runners.DefaultRunner import DefaultRunner
+from aienvs.listener.DefaultListenable import DefaultListenable
 
 
-class Episode:
+class Episode(DefaultRunner, DefaultListenable):
     """
     Contains all info to run an episode (single run till environment is done)
     """
@@ -34,6 +36,7 @@ class Episode:
     
         while not done:
             obs, globalReward, done, info = self._env.step(actions)
+            self.notifyAll({'steps':steps, 'reward':globalReward, 'done':done})
             self._agent.observe(obs, globalReward, done)
             totalReward += globalReward
             actions = self._agent.select_actions()

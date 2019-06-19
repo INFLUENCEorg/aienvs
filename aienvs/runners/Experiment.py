@@ -2,9 +2,12 @@ from aiagents.AgentComponent import AgentComponent
 from aienvs.Environment import Env
 from gym import spaces
 from aienvs.runners.Episode import Episode
+from aienvs.runners.DefaultRunner import DefaultRunner
+from aienvs.listener.DefaultListenable import DefaultListenable
+from aienvs.listener.Listener import Listener
 
 
-class Experiment():
+class Experiment(DefaultRunner, DefaultListenable, Listener):
     """
     Contains all info to run an experiment
 
@@ -34,9 +37,16 @@ class Experiment():
     
         while steps < self._maxSteps:
             self._env.reset()
-            episodeSteps, episodeReward = Episode(self._agent, self._env, self._render, self._renderDelay).run()
+            episode = Episode(self._agent, self._env, self._render, self._renderDelay)
+            episode.addListener(self)
+            episodeSteps, episodeReward = episode.run()
             steps += episodeSteps
             totalReward += episodeReward
             episodeCount += 1
     
         return totalReward / episodeCount
+
+    def notifyChange(self, data):
+        self.notifyAll(data)
+
+    

@@ -17,7 +17,8 @@ from aienvs.runners.Episode import Episode
 from aienvs.runners.Experiment import Experiment
 from aienvs.utils import getParameters
 from unittest.mock import Mock
-
+from aienvs.loggers.EpisodeResultsJsonLogger import EpisodeResultsJsonLogger
+import io
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
@@ -66,7 +67,11 @@ class testFactoryFloor(LoggedTestCase):
         self.assertEquals("[1 4]", str(env._getFreeMapPosition()))
 
     def test_mcts_agent(self):
+        """
+        Really a smoketest/demo how to run an agent
+        """
         logging.info("Starting test_mcts_agent")
+        logoutput = io.StringIO("episode output log")
         parameters = getParameters("test/configs/factory_floor_simple.yaml")
         env = FactoryFloor(parameters)
 
@@ -76,7 +81,10 @@ class testFactoryFloor(LoggedTestCase):
 
         complexAgent = ComplexAgentComponent(mctsAgents)
 
-        Episode(complexAgent, env, None, render=True).run()
+        episode = Episode(complexAgent, env, None, render=True)
+        episode.addListener(EpisodeResultsJsonLogger(logoutput))
+        episode.run()
+        print(logoutput.getvalue())
 
     def est_random_agent(self):
         logging.info("Starting test random agent")
@@ -107,14 +115,6 @@ class testFactoryFloor(LoggedTestCase):
         while steps < parameters["max_steps"]:
             steps += Episode(complexAgent, env, env.action_space.sample()).run()
     
-    def test_notification(self):
-        parameters = getParameters("test/configs/factory_floor.yaml")
-        env = FactoryFloor(parameters)
-        l = Mock()
-        env.addListener(l)
-        env.step(None)
-        l.notifyChange.assert_called_with({'steps':1, 'reward':-2})
-        
 
 if __name__ == '__main__':
     unittest.main()

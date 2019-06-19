@@ -17,8 +17,9 @@ class DefaultListenable(Listenable):
     def removeListener(self, l: Listener):
         self._listeners.remove(l)
 
-    def notifyChange(self, data):
+    def notifyAll(self, data):
         """
+        Notifies all listeners of a change.
         This should only be called by the owner of this, not by 
         listeners or others.
         Listeners should not throw. But as courtesy, any exceptions 
