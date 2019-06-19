@@ -1,7 +1,7 @@
 import sys
 import unittest
 import logging
-from LoggedTestCase import LoggedTestCase
+from test.LoggedTestCase import LoggedTestCase
 from aienvs.FactoryFloor.FactoryFloor import FactoryFloor
 from aiagents.single.PPO.PPOAgent import PPOAgent
 from aiagents.single.RandomAgent import RandomAgent
@@ -13,7 +13,9 @@ import yaml
 from numpy import array
 from numpy import ndarray
 from aienvs.Environment import Env
-from aienvs.utils import runExperiment, runEpisode, getParameters
+from aienvs.runners.Episode import Episode
+from aienvs.runners.Experiment import Experiment
+from aienvs.utils import getParameters
 from unittest.mock import Mock
 
 logger = logging.getLogger()
@@ -40,7 +42,7 @@ class testFactoryFloor(LoggedTestCase):
             observation, reward, done, info = env.step(actions)
 
     def test_importParametersFromYaml(self):
-        with open("resources/settings.yaml", 'r') as stream:
+        with open("test/resources/settings.yaml", 'r') as stream:
                 settings = yaml.safe_load(stream)
                 print ("succesfully read settings", settings)
                 # and proof that the settings are good, quick hack
@@ -65,7 +67,7 @@ class testFactoryFloor(LoggedTestCase):
 
     def test_mcts_agent(self):
         logging.info("Starting test_mcts_agent")
-        parameters = getParameters("configs/factory_floor_simple.yaml")
+        parameters = getParameters("test/configs/factory_floor_simple.yaml")
         env = FactoryFloor(parameters)
 
         mctsAgents = []
@@ -74,11 +76,11 @@ class testFactoryFloor(LoggedTestCase):
 
         complexAgent = ComplexAgentComponent(mctsAgents)
 
-        runEpisode(complexAgent, env, None, render=True)
+        Episode(complexAgent, env, None, render=True).run()
 
-    def test_random_agent(self):
-        logging.info("Starting test_PPO_agent")
-        parameters = getParameters("configs/factory_floor.yaml")
+    def est_random_agent(self):
+        logging.info("Starting test random agent")
+        parameters = getParameters("test/configs/factory_floor.yaml")
 
         env = FactoryFloor(parameters)
         randomAgents = []
@@ -88,11 +90,11 @@ class testFactoryFloor(LoggedTestCase):
         complexAgent = ComplexAgentComponent(randomAgents)
         steps = 0
 
-        runExperiment(complexAgent, env, 1000, True)
+        Experiment(complexAgent, env, 1000, True).run()
 
-    def test_PPO_agent(self):
-        logging.info("Starting test_PPO_agent")
-        parameters = getParameters("configs/factory_floor.yaml")
+    def est_PPO_agent(self):
+        logging.info("Starting test PPO agent")
+        parameters = getParameters("test/configs/factory_floor.yaml")
 
         env = FactoryFloor(parameters)
         PPOAgents = []
@@ -103,10 +105,10 @@ class testFactoryFloor(LoggedTestCase):
         steps = 0
 
         while steps < parameters["max_steps"]:
-            steps += runEpisode(complexAgent, env, env.action_space.sample())
+            steps += Episode(complexAgent, env, env.action_space.sample()).run()
     
     def test_notification(self):
-        parameters = getParameters("configs/factory_floor.yaml")
+        parameters = getParameters("test/configs/factory_floor.yaml")
         env = FactoryFloor(parameters)
         l = Mock()
         env.addListener(l)
