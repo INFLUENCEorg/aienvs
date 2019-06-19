@@ -20,6 +20,7 @@ from aienvs.utils import getParameters
 from unittest.mock import Mock
 from aienvs.loggers.JsonLogger import JsonLogger
 import io
+from aienvs.loggers.PickleLogger import PickleLogger
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
@@ -72,7 +73,6 @@ class testFactoryFloor(LoggedTestCase):
         Really a smoketest/demo how to run an agent
         """
         logging.info("Starting test_mcts_agent")
-        logoutput = io.StringIO("episode output log")
         dirname = os.path.dirname(__file__)
         filename = os.path.join(dirname, "../configs/factory_floor_simple.yaml")
         parameters = getParameters(filename)
@@ -85,9 +85,7 @@ class testFactoryFloor(LoggedTestCase):
         complexAgent = ComplexAgentComponent(mctsAgents)
 
         episode = Episode(complexAgent, env, None, render=True)
-        episode.addListener(JsonLogger(logoutput))
         episode.run()
-        print(logoutput.getvalue())
 
     def est_random_agent(self):
         logging.info("Starting test random agent")
@@ -105,7 +103,7 @@ class testFactoryFloor(LoggedTestCase):
 
         Experiment(complexAgent, env, 1000, True).run()
 
-    def test_PPO_agent(self):
+    def est_PPO_agent(self):
         logging.info("Starting test PPO agent")
         dirname = os.path.dirname(__file__)
         filename = os.path.join(dirname, "../configs/factory_floor.yaml")

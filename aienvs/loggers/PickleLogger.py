@@ -1,15 +1,15 @@
 from aienvs.listener.Listener import Listener
-import json
-from _pyio import TextIOBase
+import pickle
+from _io import BytesIO
 
 
-class JsonLogger(Listener):
+class PickleLogger(Listener):
     
     """
     Logs final results coming from a DefaultRunner to a json file
     """
     
-    def __init__(self, outstream: TextIOBase):
+    def __init__(self, outstream: BytesIO):
         """
         @param outstream a general outputstream, either file or StringIO.
         Create with  open("myfile.txt", "r", encoding="utf-8") or
@@ -18,5 +18,5 @@ class JsonLogger(Listener):
         self._outstream = outstream
         
     def notifyChange(self, data):
-        self._outstream.writelines(json.dumps(data))
+        self._outstream.write(pickle.dumps(data))
         

@@ -36,7 +36,7 @@ class Episode(DefaultRunner, DefaultListenable):
     
         while not done:
             obs, globalReward, done, info = self._env.step(actions)
-            self.notifyAll({'steps':steps, 'reward':globalReward, 'done':done})
+            self.notifyAll({'steps':steps, 'reward':globalReward, 'done':done, 'actions':actions})
             self._agent.observe(obs, globalReward, done)
             totalReward += globalReward
             actions = self._agent.select_actions()
