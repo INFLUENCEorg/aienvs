@@ -87,7 +87,7 @@ class testFactoryFloor(LoggedTestCase):
         episode = Episode(complexAgent, env, None, render=True)
         episode.run()
 
-    def est_random_agent(self):
+    def test_random_agent(self):
         logging.info("Starting test random agent")
         dirname = os.path.dirname(__file__)
         filename = os.path.join(dirname, "../configs/factory_floor.yaml")

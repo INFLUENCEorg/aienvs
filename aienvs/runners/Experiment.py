@@ -34,10 +34,11 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
         steps = 0
         episodeCount = 0
         totalReward = 0
+        firstActions = None
     
         while steps < self._maxSteps:
             self._env.reset()
-            episode = Episode(self._agent, self._env, self._render, self._renderDelay)
+            episode = Episode(self._agent, self._env, firstActions, self._render, self._renderDelay)
             episode.addListener(self)
             episodeSteps, episodeReward = episode.run()
             steps += episodeSteps
