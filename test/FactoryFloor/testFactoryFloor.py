@@ -1,4 +1,5 @@
 import sys
+import os
 import unittest
 import logging
 from test.LoggedTestCase import LoggedTestCase
@@ -72,7 +73,9 @@ class testFactoryFloor(LoggedTestCase):
         """
         logging.info("Starting test_mcts_agent")
         logoutput = io.StringIO("episode output log")
-        parameters = getParameters("test/configs/factory_floor_simple.yaml")
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, "../configs/factory_floor_simple.yaml")
+        parameters = getParameters(filename)
         env = FactoryFloor(parameters)
 
         mctsAgents = []
@@ -88,7 +91,9 @@ class testFactoryFloor(LoggedTestCase):
 
     def est_random_agent(self):
         logging.info("Starting test random agent")
-        parameters = getParameters("test/configs/factory_floor.yaml")
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, "../configs/factory_floor.yaml")
+        parameters = getParameters(filename)
 
         env = FactoryFloor(parameters)
         randomAgents = []
@@ -100,9 +105,11 @@ class testFactoryFloor(LoggedTestCase):
 
         Experiment(complexAgent, env, 1000, True).run()
 
-    def est_PPO_agent(self):
+    def test_PPO_agent(self):
         logging.info("Starting test PPO agent")
-        parameters = getParameters("test/configs/factory_floor.yaml")
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, "../configs/factory_floor.yaml")
+        parameters = getParameters(filename)
 
         env = FactoryFloor(parameters)
         PPOAgents = []
@@ -114,7 +121,7 @@ class testFactoryFloor(LoggedTestCase):
 
         while steps < parameters["max_steps"]:
             steps += Episode(complexAgent, env, env.action_space.sample()).run()
-    
+        
 
 if __name__ == '__main__':
     unittest.main()
