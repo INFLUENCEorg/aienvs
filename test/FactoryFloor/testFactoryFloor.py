@@ -1,4 +1,5 @@
 import sys
+import os
 import unittest
 import logging
 from test.LoggedTestCase import LoggedTestCase
@@ -67,7 +68,9 @@ class testFactoryFloor(LoggedTestCase):
 
     def test_mcts_agent(self):
         logging.info("Starting test_mcts_agent")
-        parameters = getParameters("test/configs/factory_floor_simple.yaml")
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, "../configs/factory_floor_simple.yaml")
+        parameters = getParameters(filename)
         env = FactoryFloor(parameters)
 
         mctsAgents = []
@@ -80,7 +83,9 @@ class testFactoryFloor(LoggedTestCase):
 
     def est_random_agent(self):
         logging.info("Starting test random agent")
-        parameters = getParameters("test/configs/factory_floor.yaml")
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, "../configs/factory_floor.yaml")
+        parameters = getParameters(filename)
 
         env = FactoryFloor(parameters)
         randomAgents = []
@@ -92,9 +97,11 @@ class testFactoryFloor(LoggedTestCase):
 
         Experiment(complexAgent, env, 1000, True).run()
 
-    def est_PPO_agent(self):
+    def test_PPO_agent(self):
         logging.info("Starting test PPO agent")
-        parameters = getParameters("test/configs/factory_floor.yaml")
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, "../configs/factory_floor.yaml")
+        parameters = getParameters(filename)
 
         env = FactoryFloor(parameters)
         PPOAgents = []
@@ -108,7 +115,9 @@ class testFactoryFloor(LoggedTestCase):
             steps += Episode(complexAgent, env, env.action_space.sample()).run()
     
     def test_notification(self):
-        parameters = getParameters("test/configs/factory_floor.yaml")
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, "../configs/factory_floor.yaml")
+        parameters = getParameters(filename)
         env = FactoryFloor(parameters)
         l = Mock()
         env.addListener(l)
