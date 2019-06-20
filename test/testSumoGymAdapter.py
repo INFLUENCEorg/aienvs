@@ -20,7 +20,7 @@ class testSumoGymAdapter(LoggedTestCase):
     aiagents project must be installed 
     """
 
-    def est_new_traffic(self):
+    def test_new_traffic(self):
         logging.info("Starting test_new_traffic")
         dirname = os.path.dirname(__file__)
         filename = os.path.join(dirname, "configs/new_traffic_loop_ppo.yaml")
@@ -36,7 +36,7 @@ class testSumoGymAdapter(LoggedTestCase):
             logging.debug("Step " + str(i))
             result = env.step(env.action_space.sample())
         
-    def est_smoke(self):
+    def test_smoke(self):
         logging.info("Starting test_smoke")
         env = SumoGymAdapter(parameters={'generate_conf':False, 'gui': False})
         
@@ -48,7 +48,7 @@ class testSumoGymAdapter(LoggedTestCase):
             i += 1
             obs, global_reward, done, info = env.step(env.action_space.sample())
 
-    def est_random_agent(self):
+    def test_random_agent(self):
         logging.info("Starting test_random_agent")
         dirname = os.path.dirname(__file__)
         filename = os.path.join(dirname, "configs/new_traffic_loop_ppo.yaml")
@@ -90,7 +90,7 @@ class testSumoGymAdapter(LoggedTestCase):
                 
         env.close()
 
-    def est_PPO_agent(self):
+    def test_PPO_agent(self):
         logging.info("Starting test_PPO_agent")
         dirname = os.path.dirname(__file__)
         filename = os.path.join(dirname, "configs/new_traffic_loop_ppo.yaml")
