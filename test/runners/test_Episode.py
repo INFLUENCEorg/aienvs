@@ -31,3 +31,16 @@ class testEpisode(LoggedTestCase):
         # the Episode runner did not halt when env said 
         # it was done.
         
+    def testListener(self):
+        agent = Mock()
+        env = Mock()
+        env.step = Mock(return_value=('observation', 3.0, True, {}))
+        firstAction = Mock()
+        episode = Episode(agent, env, firstAction, False, 0)
+        
+        listener = Mock()
+        episode.addListener(listener)
+        result = episode.run()
+        
+        listener.notifyChange.assert_called_once_with({'reward':3.0, 'done':True, 'actions':firstAction })
+        
