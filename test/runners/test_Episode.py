@@ -26,6 +26,7 @@ class testEpisode(LoggedTestCase):
         episode = Episode(agent, env, firstAction, False, 0)
         result = episode.run()
         
+        # sum of rewards = 12
         self.assertEqual((3, 12.0), result)
         # if you get not enough values to unpack then 
         # the Episode runner did not halt when env said 
