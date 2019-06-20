@@ -6,7 +6,7 @@ from _io import BytesIO
 class PickleLogger(Listener):
     
     """
-    Logs final results coming from a DefaultRunner to a json file
+    Logs final results coming from a DefaultRunner to a pickle binary file
     """
     
     def __init__(self, outstream: BytesIO):
