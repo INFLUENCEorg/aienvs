@@ -37,7 +37,7 @@ class Episode(DefaultRunner, DefaultListenable):
 
     def run(self):
         """
-        Resets env. Loop env.step and agent.step() until env is done.
+        Loop env.step and agent.step() until env is done.
         @return the number of steps it took to reach done state, total reward
         """
         actions = self._firstActions

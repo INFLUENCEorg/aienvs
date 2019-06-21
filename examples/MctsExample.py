@@ -29,7 +29,7 @@ def main():
     """
     Demo how to run an agent
     """
-    logging.info("Starting test_mcts_agent")
+    logging.info("Starting example MCTS agent")
     logoutput = io.StringIO("episode output log")
     logoutputpickle = io.BytesIO()
     dirname = os.path.dirname(__file__)
@@ -39,7 +39,7 @@ def main():
 
     mctsAgents = []
     for robotId in env.action_space.spaces.keys():
-        mctsAgents.append(mctsAgent(agentId=robotId, environment=env, timeLimit=None, iterationLimit=5000))
+        mctsAgents.append(mctsAgent(agentId=robotId, environment=env, timeLimit=None, iterationLimit=10000))
 
     complexAgent = ComplexAgentComponent(mctsAgents)
 
