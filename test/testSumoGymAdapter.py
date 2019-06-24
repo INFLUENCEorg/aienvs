@@ -7,7 +7,7 @@ from aiagents.single.RandomAgent import RandomAgent
 from aiagents.single.PPO.PPOAgent import PPOAgent
 import logging
 import yaml
-from LoggedTestCase import LoggedTestCase
+from test.LoggedTestCase import LoggedTestCase
 from aienvs.Sumo.SumoGymAdapter import SumoGymAdapter
 
 logger = logging.getLogger()
@@ -104,7 +104,7 @@ class testSumoGymAdapter(LoggedTestCase):
         env = SumoGymAdapter(parameters)
         PPOAgents = []
         for intersectionId in env.action_space.spaces.keys():
-            PPOAgents.append(PPOAgent(parameters, env.observation_space, env.action_space.spaces.get(intersectionId), intersectionId))
+            PPOAgents.append(PPOAgent(intersectionId, env, parameters))
 
         complexAgent = ComplexAgentComponent(PPOAgents)
         steps = 0

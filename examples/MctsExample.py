@@ -21,6 +21,7 @@ from unittest.mock import Mock
 from aienvs.loggers.JsonLogger import JsonLogger
 import io
 from aienvs.loggers.PickleLogger import PickleLogger
+import copy
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
@@ -33,13 +34,17 @@ def main():
     logoutput = io.StringIO("episode output log")
     logoutputpickle = io.BytesIO()
     dirname = os.path.dirname(__file__)
-    filename = os.path.join(dirname, "../test/configs/factory_floor_simple.yaml")
+    filename = os.path.join(dirname, "./configs/factory_floor_complex.yaml")
     parameters = getParameters(filename)
     env = FactoryFloor(parameters)
 
     mctsAgents = []
     for robotId in env.action_space.spaces.keys():
-        mctsAgents.append(mctsAgent(agentId=robotId, environment=env, timeLimit=None, iterationLimit=10000))
+        otherAgents=[]
+        for otherRobotId in env.action_space.spaces.keys():
+            if otherRobotId != robotId:
+                otherAgents.append(RandomAgent(otherRobotId, env, parameters={}))
+        mctsAgents.append(mctsAgent(agentId=robotId, environment=env, parameters={'iterationLimit':100000}, otherAgents=copy.deepcopy(otherAgents)))
 
     complexAgent = ComplexAgentComponent(mctsAgents)
 
@@ -48,9 +53,11 @@ def main():
     episode.addListener(PickleLogger(logoutputpickle))
     episode.run()
     print("json output:", logoutput.getvalue())
-    print("pickle output (binary):", logoutputpickle.getvalue())
+
+
+ #   print("pickle output (binary):", logoutputpickle.getvalue())
 
 	
 if __name__ == "__main__":
-	main()
+        main()
 	

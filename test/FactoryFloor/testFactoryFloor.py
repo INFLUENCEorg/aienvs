@@ -82,7 +82,7 @@ class testFactoryFloor(LoggedTestCase):
 
         mctsAgents = []
         for robotId in env.action_space.spaces.keys():
-            mctsAgents.append(mctsAgent(agentId=robotId, environment=env, timeLimit=None, iterationLimit=5000))
+            mctsAgents.append(mctsAgent(agentId=robotId, environment=env, parameters={}))
 
         complexAgent = ComplexAgentComponent(mctsAgents)
 

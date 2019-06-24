@@ -10,6 +10,7 @@ from numpy import array, dstack, ndarray
 import copy
 from random import Random
 from aienvs.FactoryFloor.Map import Map
+from numpy.random import seed as npseed
 from numpy.random import choice as weightedchoice
 import time
 import random
@@ -34,7 +35,7 @@ class FactoryFloor(Env):
                 'P_task_appears':0.99,  # P(new task appears in step) 
                 'allow_robot_overlap':False,
                 'allow_task_overlap':False,
-                'seed':None,
+                'seed':42,
                 'map':['..........',
                        '...8......',
                        '..3.*.....',
@@ -57,6 +58,7 @@ class FactoryFloor(Env):
         self._parameters = copy.deepcopy(self.DEFAULT_PARAMETERS)
         self._parameters.update(parameters)
         self._random = Random(x=self._parameters['seed'])
+        npseed(self._parameters['seed'])
         self._map = Map(self._parameters['map'], self._parameters['P_task_appears'], self._random)
         # use "set" to get rid of weird wrappers
         # if set(self._parameters['P_action_succeed'].keys()) != set(FactoryFloor.ACTIONS.values()):
@@ -77,6 +79,10 @@ class FactoryFloor(Env):
             self._state.addRobot(robot)
         for pos in self._parameters['tasks']:
             self._state.addTask(FactoryFloorTask(array(pos)))
+    
+        if not USE_PossibleActionsSpace:
+            self._actSpace = spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) for robot in self._state.robots})
+            self._actSpace.seed(self._parameters['seed'])
 
     def step(self, actions:spaces.Dict):
         if(actions):
@@ -117,8 +123,8 @@ class FactoryFloor(Env):
     def close(self):
         pass  # todo
 
-    def seed(self):
-        pass  # todo
+    def seed(self, seed):
+        self._parameters['seed']=seed
 
     def getState(self) -> FactoryFloorState:
         return self._state
@@ -131,16 +137,20 @@ class FactoryFloor(Env):
         """
         Returns 2 layers: first is for the robot positions, second for the task positions
         """
-        return spaces.MultiDiscrete([2, self._map.getWidth(), self._map.getHeight()]) 
+        obsSpace = spaces.MultiDiscrete([2, self._map.getWidth(), self._map.getHeight()]) 
+        obsSpace.seed(self._parameters['seed'])
+        return obsSpace
 
     @property
     def action_space(self):
         if USE_PossibleActionsSpace:
-            return spaces.Dict({robot.getId():PossibleActionsSpace(self, robot) 
+            actSpace = spaces.Dict({robot.getId():PossibleActionsSpace(self, robot) 
                 for robot in self._state.robots})
         else:        
-            return spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) 
-                for robot in self._state.robots})
+            actSpace = self._actSpace
+
+
+        return actSpace
             
     ########## Getters ###############################
     
