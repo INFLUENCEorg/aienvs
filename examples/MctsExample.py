@@ -47,8 +47,8 @@ def main():
         otherAgents=[]
         for otherRobotId in env.action_space.spaces.keys():
             if otherRobotId != robotId:
-                #otherAgents.append(RandomAgent(otherRobotId, env, parameters={}))
-                otherAgents.append(FactoryFloorAgent(otherRobotId, env, parameters={}))
+                otherAgents.append(RandomAgent(otherRobotId, env, parameters={}))
+                #otherAgents.append(FactoryFloorAgent(otherRobotId, env, parameters={}))
         mctsAgents.append(mctsAgent(agentId=robotId, environment=env, parameters={'iterationLimit':500000, 'explorationConstant':10}, otherAgents=copy.deepcopy(otherAgents)))
 
     complexAgent = ComplexAgentComponent(mctsAgents)
