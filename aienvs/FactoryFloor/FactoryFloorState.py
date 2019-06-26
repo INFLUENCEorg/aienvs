@@ -10,6 +10,12 @@ class FactoryFloorState():
 
     def addTask(self, task):
         self.tasks.append(task)
+
+    def __str__(self):
+        """
+        for hashing
+        """
+        return "Robots: " + str([str(robot) for robot in self.robots ]) + "Tasks: " + str([str(task) for task in self.tasks ])
         
-    def getRobots(self):
-        return self.robots
+#    def getRobots(self):
+#        return self.robots

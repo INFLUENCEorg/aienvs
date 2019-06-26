@@ -19,6 +19,8 @@ from aienvs.listener.Listener import Listener
 import traceback
 from aienvs.listener.DefaultListenable import DefaultListenable
 
+import pdb
+
 USE_PossibleActionsSpace = False
 
 
@@ -35,7 +37,7 @@ class FactoryFloor(Env):
                 'P_task_appears':0.99,  # P(new task appears in step) 
                 'allow_robot_overlap':False,
                 'allow_task_overlap':False,
-                'seed':42,
+                'seed':None,
                 'map':['..........',
                        '...8......',
                        '..3.*.....',
@@ -82,7 +84,8 @@ class FactoryFloor(Env):
     
         if not USE_PossibleActionsSpace:
             self._actSpace = spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) for robot in self._state.robots})
-            self._actSpace.seed(self._parameters['seed'])
+            seed=self._random.randint(0,10*len(self._state.robots))
+            self._actSpace.seed(seed)
 
     def step(self, actions:spaces.Dict):
         if(actions):
@@ -96,7 +99,7 @@ class FactoryFloor(Env):
         done = (self._parameters['steps'] <= self._state.step)
         self._state.step += 1
 
-        obs = self._state
+        obs = copy.deepcopy(self._state)
         return obs, global_reward, done, []
     
     def reset(self):
@@ -148,8 +151,6 @@ class FactoryFloor(Env):
                 for robot in self._state.robots})
         else:        
             actSpace = self._actSpace
-
-
         return actSpace
             
     ########## Getters ###############################
@@ -218,15 +219,19 @@ class FactoryFloor(Env):
         tasks that are in the tasks list and at the robot's location 
         """
         actstring = self.ACTIONS.get(action)
-        if self._random.random() > self._parameters['P_action_succeed'][actstring]:
-            return False
+        try:
+            if self._random.random() > self._parameters['P_action_succeed'][actstring]:
+                return False
+        except:
+            pdb.post_mortem()
+
         pos = robot.getPosition()
         
         if actstring == "ACT":
             task = self._getTask(pos)
             if task != None:
                 self._state.tasks.remove(task)
-                logging.debug("removed ", task)
+                logging.debug("removed " +str(task))
         else:  # move
             newpos = self._newPos(pos, action)
             if self._isFree(newpos):

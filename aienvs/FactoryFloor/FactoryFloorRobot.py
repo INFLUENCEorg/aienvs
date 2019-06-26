@@ -37,5 +37,8 @@ class FactoryFloorRobot():
         self._pos = newpos
     
     def __str__(self):
-     return self._id
+     """
+     for hashing
+     """
+     return "Id: " + self._id + " Pos: " + str(self._pos)
         

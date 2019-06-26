@@ -1,13 +1,14 @@
 parameters:
     # Common hyperparameters
     steps: 3
-    robots: [[0,0],[2,2]]  # initial robot positions
-    tasks: [[1,0],[1,2],[1,0],[1,2]]  # initial task positions
+    robots: [[0,0],[3,3]]  # initial robot positions
+    tasks: [[1,0],[2,3],[1,0],[2,3]]  # initial task positions
     P_action_succeed: {'LEFT':1.0, 'RIGHT':1.0, 'ACT':1.0, 'UP':1.0, 'DOWN':1.0}
     P_task_appears: 0.0  # P(new task appears in step) 
     allow_robot_overlap: True
     allow_task_overlap: True
-    seed: 42
-    map: ['.9.',
-          '...',
-          '.9.']
+    seed: null
+    map: ['.9..',
+          '....',
+          '....',
+          '..9.']

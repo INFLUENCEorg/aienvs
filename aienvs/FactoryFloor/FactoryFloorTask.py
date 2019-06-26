@@ -30,4 +30,4 @@ class FactoryFloorTask():
         return self.pos
     
     def __str__(self):
-     return "Task" + str(self._id)
+     return "Task " + str(self._id) + " pos " + str(self.pos)
