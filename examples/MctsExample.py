@@ -44,18 +44,19 @@ def main():
 
     mctsAgents = []
     for robotId in env.action_space.spaces.keys():
-        otherAgents=[]
+        otherAgentsList=[]
         for otherRobotId in env.action_space.spaces.keys():
             if otherRobotId != robotId:
-                otherAgents.append(RandomAgent(otherRobotId, sim, parameters={}))
+                # this needs to be done by a factory inside mctsAgent
+                otherAgentsList.append(RandomAgent(otherRobotId, sim, parameters={}))
                 #otherAgents.append(FactoryFloorAgent(otherRobotId, env, parameters={}))
-        mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters=parameters['agents'], otherAgents=copy.deepcopy(otherAgents), simulator=sim))
+        mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters=parameters['agents'], otherAgents=ComplexAgentComponent(otherAgentsList), simulator=sim))
 
     complexAgent = ComplexAgentComponent(mctsAgents)
-
     episode = Episode(complexAgent, env, None, render=True)
     episode.addListener(JsonLogger(logoutput))
     episode.addListener(PickleLogger(logoutputpickle))
+
     episode.run()
     print("json output:", logoutput.getvalue())
     print("pickle output (binary):", logoutputpickle.getvalue())

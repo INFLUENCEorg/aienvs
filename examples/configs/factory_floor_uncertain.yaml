@@ -1,6 +1,5 @@
 parameters:
     # Common hyperparameters
-    #
     seed: null
 
     environment:
@@ -15,7 +14,6 @@ parameters:
               '....',
               '....',
               '..9.']
-
     agents:
         iterationLimit: 500000
         treeParameters: 
