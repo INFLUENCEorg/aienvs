@@ -7,7 +7,7 @@ from aienvs.FactoryFloor.FactoryFloor import FactoryFloor
 from aiagents.single.PPO.PPOAgent import PPOAgent
 from aiagents.single.RandomAgent import RandomAgent
 from aiagents.single.FactoryFloorAgent import FactoryFloorAgent
-from aiagents.single.mcts.mctsAgent import mctsAgent
+from aiagents.single.mcts.mctsAgent import MctsAgent
 from aiagents.AgentComponent import AgentComponent
 from aiagents.multi.ComplexAgentComponent import ComplexAgentComponent
 import random
@@ -36,7 +36,8 @@ def main():
     logoutput = io.StringIO("episode output log")
     logoutputpickle = io.BytesIO()
     dirname = os.path.dirname(__file__)
-    filename = os.path.join(dirname, "./configs/factory_floor_complex.yaml")
+ #   filename = os.path.join(dirname, "./configs/factory_floor_complex.yaml")
+    filename = os.path.join(dirname, "./configs/factory_floor_uncertain.yaml")
     parameters = getParameters(filename)
     random.seed(parameters['seed'])
 
@@ -49,7 +50,7 @@ def main():
             if otherRobotId != robotId:
                 otherAgents.append(RandomAgent(otherRobotId, env, parameters={}))
                 #otherAgents.append(FactoryFloorAgent(otherRobotId, env, parameters={}))
-        mctsAgents.append(mctsAgent(agentId=robotId, environment=env, parameters={'iterationLimit':500000, 'treeParameters': {'explorationConstant':10, 'samplingLimit':10}}, otherAgents=copy.deepcopy(otherAgents)))
+        mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters={'iterationLimit':500000, 'treeParameters': {'explorationConstant':10, 'samplingLimit':10}}, otherAgents=copy.deepcopy(otherAgents)))
 
     complexAgent = ComplexAgentComponent(mctsAgents)
 
