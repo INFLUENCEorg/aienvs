@@ -40,15 +40,16 @@ def main():
     random.seed(parameters['seed'])
 
     env = FactoryFloor(parameters['environment'])
+    sim = copy.deepcopy(env)
 
     mctsAgents = []
     for robotId in env.action_space.spaces.keys():
         otherAgents=[]
         for otherRobotId in env.action_space.spaces.keys():
             if otherRobotId != robotId:
-                otherAgents.append(RandomAgent(otherRobotId, env, parameters={}))
+                otherAgents.append(RandomAgent(otherRobotId, sim, parameters={}))
                 #otherAgents.append(FactoryFloorAgent(otherRobotId, env, parameters={}))
-        mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters=parameters['agents'], otherAgents=copy.deepcopy(otherAgents)))
+        mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters=parameters['agents'], otherAgents=copy.deepcopy(otherAgents), simulator=sim))
 
     complexAgent = ComplexAgentComponent(mctsAgents)
 
