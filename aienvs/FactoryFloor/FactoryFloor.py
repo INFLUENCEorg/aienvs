@@ -96,8 +96,8 @@ class FactoryFloor(Env):
             self._addTask()
 
         global_reward = -self._computePenalty()
-        done = (self._parameters['steps'] <= self._state.step)
         self._state.step += 1
+        done = (self._parameters['steps'] <= self._state.step)
 
         obs = copy.deepcopy(self._state)
         return obs, global_reward, done, []

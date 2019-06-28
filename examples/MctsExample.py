@@ -15,9 +15,10 @@ from aienvs.loggers.JsonLogger import JsonLogger
 import io
 from aienvs.loggers.PickleLogger import PickleLogger
 import copy
+import sys
+
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-import sys
 
 def main():
     """
@@ -40,17 +41,19 @@ def main():
     random.seed(parameters['seed'])
 
     env = FactoryFloor(parameters['environment'])
-    sim = copy.deepcopy(env)
 
     mctsAgents = []
     for robotId in env.action_space.spaces.keys():
-        otherAgentsList=[]
+        sim = copy.deepcopy(env)
+        otherAgentsList=list()
         for otherRobotId in env.action_space.spaces.keys():
             if otherRobotId != robotId:
                 # this needs to be done by a factory inside mctsAgent
-                otherAgentsList.append(RandomAgent(otherRobotId, sim, parameters={}))
-                #otherAgents.append(FactoryFloorAgent(otherRobotId, env, parameters={}))
-        mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters=parameters['agents'], otherAgents=ComplexAgentComponent(otherAgentsList), simulator=sim))
+                #otherAgentsList.append(RandomAgent(otherRobotId, sim, parameters={}))
+                otherAgentsList.append(FactoryFloorAgent(otherRobotId, sim, parameters={}))
+        rolloutAgent = FactoryFloorAgent(robotId, sim, parameters={})
+        treeAgent = FactoryFloorAgent(robotId, sim, parameters={})
+        mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters=parameters['agents'], treeAgent=treeAgent, rolloutAgent=rolloutAgent, otherAgents=copy.deepcopy(ComplexAgentComponent(otherAgentsList)), simulator=copy.deepcopy(sim)))
 
     complexAgent = ComplexAgentComponent(mctsAgents)
     episode = Episode(complexAgent, env, None, render=True)
