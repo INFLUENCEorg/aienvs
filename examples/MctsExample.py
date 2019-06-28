@@ -2,46 +2,44 @@ import sys
 import os
 import unittest
 import logging
-from test.LoggedTestCase import LoggedTestCase
 from aienvs.FactoryFloor.FactoryFloor import FactoryFloor
-from aiagents.single.PPO.PPOAgent import PPOAgent
 from aiagents.single.RandomAgent import RandomAgent
 from aiagents.single.FactoryFloorAgent import FactoryFloorAgent
 from aiagents.single.mcts.mctsAgent import MctsAgent
-from aiagents.AgentComponent import AgentComponent
 from aiagents.multi.ComplexAgentComponent import ComplexAgentComponent
 import random
 import yaml
-from numpy import array
-from numpy import ndarray
-from aienvs.Environment import Env
 from aienvs.runners.Episode import Episode
-from aienvs.runners.Experiment import Experiment
 from aienvs.utils import getParameters
-from unittest.mock import Mock
 from aienvs.loggers.JsonLogger import JsonLogger
 import io
 from aienvs.loggers.PickleLogger import PickleLogger
 import copy
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
+import sys
 
 def main():
     """
     Demo how to run an agent
     """
+    if( len(sys.argv) > 1 ):
+        configName = str(sys.argv[1])
+        filename = configName
+    else:
+        print("Default config ")
+        configName = "./configs/factory_floor_complex.yaml"
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, configName)
 
+    print( "Config name " + configName )
     logging.info("Starting example MCTS agent")
     logoutput = io.StringIO("episode output log")
     logoutputpickle = io.BytesIO()
-    dirname = os.path.dirname(__file__)
- #   filename = os.path.join(dirname, "./configs/factory_floor_complex.yaml")
-    filename = os.path.join(dirname, "./configs/factory_floor_uncertain.yaml")
     parameters = getParameters(filename)
     random.seed(parameters['seed'])
 
-    env = FactoryFloor(parameters)
+    env = FactoryFloor(parameters['environment'])
 
     mctsAgents = []
     for robotId in env.action_space.spaces.keys():
@@ -50,7 +48,7 @@ def main():
             if otherRobotId != robotId:
                 otherAgents.append(RandomAgent(otherRobotId, env, parameters={}))
                 #otherAgents.append(FactoryFloorAgent(otherRobotId, env, parameters={}))
-        mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters={'iterationLimit':500000, 'treeParameters': {'explorationConstant':10, 'samplingLimit':10}}, otherAgents=copy.deepcopy(otherAgents)))
+        mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters=parameters['agents'], otherAgents=copy.deepcopy(otherAgents)))
 
     complexAgent = ComplexAgentComponent(mctsAgents)
 

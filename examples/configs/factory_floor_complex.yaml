@@ -1,14 +1,21 @@
 parameters:
     # Common hyperparameters
-    steps: 4
-    robots: [[0,0],[3,3]]  # initial robot positions
-    tasks: [[1,0],[2,3],[1,0],[2,3]]  # initial task positions
-    P_action_succeed: {'LEFT':0.9, 'RIGHT':0.9, 'ACT':0.9, 'UP':0.9, 'DOWN':0.9}
-    P_task_appears: 0.0  # P(new task appears in step) 
-    allow_robot_overlap: True
-    allow_task_overlap: True
     seed: null
-    map: ['.9..',
-          '....',
-          '....',
-          '..9.']
+
+    environment:
+        steps: 4
+        robots: [[0,0],[3,3]]  # initial robot positions
+        tasks: [[1,0],[2,3],[1,0],[2,3]]  # initial task positions
+        P_action_succeed: {'LEFT':0.9, 'RIGHT':0.9, 'ACT':0.9, 'UP':0.9, 'DOWN':0.9}
+        P_task_appears: 0.0  # P(new task appears in step) 
+        allow_robot_overlap: True
+        allow_task_overlap: True
+        map: ['.9..',
+              '....',
+              '....',
+              '..9.']
+    agents:
+        iterationLimit: 500000
+        treeParameters: 
+            explorationConstant: 10
+            samplingLimit: 10
