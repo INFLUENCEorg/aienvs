@@ -1,6 +1,4 @@
-import sys
 import os
-import unittest
 import logging
 from aienvs.FactoryFloor.FactoryFloor import FactoryFloor
 from aiagents.single.RandomAgent import RandomAgent
@@ -8,7 +6,6 @@ from aiagents.single.FactoryFloorAgent import FactoryFloorAgent
 from aiagents.single.mcts.mctsAgent import MctsAgent
 from aiagents.multi.ComplexAgentComponent import ComplexAgentComponent
 import random
-import yaml
 from aienvs.runners.Episode import Episode
 from aienvs.utils import getParameters
 from aienvs.loggers.JsonLogger import JsonLogger
