@@ -59,6 +59,7 @@ class SumoGymAdapter(Env):
         logging.debug(parameters)
         self._takenActions = {}
         self._yellowTimer = {}
+        self._chosen_action = Null
         self.seed()
         self.reset()
     
@@ -223,9 +224,10 @@ class SumoGymAdapter(Env):
                 timer -= 1
             # Otherwise we can get out of the yellow state
             else:
-                new_action = action
+                new_action = self._chosen_action
         # We are switching from green to red, initialize the yellow state
         else:
+            self._chosen_action = action
             new_action = prev_action.replace('G', 'y')
             timer = self._parameters['y_t'] - 1
 
