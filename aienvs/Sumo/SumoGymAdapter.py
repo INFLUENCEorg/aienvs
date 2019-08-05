@@ -59,7 +59,7 @@ class SumoGymAdapter(Env):
         logging.debug(parameters)
         self._takenActions = {}
         self._yellowTimer = {}
-        self._chosen_action = Null
+        self._chosen_action = None
         self.seed()
         self.reset()
     
