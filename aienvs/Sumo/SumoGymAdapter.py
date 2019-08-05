@@ -228,8 +228,12 @@ class SumoGymAdapter(Env):
         # We are switching from green to red, initialize the yellow state
         else:
             self._chosen_action = action
-            new_action = prev_action.replace('G', 'y')
-            timer = self._parameters['y_t'] - 1
+            if self._parameters['y_t'] > 0:
+                new_action = prev_action.replace('G', 'y')
+                timer = self._parameters['y_t'] - 1
+            else:
+                new_action = action
+                timer = 0
 
         return new_action, timer
 
