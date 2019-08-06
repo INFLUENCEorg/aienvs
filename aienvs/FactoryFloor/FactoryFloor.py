@@ -1,11 +1,10 @@
-import gym
 import logging
 from gym import spaces
 from aienvs.FactoryFloor.FactoryFloorRobot import FactoryFloorRobot
 from aienvs.FactoryFloor.FactoryFloorTask import FactoryFloorTask
 from aienvs.FactoryFloor.FactoryFloorState import FactoryFloorState
 from aienvs.Environment import Env
-import numpy as np
+from numpy import set_printoptions, transpose, zeros
 from numpy import array, dstack, ndarray
 import copy
 from random import Random
@@ -15,10 +14,6 @@ from numpy.random import choice as weightedchoice
 import time
 import random
 from aiagents.FixedActionsSpace import FixedActionsSpace
-from aienvs.listener.Listener import Listener
-import traceback
-from aienvs.listener.DefaultListenable import DefaultListenable
-
 import pdb
 
 USE_PossibleActionsSpace = False
@@ -88,12 +83,12 @@ class FactoryFloor(Env):
             self._actSpace.seed(seed)
 
     def step(self, actions:spaces.Dict):
+        if self._random.random() < self._map.getTaskProbability():
+            self._addTask()
+
         if(actions):
             for robot in self._state.robots:
                 self._applyAction(robot, actions[robot.getId()])
-
-        if self._random.random() < self._map.getTaskProbability():
-            self._addTask()
 
         global_reward = -self._computePenalty()
         self._state.step += 1
@@ -118,9 +113,9 @@ class FactoryFloor(Env):
 
             clear()
             move_cursor(100, 100)
-            np.set_printoptions(linewidth=100)
+            set_printoptions(linewidth=100)
         bitmap = self._createBitmap()
-        print(np.transpose(bitmap[:, :, 0] - bitmap[:, :, 1]))
+        print(transpose(bitmap[:, :, 0] - bitmap[:, :, 1]))
         time.sleep(delay)
 
     def close(self):
@@ -199,8 +194,8 @@ class FactoryFloor(Env):
     ########## Private functions ##########################
 
     def _createBitmap(self):
-        bitmapRobots = np.zeros((self._map.getWidth(), self._map.getHeight()))
-        bitmapTasks = np.zeros((self._map.getWidth(), self._map.getHeight()))
+        bitmapRobots = zeros((self._map.getWidth(), self._map.getHeight()))
+        bitmapTasks = zeros((self._map.getWidth(), self._map.getHeight()))
         for robot in self._state.robots:
             pos = robot.getPosition()
             bitmapRobots[pos[0], pos[1]] += 1
