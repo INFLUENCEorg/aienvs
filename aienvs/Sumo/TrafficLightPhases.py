@@ -24,8 +24,8 @@ class TrafficLightPhases():
         tree = ElementTree.parse(filename)
         self._phases = {}
         for element in tree.getroot().findall('tlLogic'):
-            lightid = element.get('id')
-            if lightid in self._phases:
+            intersectionid = element.get('id')
+            if intersectionid in self._phases:
                 raise Exception('file ' + filename + ' contains multiple tlLogic elements with id=' + id)
             
             newphases = {}
@@ -33,7 +33,7 @@ class TrafficLightPhases():
             for item in element:
                 newphases[phasenr] = item.get('state')
                 phasenr = phasenr + 1
-            self._phases[lightid] = newphases
+            self._phases[intersectionid] = newphases
     
     def getLightIds(self) -> list:
         '''
@@ -41,19 +41,19 @@ class TrafficLightPhases():
         '''
         return list(self._phases.keys())
 
-    def getPhases(self, lightid:str) -> list:
+    def getPhases(self, intersectionId:str) -> list:
         '''
-        @param lightid the traffic light id 
+        @param intersectionId the intersection id 
         @return all possible phasenrs for given lightid
         '''
-        return list(self._phases[lightid].keys())
+        return list(self._phases[intersectionId].keys())
     
-    def getPhase(self, lightid:str, phasenr: int):
+    def getPhase(self, intersectionId:str, phasenr: int):
         """
-        @param lightid the traffic light id 
+        @param intersectionId the intersection id 
         @param phasenr the short number given to this phase
         @return the phase for given lightid and phasenr. Usually this
         is the index number in the file, starting at 0.
         """
-        return self._phases[lightid][phasenr]
+        return self._phases[intersectionId][phasenr]
 
