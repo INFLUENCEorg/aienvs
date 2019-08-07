@@ -35,9 +35,9 @@ class TrafficLightPhases():
                 phasenr = phasenr + 1
             self._phases[intersectionid] = newphases
     
-    def getLightIds(self) -> list:
+    def getIntersectionIds(self) -> list:
         '''
-        @return all traffic light ids
+        @return all intersection ids
         '''
         return list(self._phases.keys())
 
