@@ -104,13 +104,13 @@ class testSumoGymAdapter(LoggedTestCase):
         env = SumoGymAdapter(parameters)
         PPOAgents = []
         for intersectionId in env.action_space.spaces.keys():
-            PPOAgents.append(PPOAgent(intersectionId, env, parameters))
+            PPOAgents.append(PPOAgent(parameters, env.observation_space, env.action_space.spaces.get(intersectionId), intersectionId))
 
         complexAgent = ComplexAgentComponent(PPOAgents)
         steps = 0
         episode = 0
 
-        while steps < parameters["max_steps"]:
+        while steps < 10:  # parameters["max_steps"] takes too long:
             # actions=env.action_space.sample()
             actions = {'0': 0}
             print(actions)
