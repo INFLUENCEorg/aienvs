@@ -38,7 +38,7 @@ class testSumoGymAdapter(LoggedTestCase):
         
     def test_smoke(self):
         logging.info("Starting test_smoke")
-        env = SumoGymAdapter(parameters={'generate_conf':False, 'gui': False})
+        env = SumoGymAdapter(parameters={'generate_conf':False, 'gui': False, 'maxConnectRetries':2})
         
         done = False
         i = 0
@@ -69,7 +69,7 @@ class testSumoGymAdapter(LoggedTestCase):
  
         steps = 0
         episode = 0
-        while steps < parameters["max_steps"]:
+        while steps < 10 :  # parameters["max_steps"] is too big
             # actions=env.action_space.sample()
             actions = {'0': 0}
             print(actions)
