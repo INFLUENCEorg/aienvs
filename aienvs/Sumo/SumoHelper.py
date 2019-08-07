@@ -6,11 +6,13 @@ import warnings
 import xml.etree.ElementTree as ElementTree
 import glob
 
+
 class SumoHelper(object):
     """
     Object that holds helper functions + information for generating routes
     and scenarios for SUMO
     """
+
     def __init__(self, parameters, port=9000, seed=42):
         """
         Initializes SUMOHelper object and checks 1) if the proper types are
@@ -38,12 +40,11 @@ class SumoHelper(object):
         self.scenario_path = os.path.join(sumoai_home, 'scenarios/Sumo', scenario)
 
         if(self.parameters['generate_conf']):
-            self._net_file = os.path.basename(glob.glob(self.scenario_path+'/*.net.xml')[0])
+            self._net_file = os.path.basename(glob.glob(self.scenario_path + '/*.net.xml')[0])
             self._needed_files = [os.path.basename(self._net_file)]
         else:
-            self.sumocfg_file = glob.glob(self.scenario_path+'/*.sumocfg')[0]
+            self.sumocfg_file = glob.glob(self.scenario_path + '/*.sumocfg')[0]
             self._needed_files = [os.path.basename(self.sumocfg_file)]
-
 
         scenario_files = os.listdir(self.scenario_path)
         for n_file in self._needed_files:
@@ -86,19 +87,19 @@ class SumoHelper(object):
         self._route_file = os.path.join(self.scenario_path, self.routefile_name)
         with open(self.sumocfg_file, 'w') as f:
             f.write('<?xml version="1.0" encoding="UTF-8"?>\n'
-                    + '<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">\n'
-                    + '    <input>\n'
-                    + '        <net-file value="' + self._net_file + '"/>\n'
-                    + '        <route-files value="' + self.routefile_name + '"/>\n'
-                    + '    </input>\n'
-                    + '    <time>\n'
-                    + '        <begin value="0"/>\n'
-                    + '    </time>\n'
-                    + '    <report>\n'
-                    + '        <verbose value="true"/>\n'
-                    + '        <no-step-log value="true"/>\n'
-                    + '    </report>\n'
-                    + '</configuration>')
+                    +'<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">\n'
+                    +'    <input>\n'
+                    +'        <net-file value="' + self._net_file + '"/>\n'
+                    +'        <route-files value="' + self.routefile_name + '"/>\n'
+                    +'    </input>\n'
+                    +'    <time>\n'
+                    +'        <begin value="0"/>\n'
+                    +'    </time>\n'
+                    +'    <report>\n'
+                    +'        <verbose value="true"/>\n'
+                    +'        <no-step-log value="true"/>\n'
+                    +'    </report>\n'
+                    +'</configuration>')
 
     def generate_randomized_route(self):
         if len(self.parameters['route_starts']) > 0:
@@ -107,7 +108,7 @@ class SumoHelper(object):
         else:
             route = ""
 
-        number_of_segments = random.choice(range(self.parameters['route_min_segments'],  self.parameters['route_max_segments'] + 1))
+        number_of_segments = random.choice(range(self.parameters['route_min_segments'], self.parameters['route_max_segments'] + 1))
 
         for i in range(number_of_segments):
             route += random.choice(self.parameters['route_segments']) + " "
@@ -151,8 +152,9 @@ class SumoHelper(object):
                           "actual number of cars is {}, which may indicate"
                           " a bug.".format(expected_value, car_sum))
 
-
     def __del__(self): 
         if(self.parameters['generate_conf']):
-            os.remove(self.sumocfg_file)
-            os.remove(self._route_file)
+            if ('sumocfg_file' in locals()):
+                os.remove(self.sumocfg_file)
+            if ('_route_file' in locals()):
+                os.remove(self._route_file)
