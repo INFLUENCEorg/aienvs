@@ -15,6 +15,7 @@ import time
 import random
 from aiagents.FixedActionsSpace import FixedActionsSpace
 import pdb
+import numbers
 
 USE_PossibleActionsSpace = False
 
@@ -55,7 +56,8 @@ class FactoryFloor(Env):
         self._parameters = copy.deepcopy(self.DEFAULT_PARAMETERS)
         self._parameters.update(parameters)
         self._random = Random(x=self._parameters['seed'])
-        npseed(self._parameters['seed'])
+        if isinstance(self._parameters['seed'], numbers.Number):
+            npseed(self._parameters['seed'])
         self._map = Map(self._parameters['map'], self._parameters['P_task_appears'], self._random)
         # use "set" to get rid of weird wrappers
         # if set(self._parameters['P_action_succeed'].keys()) != set(FactoryFloor.ACTIONS.values()):
@@ -79,7 +81,7 @@ class FactoryFloor(Env):
     
         if not USE_PossibleActionsSpace:
             self._actSpace = spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) for robot in self._state.robots})
-            seed=self._random.randint(0,10*len(self._state.robots))
+            seed = self._random.randint(0, 10 * len(self._state.robots))
             self._actSpace.seed(seed)
 
     def step(self, actions:spaces.Dict):
@@ -122,7 +124,7 @@ class FactoryFloor(Env):
         pass  # todo
 
     def seed(self, seed):
-        self._parameters['seed']=seed
+        self._parameters['seed'] = seed
 
     def getState(self) -> FactoryFloorState:
         return self._state
@@ -226,7 +228,7 @@ class FactoryFloor(Env):
             task = self._getTask(pos)
             if task != None:
                 self._state.tasks.remove(task)
-                logging.debug("removed " +str(task))
+                logging.debug("removed " + str(task))
         else:  # move
             newpos = self._newPos(pos, action)
             if self._isFree(newpos):
