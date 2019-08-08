@@ -12,7 +12,7 @@ class testGym(LoggedTestCase):
     def test_load(self):
         res = TrafficLightPhases('test.tll.xml')
         self.assertEqual(['0', '1'], res.getIntersectionIds())
-        self.assertEqual([0, 1], res.getPhases('1'))
+        self.assertEqual(2, res.getNrPhases('1'))
         self.assertEqual("GGggrrrrGGggrrrr", res.getPhase("0", 0))
 
     

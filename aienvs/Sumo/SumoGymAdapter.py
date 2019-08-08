@@ -11,6 +11,7 @@ import random
 from aienvs.Sumo.SumoHelper import SumoHelper
 from aienvs.Environment import Env
 import copy
+from aienvs.Sumo.TrafficLightPhases import TrafficLightPhases
 
 
 class SumoGymAdapter(Env):
@@ -27,6 +28,7 @@ class SumoGymAdapter(Env):
     """
     _DEFAULT_PARAMETERS = {'gui':True,
                 'scene':'four_grid',
+                'tlphasesfile':'scenarios/Sumo/four_grid/cross.net.xml',
                 'box_bottom_corner':(0, 0),
                 'box_top_corner':(10, 10),
                 'resolutionInPixelsPerMeterX': 1,
@@ -45,14 +47,13 @@ class SumoGymAdapter(Env):
                 'new_reward': False,
                 'lightPositions' : {},
                 'scaling_factor' : 1.0,
-                'maxConnectRetries':50
+                'maxConnectRetries':50,
                 }
     
-    # TODO: Wouter: This should be read from a file
-    _PHASES = {
-        0: "GGrr",
-        1: "rrGG"
-    }
+#     _PHASES = {
+#         0: "GGrr",
+#         1: "rrGG"
+#    }
 
     def __init__(self, parameters:dict={}):
         """
@@ -61,15 +62,19 @@ class SumoGymAdapter(Env):
         gui: whether we show a GUI. 
         scenario: the path to the scenario to use
         """
+        logging.debug(parameters)
         self._parameters = copy.deepcopy(self._DEFAULT_PARAMETERS)
         self._parameters.update(parameters)
+        self._tlphases = TrafficLightPhases(self._parameters['tlphasesfile'])
         self.ldm = ldm(using_libsumo=self._parameters['libsumo'])
-        logging.debug(parameters)
+        
         self._takenActions = {}
         self._yellowTimer = {}
         self._chosen_action = None
         self.seed()
         self.reset()
+        if list(self.ldm.getTrafficLights()) != self._tlphases.getIntersectionIds():
+            raise Exception("environment traffic lights do not match those in the tlphasesfile " + self._parameters['tlphasesfile'])
     
     def step(self, actions:spaces.Dict):
         # Ask SUMO the number of vehicles which are in the net plus the
@@ -134,7 +139,8 @@ class SumoGymAdapter(Env):
     ########## Private functions ##########################
     def __del__(self):
         logging.debug("LDM closed by destructor")
-        self.ldm.close()
+        if 'ldm' in locals():
+            self.ldm.close()
 
     def _startSUMO(self):
         """
@@ -174,7 +180,7 @@ class SumoGymAdapter(Env):
         @return the intersection PHASES string eg 'rrGr' or 'GGrG'
         """
         logging.debug("lightPhaseId" + str(lightPhaseId))
-        return self._PHASES.get(lightPhaseId)
+        return self._tlphases.getPhase(intersectionId, lightPhaseId)
                 
     def _observe(self): 
         """
@@ -192,10 +198,14 @@ class SumoGymAdapter(Env):
     
     def _getActionSpace(self):
         """
-        @returns the actionspace:
+        @returns the actionspace: a dict containing <id,phases> where 
+        id is the intersection id and 
          two possible actions for each lightid: see PHASES variable
         """
-        return spaces.Dict({id:spaces.Discrete(len(self._PHASES.keys())) for id in self.ldm.getTrafficLights()})
+        return spaces.Dict({inters:spaces.Discrete(self._tlphases.getNrPhases(inters)) \
+                            for inters in self._tlphases.getIntersectionIds()})
+
+        # return spaces.Dict({id:spaces.Discrete(len(self._PHASES.keys())) for id in self.ldm.getTrafficLights()})
 
     def _set_lights(self, actions:spaces.Dict):
         """
@@ -223,6 +233,8 @@ class SumoGymAdapter(Env):
             self._takenActions[intersectionId].append(action)
 
     def _correct_action(self, prev_action, action, timer):
+        return action, timer  # HACK FIXME
+    
         """
         Check what we are going to do with the given action based on the
         previous action.
@@ -236,6 +248,8 @@ class SumoGymAdapter(Env):
             # Otherwise we can get out of the yellow state
             else:
                 new_action = self._chosen_action
+                if not isinstance(new_action, str):
+                    raise Exception("chosen action is illegal")
         # We are switching from green to red, initialize the yellow state
         else:
             self._chosen_action = action

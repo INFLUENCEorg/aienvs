@@ -28,31 +28,31 @@ class TrafficLightPhases():
             if intersectionid in self._phases:
                 raise Exception('file ' + filename + ' contains multiple tlLogic elements with id=' + id)
             
-            newphases = {}
-            phasenr = 0
+            newphases = []
             for item in element:
-                newphases[phasenr] = item.get('state')
-                phasenr = phasenr + 1
+                newphases.append(item.get('state'))
             self._phases[intersectionid] = newphases
     
     def getIntersectionIds(self) -> list:
         '''
-        @return all intersection ids
+        @return all intersection ids (list of str)
         '''
         return list(self._phases.keys())
 
-    def getPhases(self, intersectionId:str) -> list:
+    def getNrPhases(self, intersectionId:str) -> int:
         '''
         @param intersectionId the intersection id 
-        @return all possible phasenrs for given lightid
+        @return number of available phases (int). 
+        If n is returned, Phases 0..n-1 are available
         '''
-        return list(self._phases[intersectionId].keys())
+        return len(self._phases[intersectionId])
     
-    def getPhase(self, intersectionId:str, phasenr: int):
+    def getPhase(self, intersectionId:str, phasenr: int) -> str:
         """
         @param intersectionId the intersection id 
         @param phasenr the short number given to this phase
-        @return the phase for given lightid and phasenr. Usually this
+        @return the phase string (eg 'rrGG') for given lightid 
+        and phasenr. Usually this
         is the index number in the file, starting at 0.
         """
         return self._phases[intersectionId][phasenr]

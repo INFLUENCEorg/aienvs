@@ -43,7 +43,7 @@ class testSumoGymAdapter(LoggedTestCase):
         done = False
         i = 0
  
-        while(not done):
+        while (not done) and i < 10:
             logging.debug("Step " + str(i))
             i += 1
             obs, global_reward, done, info = env.step(env.action_space.sample())
