@@ -233,7 +233,7 @@ class SumoGymAdapter(Env):
             self._takenActions[intersectionId].append(action)
 
     def _correct_action(self, prev_action, action, timer):
-        return action, timer  # HACK FIXME
+        # return action, timer  # HACK FIXME
     
         """
         Check what we are going to do with the given action based on the

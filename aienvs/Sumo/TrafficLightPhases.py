@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ElementTree
 
 class TrafficLightPhases():
     '''
-    Contains possible phases of all traffic lights.
+    Contains all phases of all traffic lights that do not involve yellow.
     Usually read from a file.
     The file follows the SUMO format from
     https://sumo.dlr.de/wiki/Simulation/Traffic_Lights#Defining_New_TLS-Programs
@@ -30,7 +30,10 @@ class TrafficLightPhases():
             
             newphases = []
             for item in element:
-                newphases.append(item.get('state'))
+                state = item.get('state')
+                if 'y' in state or 'Y' in state:
+                    continue  # ignore ones with yY: handled by us.
+                newphases.append(state)
             self._phases[intersectionid] = newphases
     
     def getIntersectionIds(self) -> list:
