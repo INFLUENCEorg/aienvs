@@ -199,8 +199,8 @@ class SumoGymAdapter(Env):
     def _getActionSpace(self):
         """
         @returns the actionspace: a dict containing <id,phases> where 
-        id is the intersection id and 
-         two possible actions for each lightid: see PHASES variable
+        id is the intersection id and value is
+         all possible actions for each id as specified in tlphases
         """
         return spaces.Dict({inters:spaces.Discrete(self._tlphases.getNrPhases(inters)) \
                             for inters in self._tlphases.getIntersectionIds()})
@@ -233,7 +233,6 @@ class SumoGymAdapter(Env):
             self._takenActions[intersectionId].append(action)
 
     def _correct_action(self, prev_action, action, timer):
-        # return action, timer  # HACK FIXME
     
         """
         Check what we are going to do with the given action based on the
