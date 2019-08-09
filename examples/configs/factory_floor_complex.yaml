@@ -5,7 +5,7 @@ parameters:
     environment:
         steps: 4
         robots: [[0,0],[3,3]]  # initial robot positions
-        tasks: []  # initial task positions
+        tasks: [[1,0],[2,3]]  # initial task positions
         P_action_succeed: {'LEFT':1.0, 'RIGHT':1.0, 'ACT':1.0, 'UP':1.0, 'DOWN':1.0}
         P_task_appears: 0.0  # P(new task appears in step) 
         allow_robot_overlap: True
@@ -15,8 +15,8 @@ parameters:
               '....',
               '..9.']
     agents:
-      #       iterationLimit: 500000
-        timeLimit: 10
+        iterationLimit: 500
+        #timeLimit: 30
         treeParameters: 
-            explorationConstant: 10
-            samplingLimit: 10
+            explorationConstant: 10000
+            samplingLimit: 20

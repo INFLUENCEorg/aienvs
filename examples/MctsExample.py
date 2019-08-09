@@ -46,11 +46,11 @@ def main():
         for otherRobotId in env.action_space.spaces.keys():
             if otherRobotId != robotId:
                 # this needs to be done by a factory inside mctsAgent
-                #otherAgentsList.append(RandomAgent(otherRobotId, sim, parameters={}))
-                otherAgentsList.append(FactoryFloorAgent(otherRobotId, sim, parameters={}))
+                otherAgentsList.append(RandomAgent(otherRobotId, sim, parameters={}))
+                #otherAgentsList.append(FactoryFloorAgent(otherRobotId, sim, parameters={}))
         rolloutAgent = FactoryFloorAgent(robotId, sim, parameters={})
-        treeAgent = FactoryFloorAgent(robotId, sim, parameters={})
-        mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters=parameters['agents'], treeAgent=treeAgent, rolloutAgent=rolloutAgent, otherAgents=copy.deepcopy(ComplexAgentComponent(otherAgentsList)), simulator=copy.deepcopy(sim)))
+        treeAgent = RandomAgent(robotId, sim, parameters={})
+        mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters=parameters['agents'], treeAgent=treeAgent, rolloutAgent=rolloutAgent, otherAgents=copy.deepcopy(ComplexAgentComponent(otherAgentsList)), simulator=sim))
 
     complexAgent = ComplexAgentComponent(mctsAgents)
     episode = Episode(complexAgent, env, None, render=True)
