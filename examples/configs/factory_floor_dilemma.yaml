@@ -16,7 +16,7 @@ parameters:
               '..9..']
     agents:
         #iterationLimit: 500
-        timeLimit: 30
+        timeLimit: 10
         treeParameters: 
             explorationConstant: 10
             samplingLimit: 20
