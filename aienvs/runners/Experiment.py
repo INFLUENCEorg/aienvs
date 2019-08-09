@@ -38,8 +38,8 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
         firstActions = None
     
         while steps < self._maxSteps:
-            self._env.reset()
-            episode = Episode(self._agent, self._env, firstActions, self._render, self._renderDelay)
+            obs = self._env.reset()
+            episode = Episode(self._agent, self._env, obs, self._render, self._renderDelay)
             episode.addListener(self)
             episodeSteps, episodeReward = episode.run()
             steps += episodeSteps

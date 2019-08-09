@@ -28,7 +28,6 @@ class FactoryFloor(Env):
     DEFAULT_PARAMETERS = {'steps':1000,
                 'robots':[ [3, 4], 'random'],  # initial robot positions
                 'tasks': [ [1, 1] ],  # initial task positions
-                # P(ACT will succeed)
                 'P_action_succeed':{'LEFT':0.9, 'RIGHT':0.9, 'ACT':0.5, 'UP':0.9, 'DOWN':0.9},
                 'P_task_appears':0.99,  # P(new task appears in step) 
                 'allow_robot_overlap':False,
@@ -101,6 +100,7 @@ class FactoryFloor(Env):
     
     def reset(self):
         self._state.step = 0
+        return copy.deepcopy(self._state) # should return initial observation
         
     def render(self, delay=0.0, overlay=False):
         if overlay:

@@ -1,5 +1,5 @@
 from aienvs.FactoryFloor.Map import Map
-from LoggedTestCase import LoggedTestCase
+from .LoggedTestCase import LoggedTestCase
 from numpy import array
 
 

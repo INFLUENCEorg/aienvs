@@ -26,7 +26,7 @@ def main():
         filename = configName
     else:
         print("Default config ")
-        configName = "./configs/factory_floor_complex.yaml"
+        configName = "./configs/factory_floor_dilemma.yaml"
         dirname = os.path.dirname(__file__)
         filename = os.path.join(dirname, configName)
 
@@ -38,6 +38,7 @@ def main():
     random.seed(parameters['seed'])
 
     env = FactoryFloor(parameters['environment'])
+    obs = env.reset()
 
     mctsAgents = []
     for robotId in env.action_space.spaces.keys():
@@ -46,14 +47,14 @@ def main():
         for otherRobotId in env.action_space.spaces.keys():
             if otherRobotId != robotId:
                 # this needs to be done by a factory inside mctsAgent
-                otherAgentsList.append(RandomAgent(otherRobotId, sim, parameters={}))
-                #otherAgentsList.append(FactoryFloorAgent(otherRobotId, sim, parameters={}))
-        rolloutAgent = FactoryFloorAgent(robotId, sim, parameters={})
+                #otherAgentsList.append(RandomAgent(otherRobotId, sim, parameters={}))
+                otherAgentsList.append(FactoryFloorAgent(otherRobotId, sim, parameters={}))
+        rolloutAgent = RandomAgent(robotId, sim, parameters={})
         treeAgent = RandomAgent(robotId, sim, parameters={})
         mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters=parameters['agents'], treeAgent=treeAgent, rolloutAgent=rolloutAgent, otherAgents=copy.deepcopy(ComplexAgentComponent(otherAgentsList)), simulator=sim))
 
     complexAgent = ComplexAgentComponent(mctsAgents)
-    episode = Episode(complexAgent, env, None, render=True)
+    episode = Episode(complexAgent, env, obs, render=True)
     episode.addListener(JsonLogger(logoutput))
     episode.addListener(PickleLogger(logoutputpickle))
 

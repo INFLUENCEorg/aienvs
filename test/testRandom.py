@@ -1,5 +1,4 @@
-
-from LoggedTestCase import LoggedTestCase
+from .LoggedTestCase import LoggedTestCase
 from random import random, Random
 
 

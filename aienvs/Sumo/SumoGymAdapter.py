@@ -73,6 +73,7 @@ class SumoGymAdapter(Env):
         self._chosen_action = None
         self.seed()
         self.reset()
+
         if list(self.ldm.getTrafficLights()) != self._tlphases.getIntersectionIds():
             raise Exception("environment traffic lights do not match those in the tlphasesfile " + self._parameters['tlphasesfile'])
     
@@ -102,6 +103,8 @@ class SumoGymAdapter(Env):
         self._action_space = self._getActionSpace()
         # TODO: Wouter: make state configurable ("state factory")
         self._state = LdmMatrixState(self.ldm, [self._parameters['box_bottom_corner'], self._parameters['box_top_corner']], "byCorners")
+
+        return self._observe()
         
         # TODO: change the defaults to something sensible
     def render(self):

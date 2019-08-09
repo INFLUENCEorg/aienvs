@@ -1,4 +1,4 @@
-from LoggedTestCase import LoggedTestCase
+from .LoggedTestCase import LoggedTestCase
 import gym
 import logging
 

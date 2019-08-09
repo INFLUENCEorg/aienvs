@@ -22,8 +22,8 @@ class testEpisode(LoggedTestCase):
 
         env.step = Mock()
         env.step.side_effect = [('observation1', 3.0, False, {}), ('observation2', 4.0, False, {}), ('observation3', 5.0, True, {})]
-        firstAction = Mock()
-        episode = Episode(agent, env, firstAction, False, 0)
+        obs = Mock()
+        episode = Episode(agent, env, obs, False, 0)
         result = episode.run()
         
         # sum of rewards = 12
@@ -31,17 +31,20 @@ class testEpisode(LoggedTestCase):
         # if you get not enough values to unpack then 
         # the Episode runner did not halt when env said 
         # it was done.
-        
+   
     def testListener(self):
         agent = Mock()
+        agent.step = Mock()
+        agent.step.side_effect = [{0:0}]
+
         env = Mock()
-        env.step = Mock(return_value=('observation', 3.0, True, {}))
-        firstAction = Mock()
-        episode = Episode(agent, env, firstAction, False, 0)
-        
+        env.step = Mock(return_value=('first_obs', 3.0, True, {}))
+        obs = Mock()
+        episode = Episode(agent, env, obs, False, 0)
+       
         listener = Mock()
         episode.addListener(listener)
         result = episode.run()
         
-        listener.notifyChange.assert_called_once_with({'reward':3.0, 'done':True, 'actions':firstAction })
+        listener.notifyChange.assert_called_once_with({'actions': {0:0}, 'observation': 'first_obs', 'reward':3.0, 'done':True})
         

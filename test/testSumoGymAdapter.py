@@ -63,7 +63,7 @@ class testSumoGymAdapter(LoggedTestCase):
 
         randomAgents = []
         for intersectionId in env.action_space.spaces.keys():
-            randomAgents.append(RandomAgent(intersectionId, env.action_space.spaces.get(intersectionId)))
+            randomAgents.append(RandomAgent(intersectionId, env))
 
         complexAgent = ComplexAgentComponent(randomAgents)
  
@@ -104,7 +104,7 @@ class testSumoGymAdapter(LoggedTestCase):
         env = SumoGymAdapter(parameters)
         PPOAgents = []
         for intersectionId in env.action_space.spaces.keys():
-            PPOAgents.append(PPOAgent(parameters, env.observation_space, env.action_space.spaces.get(intersectionId), intersectionId))
+            PPOAgents.append(PPOAgent(intersectionId, env, parameters))
 
         complexAgent = ComplexAgentComponent(PPOAgents)
         steps = 0
