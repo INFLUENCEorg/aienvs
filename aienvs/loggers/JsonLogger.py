@@ -1,7 +1,14 @@
 from aienvs.listener.Listener import Listener
 import json
 from _pyio import TextIOBase
+import numpy as np
 
+def serialize(obj):
+    """JSON serializer for objects not serializable by default json code"""
+    if isinstance(obj, np.ndarray):
+        return {'array': str(obj)}
+
+    return obj.__dict__
 
 class JsonLogger(Listener):
     
@@ -18,5 +25,5 @@ class JsonLogger(Listener):
         self._outstream = outstream
         
     def notifyChange(self, data):
-        self._outstream.writelines(json.dumps(data))
+        self._outstream.writelines(json.dumps(data, default=serialize))
         

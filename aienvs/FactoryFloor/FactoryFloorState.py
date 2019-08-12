@@ -1,5 +1,4 @@
 class FactoryFloorState():
-
     def __init__(self, robotList, taskList):
         self.robots = robotList
         self.tasks = taskList
