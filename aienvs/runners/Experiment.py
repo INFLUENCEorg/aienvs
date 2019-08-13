@@ -4,7 +4,8 @@ from aienvs.runners.Episode import Episode
 from aienvs.runners.DefaultRunner import DefaultRunner
 from aienvs.listener.DefaultListenable import DefaultListenable
 from aienvs.listener.Listener import Listener
-
+from time import time
+from itertools import cycle
 
 class Experiment(DefaultRunner, DefaultListenable, Listener):
     """
@@ -12,7 +13,7 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
 
     """
 
-    def __init__(self, agent, env: Env, maxSteps:int, render:bool=False, renderDelay=0):
+    def __init__(self, agent, env: Env, maxSteps:int, seedlist=None, render:bool=False, renderDelay=0):
         """
         @param agent an AgentComponent holding an agent
         @param env the openai gym Env that we are running in
@@ -24,6 +25,17 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
         self._maxSteps = maxSteps
         self._render = render
         self._renderDelay = 0
+
+        if seedlist is not None:
+            self._seedcycle=cycle(seedlist)
+        else:
+            self._seedcycle=None
+
+    def _getSeed(self):
+        if self._seedcycle is not None:
+            return next(self._seedcycle)
+        else:
+            return int(time()) 
         
     def run(self):
         """
@@ -36,6 +48,7 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
         totalReward = 0
     
         while steps < self._maxSteps:
+            self._env.seed(self._getSeed())
             obs = self._env.reset()
             episode = Episode(self._agent, self._env, obs, self._render, self._renderDelay)
             episode.addListener(self)

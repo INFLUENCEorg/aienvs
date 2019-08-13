@@ -9,7 +9,7 @@ parameters:
     gui: false
     env_type: 'SUMO' # 'atari', 'SUMO', or 'gridworld'
     scene: 'loop_network_dumb'
-    tlphasesfile: 'scenarios/Sumo/loop_network_dumb/sample.net.xml'
+    tlphasesfile: 'sample.net.xml'
     max_steps: 2.0e+6
     max_episode_steps: 5.0e+3
     frame_height: 14
@@ -28,6 +28,7 @@ parameters:
     tensorboard: true
     iteration: -1
     episode: 0
+    seedlist: [43, 44, 45]
 
     # SUMO settings
     box_bottom_corner: [9, 13]

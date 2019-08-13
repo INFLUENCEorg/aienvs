@@ -36,7 +36,8 @@ class SumoHelper(object):
         Checks if the scenario is well-defined and usable by seeing if all
         the needed files exist.
         """
-        sumoai_home = os.environ['AIENVS_HOME']
+        dirname = os.path.dirname(__file__)
+        sumoai_home = os.path.join(dirname, "../..")
         self.scenario_path = os.path.join(sumoai_home, 'scenarios/Sumo', scenario)
 
         if(self.parameters['generate_conf']):

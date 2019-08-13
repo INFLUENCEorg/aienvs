@@ -9,6 +9,7 @@ import logging
 import yaml
 from test.LoggedTestCase import LoggedTestCase
 from aienvs.Sumo.SumoGymAdapter import SumoGymAdapter
+from aienvs.runners.Experiment import Experiment
 
 logger = logging.getLogger()
 logger.setLevel(50)
@@ -32,6 +33,8 @@ class testSumoGymAdapter(LoggedTestCase):
                 print(exc)
 
         env = SumoGymAdapter(parameters)
+        env.reset()
+
         for i in range(1000):
             logging.debug("Step " + str(i))
             result = env.step(env.action_space.sample())
@@ -39,6 +42,7 @@ class testSumoGymAdapter(LoggedTestCase):
     def test_smoke(self):
         logging.info("Starting test_smoke")
         env = SumoGymAdapter(parameters={'generate_conf':False, 'gui': False, 'maxConnectRetries':2})
+        env.reset()
         
         done = False
         i = 0
@@ -60,35 +64,16 @@ class testSumoGymAdapter(LoggedTestCase):
                 logging.error(exc)
 
         env = SumoGymAdapter(parameters)
+        env.reset()
 
         randomAgents = []
         for intersectionId in env.action_space.spaces.keys():
             randomAgents.append(RandomAgent(intersectionId, env))
 
         complexAgent = ComplexAgentComponent(randomAgents)
- 
-        steps = 0
-        episode = 0
-        while steps < 10 :  # parameters["max_steps"] is too big
-            # actions=env.action_space.sample()
-            actions = {'0': 0}
-            print(actions)
-            env.reset()
-            done = False
-            cumulative_reward = 0
-
-            while not done:
-                obs, global_reward, done, info = env.step(actions)
-                actions = complexAgent.step(obs, global_reward, done)
-                # rendering the part of the image
-                # env.render()
-                steps += 1
-                cumulative_reward += global_reward
-
-            episode += 1
-            print("Episode " + str(episode) + " cumulative reward" + str(cumulative_reward))
-                
-        env.close()
+        experiment = Experiment(complexAgent, env, parameters['max_steps'])
+        experiment.run()
+        
 
     def test_PPO_agent(self):
         logging.info("Starting test_PPO_agent")
@@ -102,33 +87,15 @@ class testSumoGymAdapter(LoggedTestCase):
                 logging.error(exc)
 
         env = SumoGymAdapter(parameters)
+        env.reset()
+
         PPOAgents = []
         for intersectionId in env.action_space.spaces.keys():
             PPOAgents.append(PPOAgent(intersectionId, env, parameters))
 
         complexAgent = ComplexAgentComponent(PPOAgents)
-        steps = 0
-        episode = 0
-
-        while steps < 10:  # parameters["max_steps"] takes too long:
-            # actions=env.action_space.sample()
-            actions = {'0': 0}
-            print(actions)
-            env.reset()
-            done = False
-            cumulative_reward = 0
-
-            while not done:
-                obs, global_reward, done, info = env.step(actions)
-                actions = complexAgent.step(obs, global_reward, done)
-                # rendering the part of the image
-                # env.render()
-                steps += 1
-                cumulative_reward += global_reward
-
-            episode += 1
-            print("Episode " + str(episode) + " cumulative reward" + str(cumulative_reward))
-
+        experiment = Experiment(complexAgent, env, parameters['max_steps'])
+        experiment.run()
         
 if __name__ == '__main__':
     unittest.main()

@@ -104,7 +104,7 @@ class testFactoryFloor(LoggedTestCase):
         complexAgent = ComplexAgentComponent(randomAgents)
         steps = 0
 
-        Experiment(complexAgent, env, 1000, True).run()
+        Experiment(complexAgent, env, 1000, None, True).run()
 
     def est_PPO_agent(self):
         logging.info("Starting test PPO agent")

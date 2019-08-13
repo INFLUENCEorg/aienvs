@@ -12,7 +12,7 @@ class test_Experiment(LoggedTestCase):
         # each episode succeeds in step 1
         env.step = Mock(return_value=('observation', 3.0, True, {}))
         firstAction = Mock()
-        exp = Experiment(agent, env, 100, False, 0)
+        exp = Experiment(agent, env, 100, None, False, 0)
         result = exp.run()
         
         self.assertEqual(3.0, result)
@@ -25,7 +25,7 @@ class test_Experiment(LoggedTestCase):
         # each episode succeeds after 3 steps, then restart 10*
         env.step.side_effect = [('observation1', 3.0, False, {}), ('observation2', 4.0, False, {}), ('observation3', 5.0, True, {})] * 10
         firstAction = Mock()
-        exp = Experiment(agent, env, 30, False, 0)
+        exp = Experiment(agent, env, 30, None, False, 0)
         result = exp.run()
         # each episode has reward 12
         self.assertEqual(12.0 , result)
@@ -35,7 +35,7 @@ class test_Experiment(LoggedTestCase):
         env = Mock()
         env.step = Mock(return_value=('observation', 3.0, True, {}))
         firstAction = Mock()
-        exp = Experiment(agent, env, 30, False, 0)
+        exp = Experiment(agent, env, 30, None, False, 0)
         
         listener = Mock()
         exp.addListener(listener)

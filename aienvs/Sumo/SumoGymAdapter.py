@@ -22,38 +22,30 @@ class SumoGymAdapter(Env):
     
     @param maxConnectRetries the max number of retries to connect. 
         A retry is needed if the randomly chosen port 
-        to connect to SUMO is already in use. Changes of a port being occupied  are very low 
-        (<1/1000?).
-
+        to connect to SUMO is already in use. 
     """
-    _DEFAULT_PARAMETERS = {'gui':True,
-                'scene':'four_grid',
-                'tlphasesfile':'scenarios/Sumo/four_grid/cross.net.xml',
-                'box_bottom_corner':(0, 0),
-                'box_top_corner':(10, 10),
-                'resolutionInPixelsPerMeterX': 1,
-                'resolutionInPixelsPerMeterY': 1,
-                'y_t': 6,
-                'car_pr': 0.5,
-                'car_tm': 2,
-                'route_starts' : [],
-                'route_min_segments' : 0,
-                'route_max_segments' : 0,
-                'route_ends' : [],
-                'seed' : 42,
-                'generate_conf' : True,
-                'libsumo' : False,
-                'waiting_penalty' : 1,
-                'new_reward': False,
-                'lightPositions' : {},
-                'scaling_factor' : 1.0,
-                'maxConnectRetries':50,
+    _DEFAULT_PARAMETERS = {'gui':True, # gui or not
+                'scene':'four_grid', # subdirectory in the aienvs/scenarios/Sumo directory where 
+                'tlphasesfile':'cross.net.xml', # file 
+                'box_bottom_corner':(0, 0), # bottom left corner of the observable frame
+                'box_top_corner':(10, 10), # top right corner of the observable frame
+                'resolutionInPixelsPerMeterX': 1, # for the observable frame
+                'resolutionInPixelsPerMeterY': 1, # for the observable frame
+                'y_t': 6, # yellow time
+                'car_pr': 0.5, # for automatic route/config generation probability that a car appears
+                'car_tm': 2, #  for automatic route/config generation when the first car appears?
+                'route_starts' : [], #  for automatic route/config generation, ask Rolf 
+                'route_min_segments' : 0,#  for automatic route/config generation, ask Rolf
+                'route_max_segments' : 0,#  for automatic route/config generation, ask Rolf
+                'route_ends' : [], #  for automatic route/config generation, ask Rolf
+                'generate_conf' : True, # for automatic route/config generation
+                'libsumo' : False, # whether libsumo is used instead of traci
+                'waiting_penalty' : 1, # penalty for waiting
+                'new_reward': False, # some other type of reward ask Miguel
+                'lightPositions' : {}, # specify traffic light positions
+                'scaling_factor' : 1.0, # for rescaling the reward? ask Miguel
+                'maxConnectRetries':50, # maximum reattempts to connect by Traci
                 }
-    
-#     _PHASES = {
-#         0: "GGrr",
-#         1: "rrGG"
-#    }
 
     def __init__(self, parameters:dict={}):
         """
@@ -65,23 +57,19 @@ class SumoGymAdapter(Env):
         logging.debug(parameters)
         self._parameters = copy.deepcopy(self._DEFAULT_PARAMETERS)
         self._parameters.update(parameters)
-        self._tlphases = TrafficLightPhases(self._parameters['tlphasesfile'])
+
+        dirname = os.path.dirname(__file__)
+        tlPhasesFile = os.path.join(dirname, "../../scenarios/Sumo/", self._parameters['scene'], self._parameters['tlphasesfile'])
+        self._tlphases = TrafficLightPhases(tlPhasesFile)
         self.ldm = ldm(using_libsumo=self._parameters['libsumo'])
         
         self._takenActions = {}
         self._yellowTimer = {}
         self._chosen_action = None
-        self.seed()
-        self.reset()
-
-        if list(self.ldm.getTrafficLights()) != self._tlphases.getIntersectionIds():
-            raise Exception("environment traffic lights do not match those in the tlphasesfile " + self._parameters['tlphasesfile'])
+        self.seed(42) # in case no seed is given
+        self._action_space = self._getActionSpace()
     
     def step(self, actions:spaces.Dict):
-        # Ask SUMO the number of vehicles which are in the net plus the
-        # ones still waiting to start. This number may be smaller than
-        # the actual number of vehicles still to come because of delayed
-        # route file parsing.
         self._set_lights(actions)
         self.ldm.step()
         obs = self._observe()
@@ -100,7 +88,6 @@ class SumoGymAdapter(Env):
 
         logging.info("Starting SUMO environment...")
         self._startSUMO()
-        self._action_space = self._getActionSpace()
         # TODO: Wouter: make state configurable ("state factory")
         self._state = LdmMatrixState(self.ldm, [self._parameters['box_bottom_corner'], self._parameters['box_top_corner']], "byCorners")
 
@@ -124,9 +111,8 @@ class SumoGymAdapter(Env):
         print(self._observe())
         time.sleep(delay)
     
-    def seed(self, seed=42):
+    def seed(self, seed):
         self._seed = seed
-        pass  # TODO: Wouter: add seed (pass to LDM)
 
     def close(self):
         self.__del__()
@@ -158,11 +144,12 @@ class SumoGymAdapter(Env):
         # Try repeatedly to connect
         while True:
             try:
+                # this cannot be seeded
                 self._port = random.SystemRandom().choice(list(range(10000, 20000)))
                 self._sumo_helper = SumoHelper(self._parameters, self._port, self._seed)
                 conf_file = self._sumo_helper.sumocfg_file
                 logging.info("Configuration: " + str(conf_file))
-                sumoCmd = [sumo_binary, "-c", conf_file]
+                sumoCmd = [sumo_binary, "-c", conf_file, "--seed", str(self._seed)]
                 self.ldm.start(sumoCmd, self._port)
             except Exception as e:
                 if str(e) == "connection closed by SUMO" and maxRetries > 0:
@@ -176,6 +163,11 @@ class SumoGymAdapter(Env):
         self.ldm.init(waitingPenalty=self._parameters['waiting_penalty'], new_reward=self._parameters['new_reward'])  # ignore reward for now
         self.ldm.setResolutionInPixelsPerMeter(self._parameters['resolutionInPixelsPerMeterX'], self._parameters['resolutionInPixelsPerMeterY'])
         self.ldm.setPositionOfTrafficLights(self._parameters['lightPositions'])
+
+        if list(self.ldm.getTrafficLights()) != self._tlphases.getIntersectionIds():
+            raise Exception("environment traffic lights do not match those in the tlphasesfile " 
+                    + self._parameters['tlphasesfile'] + str(self.ldm.getTrafficLights())
+                    + str(self._tlphases.getIntersectionIds()))
             
     def _intToPhaseString(self, intersectionId:str, lightPhaseId: int):
         """
@@ -209,8 +201,6 @@ class SumoGymAdapter(Env):
         return spaces.Dict({inters:spaces.Discrete(self._tlphases.getNrPhases(inters)) \
                             for inters in self._tlphases.getIntersectionIds()})
 
-        # return spaces.Dict({id:spaces.Discrete(len(self._PHASES.keys())) for id in self.ldm.getTrafficLights()})
-
     def _set_lights(self, actions:spaces.Dict):
         """
         Take the specified actions in the environment
@@ -232,7 +222,7 @@ class SumoGymAdapter(Env):
                 # Either the this is a true switch or coming grom yellow
                 action, self._yellowTimer[intersectionId] = self._correct_action(prev_action, action, self._yellowTimer[intersectionId])
 
-            # Set traffic lights 
+            # Set traffic lights
             self.ldm.setRedYellowGreenState(intersectionId, action)
             self._takenActions[intersectionId].append(action)
 
