@@ -6,7 +6,10 @@ import numpy as np
 def serialize(obj):
     """JSON serializer for objects not serializable by default json code"""
     if isinstance(obj, np.ndarray):
-        return {'array': str(obj)}
+        return obj.tolist()
+
+    if isinstance(obj, np.int64): 
+        return int(obj)  
 
     return obj.__dict__
 

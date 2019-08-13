@@ -107,7 +107,7 @@ class SumoGymAdapter(Env):
         return self._observe()
         
         # TODO: change the defaults to something sensible
-    def render(self):
+    def render(self, delay=0.0):
         import colorama
         colorama.init()
 
@@ -122,6 +122,7 @@ class SumoGymAdapter(Env):
         import numpy as np
         np.set_printoptions(linewidth=100)
         print(self._observe())
+        time.sleep(delay)
     
     def seed(self, seed=42):
         self._seed = seed

@@ -59,6 +59,7 @@ def main():
     episode.addListener(PickleLogger(logoutputpickle))
 
     episode.run()
+    breakpoint()
     print("json output:", logoutput.getvalue())
     print("pickle output (binary):", logoutputpickle.getvalue())
 	

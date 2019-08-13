@@ -1,4 +1,3 @@
-from aiagents.AgentComponent import AgentComponent
 from aienvs.Environment import Env
 from gym import spaces
 import yaml
@@ -11,7 +10,7 @@ class Episode(DefaultRunner, DefaultListenable):
     Contains all info to run an episode (single run till environment is done)
     """
 
-    def __init__(self, agent:AgentComponent, env: Env, initialObs, render:bool=False, renderDelay=0):
+    def __init__(self, agent, env: Env, initialObs, render:bool=False, renderDelay=0):
         """
         @param agent an AgentComponent holding an agent
         @param env the openai gym Env that we are running in
