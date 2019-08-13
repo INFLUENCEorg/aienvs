@@ -39,12 +39,13 @@ class testEpisode(LoggedTestCase):
 
         env = Mock()
         env.step = Mock(return_value=('first_obs', 3.0, True, {}))
-        obs = Mock()
+        env.reset.side_effect=['start_obs']
+        obs = env.reset()
         episode = Episode(agent, env, obs, False, 0)
        
         listener = Mock()
         episode.addListener(listener)
         result = episode.run()
         
-        listener.notifyChange.assert_called_once_with({'actions': {0:0}, 'observation': 'first_obs', 'reward':3.0, 'done':True})
+        listener.notifyChange.assert_called_once_with({'actions': {0:0}, 'observation': 'start_obs', 'reward':0, 'done':False})
         

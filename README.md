@@ -12,9 +12,5 @@ With that, you can build the library build using
 ./build.sh
 (or sudo ./build.sh depending on your user privileges)
 
-To use the scenarios in the project you need to export the environment variable
-AIENVS_HOME to the root of your repository path
-(e.g. by adding export AIENVS_HOME=/home/username/aienvs to your .bashrc and restarting the shell)
-
 WARNING: It may be that some python libraries need to be installed manually (via pip3 install..),
 not all dependencies are listed in setup.py yet..

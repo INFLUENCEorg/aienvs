@@ -30,9 +30,9 @@ class Episode(DefaultRunner, DefaultListenable):
         """
 
         actions = self._agent.step(obs, globalReward, done)
-        obs, globalReward, done, info = self._env.step(actions)
         self.notifyAll({'actions':actions, 'observation': obs, 'reward':globalReward, 'done':done})
 
+        obs, globalReward, done, info = self._env.step(actions)
         return obs, globalReward, done
 
     def run(self):
