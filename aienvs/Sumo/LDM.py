@@ -74,6 +74,15 @@ class ldm():
         '''
         This updates the vehicles' states with information from the simulation
         '''
+        try:
+            self.SUMO_client.simulationStep()
+        except self.SUMO_client.TraCIException as exc: 
+            logging.error(str(exc) + str(" This is some problem of libsumo, but everything still seems to work correctly"))
+
+        self.subscribedVehs = list(self.SUMO_client.vehicle.getIDList())
+        for vehID in self.subscribedVehs:
+            self._addVehicleSubscription(vehID)
+
         self.subscriptionResults={}
 
         for vehID in self.subscribedVehs:
@@ -84,6 +93,8 @@ class ldm():
             else:
                 self.subscribedVehs.remove(vehID)
 
+
+        self._resetMap()
      
         if( len(self.subscriptionResults.keys())>0 ):
             self._updateMapWithVehicles( self._getVehiclePositions(self.subscriptionResults) )
@@ -98,16 +109,6 @@ class ldm():
             for lightid in self._lightids:
                 if(self._tlPositions.get(lightid) != None):
                     self._add_stop_lights(self._lightstate[lightid], list(self._tlPositions.get(lightid)) )
-
-        try:
-            self.SUMO_client.simulationStep()
-        except self.SUMO_client.TraCIException as exc: 
-            logging.error(str(exc) + str(" This is some problem of libsumo, but everything still seems to work correctly"))
-
-        self.subscribedVehs = list(self.SUMO_client.vehicle.getIDList())
-        for vehID in self.subscribedVehs:
-            self._addVehicleSubscription(vehID)
-
         return True
 
     
@@ -330,7 +331,6 @@ class ldm():
         self.SUMO_client.vehicle.subscribe(vehID, (self.SUMO_client.constants.VAR_POSITION, self.SUMO_client.constants.VAR_SPEED, self.SUMO_client.constants.VAR_ALLOWED_SPEED, self.SUMO_client.constants.VAR_WAITING_TIME ))
 
     def _updateMapWithVehicles( self, floatingCarData ):
-        self._resetMap()
         for vehCoords in floatingCarData:
             vehCoordsInArray=self._coordMetersToArray(vehCoords)
             try:
