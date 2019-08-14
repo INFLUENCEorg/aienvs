@@ -18,5 +18,5 @@ class PickleLogger(Listener):
         self._outstream = outstream
         
     def notifyChange(self, data):
-        self._outstream.write(pickle.dumps(data))
+        pickle.dump(data, self._outstream)
         
