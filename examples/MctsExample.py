@@ -17,11 +17,12 @@ import sys
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+
 def main():
     """
     Demo how to run an agent
     """
-    if( len(sys.argv) > 1 ):
+    if(len(sys.argv) > 1):
         configName = str(sys.argv[1])
         filename = configName
     else:
@@ -30,7 +31,7 @@ def main():
         dirname = os.path.dirname(__file__)
         filename = os.path.join(dirname, configName)
 
-    print( "Config name " + configName )
+    print("Config name " + configName)
     logging.info("Starting example MCTS agent")
     logoutput = io.StringIO("episode output log")
     logoutputpickle = io.BytesIO()
@@ -43,11 +44,11 @@ def main():
     mctsAgents = []
     for robotId in env.action_space.spaces.keys():
         sim = copy.deepcopy(env)
-        otherAgentsList=list()
+        otherAgentsList = list()
         for otherRobotId in env.action_space.spaces.keys():
             if otherRobotId != robotId:
                 # this needs to be done by a factory inside mctsAgent
-                #otherAgentsList.append(RandomAgent(otherRobotId, sim, parameters={}))
+                # otherAgentsList.append(RandomAgent(otherRobotId, sim, parameters={}))
                 otherAgentsList.append(FactoryFloorAgent(otherRobotId, sim, parameters={}))
         rolloutAgent = RandomAgent(robotId, sim, parameters={})
         treeAgent = RandomAgent(robotId, sim, parameters={})
@@ -59,9 +60,9 @@ def main():
     episode.addListener(PickleLogger(logoutputpickle))
 
     episode.run()
-    breakpoint()
     print("json output:", logoutput.getvalue())
     print("pickle output (binary):", logoutputpickle.getvalue())
+
 	
 if __name__ == "__main__":
         main()
