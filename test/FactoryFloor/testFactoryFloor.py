@@ -6,7 +6,7 @@ from test.LoggedTestCase import LoggedTestCase
 from aienvs.FactoryFloor.FactoryFloor import FactoryFloor
 from aiagents.single.PPO.PPOAgent import PPOAgent
 from aiagents.single.RandomAgent import RandomAgent
-from aiagents.single.mcts.mctsAgent import MctsAgent
+from aiagents.single.mcts.MctsAgent import MctsAgent
 from aiagents.AgentComponent import AgentComponent
 from aiagents.multi.BasicComplexAgent import BasicComplexAgent
 import random
@@ -23,7 +23,6 @@ import io
 from aienvs.loggers.PickleLogger import PickleLogger
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
 
 
 class testFactoryFloor(LoggedTestCase):
