@@ -2,7 +2,7 @@ import os
 import logging
 from aienvs.Sumo.SumoGymAdapter import SumoGymAdapter
 from aiagents.single.PPO.PPOAgent import PPOAgent
-from aiagents.multi.ComplexAgentComponent import ComplexAgentComponent
+from aiagents.multi.ComplexAgentComponent import BasicComplexAgent
 import random
 from aienvs.runners.Episode import Episode
 from aienvs.runners.Experiment import Experiment
@@ -43,7 +43,7 @@ def main():
     env.reset()
     for intersectionId in env.action_space.spaces.keys():
         PPOAgents.append(PPOAgent(agentId=intersectionId, environment=env, parameters=parameters['all']))
-    complexAgent = ComplexAgentComponent(PPOAgents)
+    complexAgent = BasicComplexAgent(PPOAgents)
     
     # experiment is a sequence of episodes with same agents and
     experiment = Experiment(complexAgent, env, parameters['all']['max_steps'], parameters['all']['seedlist'], render=True)

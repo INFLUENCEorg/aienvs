@@ -8,7 +8,7 @@ from aiagents.single.PPO.PPOAgent import PPOAgent
 from aiagents.single.RandomAgent import RandomAgent
 from aiagents.single.mcts.mctsAgent import MctsAgent
 from aiagents.AgentComponent import AgentComponent
-from aiagents.multi.ComplexAgentComponent import ComplexAgentComponent
+from aiagents.multi.ComplexAgentComponent import BasicComplexAgent
 import random
 import yaml
 from numpy import array
@@ -85,7 +85,7 @@ class testFactoryFloor(LoggedTestCase):
         for robotId in env.action_space.spaces.keys():
             mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters={}))
 
-        complexAgent = ComplexAgentComponent(mctsAgents)
+        complexAgent = BasicComplexAgent(mctsAgents)
 
         episode = Episode(complexAgent, env, obs, render=True)
         episode.run()
@@ -101,7 +101,7 @@ class testFactoryFloor(LoggedTestCase):
         for robotId in env.action_space.spaces.keys():
             randomAgents.append(RandomAgent(robotId, env))
 
-        complexAgent = ComplexAgentComponent(randomAgents)
+        complexAgent = BasicComplexAgent(randomAgents)
         steps = 0
 
         Experiment(complexAgent, env, 1000, None, True).run()
@@ -117,7 +117,7 @@ class testFactoryFloor(LoggedTestCase):
         for robotId in env.action_space.spaces.keys():
             PPOAgents.append(PPOAgent(parameters, env.observation_space, env.action_space.spaces.get(robotId), robotId))
 
-        complexAgent = ComplexAgentComponent(PPOAgents)
+        complexAgent = BasicComplexAgent(PPOAgents)
         steps = 0
 
         while steps < parameters["max_steps"]:

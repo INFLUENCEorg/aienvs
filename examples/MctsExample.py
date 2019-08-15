@@ -4,7 +4,7 @@ from aienvs.FactoryFloor.FactoryFloor import FactoryFloor
 from aiagents.single.RandomAgent import RandomAgent
 from aiagents.single.FactoryFloorAgent import FactoryFloorAgent
 from aiagents.single.mcts.mctsAgent import MctsAgent
-from aiagents.multi.ComplexAgentComponent import ComplexAgentComponent
+from aiagents.multi.ComplexAgentComponent import BasicComplexAgent
 import random
 from aienvs.runners.Episode import Episode
 from aienvs.utils import getParameters
@@ -52,9 +52,9 @@ def main():
                 otherAgentsList.append(FactoryFloorAgent(otherRobotId, sim, parameters={}))
         rolloutAgent = RandomAgent(robotId, sim, parameters={})
         treeAgent = RandomAgent(robotId, sim, parameters={})
-        mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters=parameters['agents'], treeAgent=treeAgent, rolloutAgent=rolloutAgent, otherAgents=copy.deepcopy(ComplexAgentComponent(otherAgentsList)), simulator=sim))
+        mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters=parameters['agents'], treeAgent=treeAgent, rolloutAgent=rolloutAgent, otherAgents=copy.deepcopy(BasicComplexAgent(otherAgentsList)), simulator=sim))
 
-    complexAgent = ComplexAgentComponent(mctsAgents)
+    complexAgent = BasicComplexAgent(mctsAgents)
     episode = Episode(complexAgent, env, obs, render=True)
     episode.addListener(JsonLogger(logoutput))
     episode.addListener(PickleLogger(logoutputpickle))
