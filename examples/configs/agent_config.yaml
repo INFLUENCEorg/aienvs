@@ -5,6 +5,10 @@ parameters:
           - class: aiagents.single.mcts.MctsAgent.MctsAgent
             id: "robot1"
             parameters:
+              timeLimit: 10
+              treeParameters: 
+                explorationConstant: 10
+                samplingLimit: 20
               treeAgent:
                 class: aiagents.single.RandomAgent.RandomAgent
                 id: "robot1"
@@ -23,6 +27,10 @@ parameters:
           - class: aiagents.single.mcts.MctsAgent.MctsAgent
             id: "robot2"
             parameters:
+              timeLimit: 10
+              treeParameters: 
+                explorationConstant: 10
+                samplingLimit: 20
               treeAgent:
                 class: aiagents.single.RandomAgent.RandomAgent
                 id: "robot2"

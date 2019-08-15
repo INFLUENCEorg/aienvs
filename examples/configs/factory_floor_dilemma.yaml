@@ -1,10 +1,15 @@
 parameters:
     # Common hyperparameters
     seed: null
+    max_steps: 30
 
     environment:
         steps: 5
-        robots: [[0,0],[2,0]]  # initial robot positions
+        robots: #initial robot positions
+          - id: 'robot1'
+            pos: [0,0]
+          - id: 'robot2'
+            pos: [2,0] 
         tasks: [[1,0],[4,0]]  # initial task positions
         P_action_succeed: {'LEFT':1.0, 'RIGHT':1.0, 'ACT':1.0, 'UP':1.0, 'DOWN':1.0}
         P_task_appears: 0.0  # P(new task appears in step) 

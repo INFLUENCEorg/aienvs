@@ -3,7 +3,7 @@ import logging
 from aienvs.FactoryFloor.FactoryFloor import FactoryFloor
 from aiagents.AgentFactory import createAgent
 import random
-from aienvs.runners.Episode import Episode
+from aienvs.runners.Experiment import Experiment
 from aienvs.utils import getParameters
 from aienvs.loggers.JsonLogger import JsonLogger
 import io
@@ -28,7 +28,7 @@ def main():
 
     else:
         print("Default config ")
-        env_configName = "./configs/factory_floor_dilemma.yaml"
+        env_configName = "./configs/factory_floor_experiment.yaml"
         env_filename = os.path.join(dirname, env_configName)
         agent_configName = "./configs/agent_config.yaml"
         agent_filename = os.path.join(dirname, agent_configName)
@@ -36,6 +36,7 @@ def main():
     env_parameters = getParameters(env_filename)
     agent_parameters = getParameters(agent_filename)
     random.seed(env_parameters['seed'])
+    maxSteps=env_parameters['max_steps']
     env = FactoryFloor(env_parameters['environment'])
 
     logging.info("Starting example MCTS agent")
@@ -44,14 +45,16 @@ def main():
     try:
         logoutputpickle = open('./'+os.environ["SLURM_JOB_ID"] +'.pickle', 'wb')
     except KeyError:
+        print("No SLURM_JOB_ID found")
         logoutputpickle = io.BytesIO()
 
     obs = env.reset()
     complexAgent = createAgent(env, agent_parameters)
-    episode = Episode(complexAgent, env, obs, render=True)
-    episode.addListener(JsonLogger(logoutput))
-    episode.addListener(PickleLogger(logoutputpickle))
-    episode.run()
+
+    experiment = Experiment(complexAgent, env, maxSteps, render=True)
+    experiment.addListener(JsonLogger(logoutput))
+    experiment.addListener(PickleLogger(logoutputpickle))
+    experiment.run()
     logoutputpickle.close()
 
     print("json output:", logoutput.getvalue())
