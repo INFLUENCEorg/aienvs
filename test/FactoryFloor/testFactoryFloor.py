@@ -8,7 +8,7 @@ from aiagents.single.PPO.PPOAgent import PPOAgent
 from aiagents.single.RandomAgent import RandomAgent
 from aiagents.single.mcts.mctsAgent import MctsAgent
 from aiagents.AgentComponent import AgentComponent
-from aiagents.multi.ComplexAgentComponent import BasicComplexAgent
+from aiagents.multi.BasicComplexAgent import BasicComplexAgent
 import random
 import yaml
 from numpy import array
