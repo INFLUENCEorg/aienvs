@@ -24,6 +24,8 @@ from aienvs.loggers.PickleLogger import PickleLogger
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+randomagent = 'aiagents.single.RandomAgent.RandomAgent'
+
 
 class testFactoryFloor(LoggedTestCase):
     """
@@ -83,7 +85,10 @@ class testFactoryFloor(LoggedTestCase):
 
         mctsAgents = []
         for robotId in env.action_space.spaces.keys():
-            mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters={}))
+            params = {'treeAgent':{'class': randomagent, 'id':robotId, 'parameters':{} },
+                      'rolloutAgent':{'class': randomagent, 'id':robotId, 'parameters':{} },
+                      'otherAgents':[]} 
+            mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters=params))
 
         complexAgent = BasicComplexAgent(mctsAgents)
 
