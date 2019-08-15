@@ -2,7 +2,7 @@ parameters:
       class: aiagents.multi.BasicComplexAgent.BasicComplexAgent
       parameters: {}
       subAgentList:
-          - class: aiagents.single.mcts.mctsAgent.MctsAgent
+          - class: aiagents.single.mcts.MctsAgent.MctsAgent
             id: "robot1"
             parameters:
               treeAgent:
@@ -20,7 +20,7 @@ parameters:
                       - class: aiagents.single.FactoryFloorAgent.FactoryFloorAgent
                         id: "robot2"
                         parameters: {}
-          - class: aiagents.single.mcts.mctsAgent.MctsAgent
+          - class: aiagents.single.mcts.MctsAgent.MctsAgent
             id: "robot2"
             parameters:
               treeAgent:
