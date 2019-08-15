@@ -1,0 +1,41 @@
+parameters:
+      class: aiagents.multi.BasicComplexAgent.BasicComplexAgent
+      parameters: {}
+      subAgentList:
+          - class: aiagents.single.mcts.mctsAgent.MctsAgent
+            id: "robot1"
+            parameters:
+              treeAgent:
+                class: aiagents.single.RandomAgent.RandomAgent
+                id: "robot1"
+                parameters: {}
+              rolloutAgent:
+                class: aiagents.single.RandomAgent.RandomAgent
+                id: "robot1"
+                parameters: {}
+              otherAgents:
+                    class: aiagents.multi.BasicComplexAgent.BasicComplexAgent
+                    parameters: {}
+                    subAgentList:
+                      - class: aiagents.single.FactoryFloorAgent.FactoryFloorAgent
+                        id: "robot2"
+                        parameters: {}
+          - class: aiagents.single.mcts.mctsAgent.MctsAgent
+            id: "robot2"
+            parameters:
+              treeAgent:
+                class: aiagents.single.RandomAgent.RandomAgent
+                id: "robot2"
+                parameters: {}
+              rolloutAgent:
+                class: aiagents.single.RandomAgent.RandomAgent
+                id: "robot2"
+                parameters: {}
+              otherAgents:
+                  class: aiagents.multi.BasicComplexAgent.BasicComplexAgent
+                  parameters: {}
+                  subAgentList:
+                    - class: aiagents.single.FactoryFloorAgent.FactoryFloorAgent
+                      id: "robot1"
+                      parameters: {}
+
