@@ -14,6 +14,6 @@ setup(name='aienvs',
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=[ 'aiagents', 'gym', 'mock', 'pyyaml', 'numpy']
+    install_requires=[ 'aiagents', 'gym', 'mock', 'pyyaml', 'numpy', 'networkx']
 
 )

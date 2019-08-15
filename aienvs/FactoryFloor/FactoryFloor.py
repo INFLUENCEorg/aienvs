@@ -24,6 +24,8 @@ class FactoryFloor(Env):
     """
     The factory floor environment. This adds all dynamic aspects of the Map:
     the robots and the tasks.
+    
+    It is assumed that the factory floor itself (the layout) is immutable.
     """
     DEFAULT_PARAMETERS = {'steps':1000,
                 'robots':[ [3, 4], 'random'],  # initial robot positions
@@ -100,7 +102,7 @@ class FactoryFloor(Env):
     
     def reset(self):
         self._state.step = 0
-        return copy.deepcopy(self._state) # should return initial observation
+        return copy.deepcopy(self._state)  # should return initial observation
         
     def render(self, delay=0.0, overlay=False):
         if overlay:
