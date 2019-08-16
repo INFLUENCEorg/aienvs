@@ -1,6 +1,12 @@
 #
 #summaries
 *summaries*
+#
+#data
+*data*
+
+#pickle files
+*.pickle
 
 # New route files
 1*
