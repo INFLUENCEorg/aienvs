@@ -34,13 +34,10 @@ def main():
         agent_filename = os.path.join(dirname, agent_configName)
 
     try:
-        data_outputdir = os.path.join(dirname, "./data/"+os.environ["EXPERIMENT_JOB_ID"])
-        os.mkdir(data_outputdir)
+        data_outputdir = os.path.join(dirname, "./data/"+os.environ["SLURM_JOB_ID"])
         logoutputpickle = open('./' + data_outputdir +'/output.pickle', 'wb')
-        copyfile(env_filename, data_outputdir + "/env.yaml")
-        copyfile(agent_filename, data_outputdir + "/agent.yaml")
     except KeyError:
-        print("No EXPERIMENT_JOB_ID found")
+        print("No SLURM_JOB_ID found")
         logoutputpickle = io.BytesIO()
 
 
