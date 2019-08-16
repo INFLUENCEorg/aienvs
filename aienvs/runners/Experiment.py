@@ -6,6 +6,8 @@ from aienvs.listener.DefaultListenable import DefaultListenable
 from aienvs.listener.Listener import Listener
 from time import time
 from itertools import cycle
+import logging
+from scipy import stats
 
 class Experiment(DefaultRunner, DefaultListenable, Listener):
     """
@@ -46,6 +48,8 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
         steps = 0
         episodeCount = 0
         totalReward = 0
+
+        episodeRewards = []
     
         while steps < self._maxSteps:
             self._env.seed(self._getSeed())
@@ -53,11 +57,14 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
             episode = Episode(self._agent, self._env, obs, self._render, self._renderDelay)
             episode.addListener(self)
             episodeSteps, episodeReward = episode.run()
+            logging.info("New episode")
             steps += episodeSteps
             totalReward += episodeReward
+            episodeRewards.append(episodeReward)
+            logging.info("Episode reward: " + str(episodeReward))
             episodeCount += 1
     
-        return totalReward / episodeCount
+        return stats.describe(episodeRewards), stats.bayes_mvs(episodeRewards)
 
     def notifyChange(self, data):
         self.notifyAll(data)

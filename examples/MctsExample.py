@@ -13,7 +13,7 @@ import sys
 import pickle
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 
 
 def main():
@@ -35,6 +35,10 @@ def main():
 
     env_parameters = getParameters(env_filename)
     agent_parameters = getParameters(agent_filename)
+
+    print(env_parameters)
+    print(agent_parameters)
+
     random.seed(env_parameters['seed'])
     maxSteps=env_parameters['max_steps']
     env = FactoryFloor(env_parameters['environment'])
@@ -51,13 +55,15 @@ def main():
     obs = env.reset()
     complexAgent = createAgent(env, agent_parameters)
 
-    experiment = Experiment(complexAgent, env, maxSteps, render=True)
+    experiment = Experiment(complexAgent, env, maxSteps, render=False)
     experiment.addListener(JsonLogger(logoutput))
     experiment.addListener(PickleLogger(logoutputpickle))
-    experiment.run()
+    stats, confidence_ints = experiment.run()
     logoutputpickle.close()
 
     print("json output:", logoutput.getvalue())
+
+    print("\n\nREWARD STATS: " + str(stats) + " \nCONFIDENCE INTERVALS " + str(confidence_ints))
 
  #   instream = open('./file3', 'rb')
  #   while True:

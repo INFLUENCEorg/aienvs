@@ -67,13 +67,16 @@ class FactoryFloor(Env):
         robots = []
         tasks = []
         self._state = FactoryFloorState(robots, tasks)
-        for pos in self._parameters['robots']:
+
+        for item in self._parameters['robots']:
+            pos=item['pos']
+            robotId=item['id']
             if isinstance(pos, list):
                 if len(pos) != 2:
                     raise ValueError("position vector must be length 2 but got " + str(pos))
-                robot = FactoryFloorRobot(array(pos))
+                robot = FactoryFloorRobot(robotId, array(pos))
             elif pos == 'random':
-                robot = FactoryFloorRobot(self._getFreeMapPosition())
+                robot = FactoryFloorRobot(robotId, self._getFreeMapPosition())
             else:
                 raise ValueError("Unknown robot position, expected list but got " + str(type(pos)))
             self._state.addRobot(robot)
@@ -89,11 +92,12 @@ class FactoryFloor(Env):
         if self._random.random() < self._map.getTaskProbability():
             self._addTask()
 
+        global_reward = self._computePenalty()
         if(actions):
             for robot in self._state.robots:
                 self._applyAction(robot, actions[robot.getId()])
+        global_reward -= self._computePenalty()
 
-        global_reward = -self._computePenalty()
         self._state.step += 1
         done = (self._parameters['steps'] <= self._state.step)
 
@@ -101,7 +105,7 @@ class FactoryFloor(Env):
         return obs, global_reward, done, []
     
     def reset(self):
-        self._state.step = 0
+        self.__init__(self._parameters)
         return copy.deepcopy(self._state)  # should return initial observation
         
     def render(self, delay=0.0, overlay=False):
@@ -123,7 +127,7 @@ class FactoryFloor(Env):
         time.sleep(delay)
 
     def close(self):
-        pass  # todo
+        pass  
 
     def seed(self, seed):
         self._parameters['seed'] = seed

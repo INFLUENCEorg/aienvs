@@ -1,49 +1,97 @@
+aliases:
+  - &BasicComplexAgent aiagents.multi.BasicComplexAgent.BasicComplexAgent
+  - &MctsAgent aiagents.single.mcts.MctsAgent.MctsAgent
+  - &RandomAgent aiagents.single.RandomAgent.RandomAgent
+  - &FactoryFloorAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
+
+config:
+  - &RobotAgent aiagents.single.mcts.MctsAgent.MctsAgent
+    #- &RobotAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
+    # - &RobotAgent aiagents.single.RandomAgent.RandomAgent
+  - &timeLimit 2
+  - &explorationConstant 10
+  - &samplingLimit 20
+
+# do not edit here
 parameters:
-      class: aiagents.multi.BasicComplexAgent.BasicComplexAgent
+      class: *BasicComplexAgent
       parameters: {}
       subAgentList:
-          - class: aiagents.single.mcts.MctsAgent.MctsAgent
+          - class: *RobotAgent
             id: "robot1"
             parameters:
-              timeLimit: 10
-              treeParameters: 
-                explorationConstant: 10
-                samplingLimit: 20
               treeAgent:
-                class: aiagents.single.RandomAgent.RandomAgent
+                class: *RandomAgent
                 id: "robot1"
                 parameters: {}
               rolloutAgent:
-                class: aiagents.single.RandomAgent.RandomAgent
+                class: *RandomAgent
                 id: "robot1"
                 parameters: {}
               otherAgents:
-                    class: aiagents.multi.BasicComplexAgent.BasicComplexAgent
+                    class: *BasicComplexAgent
                     parameters: {}
                     subAgentList:
-                      - class: aiagents.single.FactoryFloorAgent.FactoryFloorAgent
+                      - class: *FactoryFloorAgent
                         id: "robot2"
                         parameters: {}
-          - class: aiagents.single.mcts.MctsAgent.MctsAgent
+                      - class: *FactoryFloorAgent
+                        id: "robot3"
+                        parameters: {}
+              timeLimit: *timeLimit
+              treeParameters: 
+                  explorationConstant: *explorationConstant
+                  samplingLimit: *samplingLimit
+          - class: *RobotAgent
             id: "robot2"
             parameters:
-              timeLimit: 10
-              treeParameters: 
-                explorationConstant: 10
-                samplingLimit: 20
               treeAgent:
-                class: aiagents.single.RandomAgent.RandomAgent
+                class: *RandomAgent
                 id: "robot2"
                 parameters: {}
               rolloutAgent:
-                class: aiagents.single.RandomAgent.RandomAgent
+                class: *RandomAgent
                 id: "robot2"
                 parameters: {}
               otherAgents:
-                  class: aiagents.multi.BasicComplexAgent.BasicComplexAgent
+                  class: *BasicComplexAgent
                   parameters: {}
                   subAgentList:
-                    - class: aiagents.single.FactoryFloorAgent.FactoryFloorAgent
-                      id: "robot1"
-                      parameters: {}
+                      - class: *FactoryFloorAgent
+                        id: "robot1"
+                        parameters: {}
+                      - class: *FactoryFloorAgent
+                        id: "robot3"
+                        parameters: {}
+              timeLimit: *timeLimit
+              treeParameters: 
+                  explorationConstant: *explorationConstant
+                  samplingLimit: *samplingLimit
+          - class: *RobotAgent
+            id: "robot3"
+            parameters:
+              treeAgent:
+                class: *RandomAgent
+                id: "robot3"
+                parameters: {}
+              rolloutAgent:
+                class: *RandomAgent
+                id: "robot3"
+                parameters: {}
+              otherAgents:
+                  class: *BasicComplexAgent
+                  parameters: {}
+                  subAgentList:
+                      - class: *FactoryFloorAgent
+                        id: "robot1"
+                        parameters: {}
+                      - class: *FactoryFloorAgent
+                        id: "robot2"
+                        parameters: {}
+              timeLimit: *timeLimit
+              treeParameters: 
+                  explorationConstant: *explorationConstant
+                  samplingLimit: *samplingLimit
+
+
 
