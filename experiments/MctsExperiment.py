@@ -24,8 +24,8 @@ def main():
     dirname = os.path.dirname(__file__)
 
     if(len(sys.argv) > 1):
-        env_configName = str(sys.argv[1])
-        agent_configName = str(sys.argv[2])
+        env_filename = str(sys.argv[1])
+        agent_filename = str(sys.argv[2])
     else:
         print("Default config ")
         env_configName = "./debug_configs/factory_floor_experiment.yaml"
