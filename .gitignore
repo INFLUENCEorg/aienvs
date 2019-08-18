@@ -1,4 +1,8 @@
-#
+# png files
+*.png
+
+# h5 files
+*.h5
 #summaries
 *summaries*
 *slurm*
