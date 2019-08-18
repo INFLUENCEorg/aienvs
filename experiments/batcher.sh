@@ -18,7 +18,7 @@
 #SBATCH --cpus-per-task=2
 
 # The default memory per node is 1024 megabytes (1GB)
-#SBATCH --mem=2048
+#SBATCH --mem=64
 
 # Set mail type to 'END' to receive a mail when the job finishes (with usage statistics)
 #SBATCH --mail-type=END
