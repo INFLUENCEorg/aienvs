@@ -2,7 +2,7 @@ import os
 import logging
 from aienvs.Sumo.SumoGymAdapter import SumoGymAdapter
 from aiagents.single.PPO.PPOAgent import PPOAgent
-from aiagents.multi.ComplexAgentComponent import BasicComplexAgent
+from aiagents.multi.BasicComplexAgent import BasicComplexAgent
 import random
 from aienvs.runners.Episode import Episode
 from aienvs.runners.Experiment import Experiment
