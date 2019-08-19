@@ -100,7 +100,7 @@ def main():
 
     dummy_y = np_utils.to_categorical(y_train)
     
-    batch_size=300
+    batch_size=1200
     epochs=320
 
     if evaluate:
