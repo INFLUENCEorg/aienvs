@@ -34,4 +34,4 @@ module use /opt/insy/modulefiles
 module load cuda/10.0 cudnn/10.0-7.4.2.24
 module list
 
-srun python3 preprocessor.py ../debug_configs/training.yaml
+srun python3 preprocessor.py debug_configs/training.yaml

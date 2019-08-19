@@ -8,6 +8,8 @@ config:
   - &RobotAgent aiagents.single.mcts.MctsAgent.MctsAgent
     #- &RobotAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
     #- &RobotAgent aiagents.single.RandomAgent.RandomAgent
+  - &otherAgent aiagents.single.TrainedAgent.TrainedAgent.TrainedAgent
+  - &otherAgentParameters {"modelFile": "models/temp.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {}} 
   - &timeLimit 2
   - &explorationConstant 10
   - &samplingLimit 20
@@ -32,12 +34,12 @@ parameters:
                     class: *BasicComplexAgent
                     parameters: {}
                     subAgentList:
-                      - class: *FactoryFloorAgent
+                      - class: *otherAgent
                         id: "robot2"
-                        parameters: {}
-                      - class: *FactoryFloorAgent
+                        parameters: *otherAgentParameters
+                      - class: *otherAgent
                         id: "robot3"
-                        parameters: {}
+                        parameters: *otherAgentParameters
               timeLimit: *timeLimit
               treeParameters: 
                   explorationConstant: *explorationConstant
@@ -57,12 +59,12 @@ parameters:
                   class: *BasicComplexAgent
                   parameters: {}
                   subAgentList:
-                      - class: *FactoryFloorAgent
+                      - class: *otherAgent
                         id: "robot1"
-                        parameters: {}
-                      - class: *FactoryFloorAgent
+                        parameters: *otherAgentParameters
+                      - class: *otherAgent
                         id: "robot3"
-                        parameters: {}
+                        parameters: *otherAgentParameters
               timeLimit: *timeLimit
               treeParameters: 
                   explorationConstant: *explorationConstant
@@ -82,12 +84,12 @@ parameters:
                   class: *BasicComplexAgent
                   parameters: {}
                   subAgentList:
-                      - class: *FactoryFloorAgent
+                      - class: *otherAgent
                         id: "robot1"
-                        parameters: {}
-                      - class: *FactoryFloorAgent
+                        parameters: *otherAgentParameters
+                      - class: *otherAgent
                         id: "robot2"
-                        parameters: {}
+                        parameters: *otherAgentParameters
               timeLimit: *timeLimit
               treeParameters: 
                   explorationConstant: *explorationConstant

@@ -1,7 +1,7 @@
 parameters:
-    data: "../data/"
+    data: "data/"
     width: 5
     height: 4
     robotIds: ["robot1"]
     evaluate: True
-    output_file: "../models/robot_model.h5"
+    output_file: "models/robot.h5"
