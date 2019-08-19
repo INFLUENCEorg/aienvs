@@ -17,6 +17,5 @@ do
   DJOBS+=$(./runner.sh $DATADIR $TJOB) # one last one
   
   ln -sfn $DATADIR data
-  mv models/robot.h5 models/robot_gen$GEN.h5
-  TJOB=$(sbatch --dependency=afterok:$DJOBS --parsable train_batcher.sh)
+  TJOB=$(sbatch --dependency=afterok:$DJOBS --parsable train_batcher.sh $GEN)
 done
