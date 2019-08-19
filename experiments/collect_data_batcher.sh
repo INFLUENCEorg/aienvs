@@ -25,12 +25,11 @@
 
 # Your job commands go below here
 
-# Uncomment these lines when your job requires this software
 echo $1 $2 $3
 echo "PYTHONPATH: "$PYTHONPATH
 
 mkdir -p $3
-echo $3
+mkdir $3/${SLURM_JOB_ID}
 
 srun python3 MctsExperiment.py $1 $2 $3
 mv slurm-${SLURM_JOB_ID}.out ./$3/${SLURM_JOB_ID}/stdout.txt
