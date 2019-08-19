@@ -11,6 +11,7 @@ if [ "$DEPENDENCY"="NONE" ]
     JOBID=$(sbatch --parsable --dependency=afterok:$DEPENDENCY collect_data_batcher.sh $ENV_FILE $AGENT_FILE $DATA_DIR)
 fi
 
+mkdir -p $DATA_DIR
 mkdir $DATA_DIR/$JOBID
 cp $ENV_FILE $DATA_DIR/$JOBID/env.yaml
 cp $AGENT_FILE $DATA_DIR/$JOBID/agent.yaml
