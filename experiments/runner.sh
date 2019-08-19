@@ -4,16 +4,15 @@ AGENT_FILE=${4:-./debug_configs/agent_config.yaml}
 DATA_DIR=${1:-data/}
 DEPENDENCY=${2:-NONE}
 
-
-mkdir $DATA_DIR/$JOBID
-cp $ENV_FILE $DATA_DIR/$JOBID/env.yaml
-cp $AGENT_FILE $DATA_DIR/$JOBID/agent.yaml
-
 if [ "$DEPENDENCY"="NONE" ]
   then
     JOBID=$(sbatch --parsable collect_data_batcher.sh $ENV_FILE $AGENT_FILE $DATA_DIR)
   else
     JOBID=$(sbatch --parsable --dependency=afterok:$DEPENDENCY collect_data_batcher.sh $ENV_FILE $AGENT_FILE $DATA_DIR)
 fi
+
+mkdir $DATA_DIR/$JOBID
+cp $ENV_FILE $DATA_DIR/$JOBID/env.yaml
+cp $AGENT_FILE $DATA_DIR/$JOBID/agent.yaml
 
 echo $JOBID
