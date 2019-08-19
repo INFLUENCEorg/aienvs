@@ -41,6 +41,8 @@ from keras.utils import plot_model
 from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import KFold
+from keras.preprocessing.image import ImageDataGenerator
+from aienvs.utils import getParameters
 
 def classification_model():
     model = Sequential()
@@ -61,25 +63,37 @@ def classification_model():
 
     return model
 
-def main():
-    if(len(sys.argv) > 1):
-        dirname = str(sys.argv[1])
-        if(len(sys.argv) == 7):
-            width = int(sys.argv[2])
-            height = int(sys.argv[3])
-            robotId = str(sys.argv[4])
-            evaluate = bool(int(sys.argv[5]))
-            output_file = str(sys.argv[6])
-        else:
-            width=None
-            height=None
-            robotId = "robot1"
-            evaluate = True
-            output_file="robot.h5"
-    else:
-        dirname = "./"
 
-    X_train, y_train = preprocess(dirname, width, height, ["robot1", "robot2"])
+
+def main():
+    if(len(sys.argv) == 2):
+        param_filename = str(sys.argv[1])
+        parametersDict = getParameters(param_filename)
+        dirname = parametersDict["data"]
+        width = parametersDict["width"]
+        height = parametersDict["height"]
+        robotIds = parametersDict["robotIds"]
+        evaluate = parametersDict["evaluate"]
+        output_file = parametersDict["output_file"]
+    elif(len(sys.argv) == 7):
+        dirname = str(sys.argv[1])
+        width = int(sys.argv[2])
+        height = int(sys.argv[3])
+        robotIds = str(sys.argv[4]).split(",")
+        evaluate = bool(int(sys.argv[5]))
+        output_file = str(sys.argv[6])
+    else:
+        raise "Either 1 or 6 arguments"
+
+    X_train, y_train = preprocess(dirname, width, height, robotIds)
+
+    datagen = ImageDataGenerator(
+        featurewise_center=False,
+        featurewise_std_normalization=False,
+        rotation_range=0,
+        width_shift_range=0.0,
+        height_shift_range=0.0,
+        horizontal_flip=False)
 
     print(X_train.shape)
     print(y_train.shape)
@@ -100,8 +114,10 @@ def main():
  #       print(estimator.predict_proba([2]))
  #       print(estimator.predict_proba([0]))
     else:
+        generator = datagen.flow(X_train, dummy_y, batch_size=batch_size)
         model=classification_model()
-        model.fit(X_train, dummy_y, epochs=epochs, batch_size=batch_size, verbose=True)
+        model.fit_generator(generator, steps_per_epoch=len(X_train) / batch_size, nb_epoch=epochs)
+     #   model.fit(X_train, dummy_y, epochs=epochs, batch_size=batch_size, verbose=True)
         model.save(output_file)
 
     #model = load_model("robot1.h5")
