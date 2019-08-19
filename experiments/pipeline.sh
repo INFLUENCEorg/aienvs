@@ -16,5 +16,5 @@ do
     
     ln -sfn $DATADIR data
     mv models/robot.h5 models/robot_gen$GEN.h5
-    TJOB=$(sbatch --afterok:$DJOBS --parsable train_batcher.sh)
+    TJOB=$(sbatch --dependency=afterok:$DJOBS --parsable train_batcher.sh)
 done

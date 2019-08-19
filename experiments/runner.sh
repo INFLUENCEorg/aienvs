@@ -7,9 +7,9 @@ DEPENDENCY=${2:-NONE}
 
 if [ "$DEPENDENCY"="NONE" ]
   then
-    JOBID=$(sbatch --parsable batcher.sh $ENV_FILE $AGENT_FILE)
+    JOBID=$(sbatch --parsable collect_data_batcher.sh $ENV_FILE $AGENT_FILE)
   else
-    JOBID=$(sbatch --parsable --afterok:$DEPENDENCY batcher.sh $ENV_FILE $AGENT_FILE)
+    JOBID=$(sbatch --parsable --dependency=afterok:$DEPENDENCY collect_data_batcher.sh $ENV_FILE $AGENT_FILE)
 fi
 
 mkdir $DATA_DIR/$JOBID
