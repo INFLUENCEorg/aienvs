@@ -9,7 +9,7 @@ config:
     #- &RobotAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
     #- &RobotAgent aiagents.single.RandomAgent.RandomAgent
   - &otherAgent aiagents.single.TrainedAgent.TrainedAgent.TrainedAgent
-  - &otherAgentParameters {"modelFile": "models/temp.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {}} 
+  - &otherAgentParameters {"modelFile": "models/robot.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {}} 
   - &timeLimit 2
   - &explorationConstant 10
   - &samplingLimit 20

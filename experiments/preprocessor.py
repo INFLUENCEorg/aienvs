@@ -100,8 +100,8 @@ def main():
 
     dummy_y = np_utils.to_categorical(y_train)
     
-    batch_size=1200
-    epochs=320
+    batch_size=600
+    epochs=10
 
     if evaluate:
         estimator = KerasClassifier(classification_model, epochs=epochs, batch_size=batch_size, verbose=True)

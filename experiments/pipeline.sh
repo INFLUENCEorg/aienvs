@@ -1,4 +1,6 @@
 #!/bin/bash
+unlink data
+
 for (( GEN = 1; GEN <= 5; GEN++ ))      ### Outer for loop ###
 do
     TJOB=NONE
