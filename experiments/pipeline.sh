@@ -7,7 +7,6 @@ do
   DATADIR=DATA$GEN
   mkdir $DATADIR
   echo $DATADIR
-  exit 1
 
   DJOBS=()
   for (( djob = 1 ; djob <= 15; djob++ )) ### Inner for loop ###

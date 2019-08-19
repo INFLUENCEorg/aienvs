@@ -26,15 +26,17 @@ def main():
     if(len(sys.argv) > 1):
         env_filename = str(sys.argv[1])
         agent_filename = str(sys.argv[2])
+        data_dirname = str(sys.argv[3])
     else:
         print("Default config ")
         env_configName = "./debug_configs/factory_floor_experiment.yaml"
         env_filename = os.path.join(dirname, env_configName)
         agent_configName = "./debug_configs/agent_config.yaml"
         agent_filename = os.path.join(dirname, agent_configName)
+        data_dirname = "data"
 
     try:
-        data_outputdir = os.path.join(dirname, "./data/"+os.environ["SLURM_JOB_ID"])
+        data_outputdir = os.path.join(dirname, "./"+ data_dirname + "/"+os.environ["SLURM_JOB_ID"])
         logoutputpickle = open('./' + data_outputdir +'/output.pickle', 'wb')
     except KeyError:
         print("No SLURM_JOB_ID found")
