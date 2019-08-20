@@ -1,0 +1,7 @@
+parameters:
+    data: "full_data/"
+    width: 5
+    height: 4
+    robotIds: ["robot1", "robot2", "robot3"]
+    evaluate: True
+    output_file: "none.h5"
