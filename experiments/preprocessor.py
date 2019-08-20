@@ -103,7 +103,7 @@ def main():
     batch_size=600
     epochs=10
 
-    if evaluate:
+    if(eval(evaluate)):
         estimator = KerasClassifier(classification_model, epochs=epochs, batch_size=batch_size, verbose=True)
         kfold = KFold(n_splits=5, shuffle=True)
         results = cross_val_score(estimator, X_train, dummy_y, cv=kfold)

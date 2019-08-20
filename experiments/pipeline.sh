@@ -1,5 +1,6 @@
 #!/bin/bash
 unlink data
+rm models/robot.h5
 TJOB=(NONE)
 
 for (( GEN = 1; GEN <= 5; GEN++ ))      ### Outer for loop ###
