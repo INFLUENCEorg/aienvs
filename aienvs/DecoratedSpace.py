@@ -69,17 +69,6 @@ class DictSpaceDecorator(DecoratedSpace):
 
     '''
 
-    def __init__(self, space:Dict, mergeInfo:list=[]):
-        '''
-        @param mergeInfo optional. 
-        contains lists of keys to be merged. 
-        For instance [['a','b'],['c','d','e']] indicates
-        that the keys a and b are to be merged into a 
-        new key a_b, and c,d,e are to be merged into new key c_d_e
-        The remaining keys in the original space are left untouched.
-        '''
-        super().__init__(space)
-        
     def getSubSpaces(self):
         return [DecoratedSpace.create(space) for space in self.getSpace().spaces.values()]
         
