@@ -69,8 +69,8 @@ class FactoryFloor(Env):
         self._state = FactoryFloorState(robots, tasks)
 
         for item in self._parameters['robots']:
-            pos=item['pos']
-            robotId=item['id']
+            pos = item['pos']
+            robotId = item['id']
             if isinstance(pos, list):
                 if len(pos) != 2:
                     raise ValueError("position vector must be length 2 but got " + str(pos))
@@ -174,7 +174,8 @@ class FactoryFloor(Env):
         parameters = copy.deepcopy(self._parameters)
         newmap = self._map.getPart(area)
         parameters['map'] = newmap.getFullMap()
-        parameters['robots'] = [robot.getPosition().tolist() \
+        parameters['robots'] = [\
+            { 'id':robot.getId(), 'pos':robot.getPosition().tolist() }\
             for robot in self._state.robots if self._map.isInside(robot.getPosition())]
         parameters['tasks'] = [task.getPosition().tolist() \
             for task in self._state.tasks if self._map.isInside(task.getPosition())]
