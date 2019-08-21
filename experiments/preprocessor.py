@@ -46,9 +46,14 @@ from aienvs.utils import getParameters
 
 def classification_model():
     model = Sequential()
-    model.add(Convolution2D(16,(2,2), input_shape=(5,4,3), activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Flatten())
+   # model.add(Convolution2D(16,(2,2), input_shape=(5,4,3), activation='relu'))
+   # model.add(Dropout(0.5))
+   # model.add(Flatten())
+    model.add(Flatten(input_shape=(5,4,3)))
+    model.add(Dense(128, activation='relu'))
+    model.add(Dropout(0.7))
+    model.add(Dense(192, activation='relu'))
+    model.add(Dropout(0.7))
  #   model.add(Dense(128, input_dim=1, activation='relu'))
     model.add(Dense(128, activation='relu'))
     model.add(Dropout(0.7))
@@ -86,6 +91,10 @@ def main():
         raise "Either 1 or 6 arguments"
 
     X_train, y_train = preprocess(dirname, width, height, robotIds)
+    print(np.histogram(y_train))
+    import pdb
+    pdb.set_trace()
+    breakpoint()
 
     datagen = ImageDataGenerator(
         featurewise_center=False,
@@ -101,7 +110,7 @@ def main():
     dummy_y = np_utils.to_categorical(y_train)
     
     batch_size=600
-    epochs=10
+    epochs=100
 
     if(eval(evaluate)):
         estimator = KerasClassifier(classification_model, epochs=epochs, batch_size=batch_size, verbose=True)
