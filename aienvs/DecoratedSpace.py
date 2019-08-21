@@ -65,7 +65,7 @@ class DecoratedSpace(Space):
 
 class DictSpaceDecorator(DecoratedSpace):
     '''
-    Decorates a spaces.Dictfrom abc import abstractclassmethod
+    Decorates a spaces.Dict
 
     '''
 
@@ -132,7 +132,7 @@ class TupleSpaceDecorator(DecoratedSpace):
 
 class BoxSpaceDecorator(DecoratedSpace):
     '''
-    Decorates a spaces.Discrete
+    Decorates a spaces.Box
     '''
 
     # Override
@@ -142,7 +142,7 @@ class BoxSpaceDecorator(DecoratedSpace):
 
 class MultiBinarySpaceDecorator(DecoratedSpace):
     '''
-    Decorates a spaces.Discrete
+    Decorates a spaces.MultiBinary
     '''
 
     # Override
