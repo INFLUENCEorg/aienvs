@@ -98,7 +98,7 @@ class testFactoryFloor(LoggedTestCase):
     def test_random_agent(self):
         logging.info("Starting test random agent")
         dirname = os.path.dirname(__file__)
-        filename = os.path.join(dirname, "../configs/factory_floor.yaml")
+        filename = os.path.join(dirname, "../configs/factory_floor_simple.yaml")
         parameters = getParameters(filename)
 
         env = FactoryFloor(parameters)
@@ -114,7 +114,7 @@ class testFactoryFloor(LoggedTestCase):
     def est_PPO_agent(self):
         logging.info("Starting test PPO agent")
         dirname = os.path.dirname(__file__)
-        filename = os.path.join(dirname, "../configs/factory_floor.yaml")
+        filename = os.path.join(dirname, "../configs/factory_floor_simple.yaml")
         parameters = getParameters(filename)
 
         env = FactoryFloor(parameters)

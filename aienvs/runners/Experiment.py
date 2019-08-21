@@ -64,7 +64,10 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
             logging.info("Episode reward: " + str(episodeReward))
             episodeCount += 1
     
-        return stats.describe(episodeRewards), stats.bayes_mvs(episodeRewards)
+        try:    
+            return stats.describe(episodeRewards), stats.bayes_mvs(episodeRewards)
+        except ValueError as err:
+            print(err)
 
     def notifyChange(self, data):
         self.notifyAll(data)

@@ -28,7 +28,7 @@ class FactoryFloor(Env):
     It is assumed that the factory floor itself (the layout) is immutable.
     """
     DEFAULT_PARAMETERS = {'steps':1000,
-                'robots':[ [3, 4], 'random'],  # initial robot positions
+                'robots':[ {'id': "robot1", 'pos':[3, 4]}, {'id': "robot2", 'pos': 'random'}],  # initial robot positions
                 'tasks': [ [1, 1] ],  # initial task positions
                 'P_action_succeed':{'LEFT':0.9, 'RIGHT':0.9, 'ACT':0.5, 'UP':0.9, 'DOWN':0.9},
                 'P_task_appears':0.99,  # P(new task appears in step) 
