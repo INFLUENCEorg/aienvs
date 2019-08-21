@@ -88,7 +88,8 @@ class FactoryFloor(Env):
             seed = self._random.randint(0, 10 * len(self._state.robots))
             self._actSpace.seed(seed)
 
-    def step(self, actions:spaces.Dict):
+    # Override
+    def step(self, actions:dict):
         if self._random.random() < self._map.getTaskProbability():
             self._addTask()
 
