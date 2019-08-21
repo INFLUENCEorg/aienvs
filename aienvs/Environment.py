@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from aienvs.listener.Listenable import Listenable
+from gym.spaces import Dict
 
 
 class Env(ABC):
@@ -41,7 +42,11 @@ class Env(ABC):
     # Set these in ALL subclasses
     @property
     @abstractmethod
-    def action_space(self):
+    def action_space(self) -> Dict:
+        '''
+        @return a gym Dict containing the possible actions at this moment.
+        always return a Dict: the keys are the agents in the environment.
+        '''
         pass
 
     @property
@@ -50,14 +55,14 @@ class Env(ABC):
         pass
 
     @abstractmethod
-    def step(self, action):
+    def step(self, action:dict):
         """Run one timestep of the environment's dynamics. When end of
         episode is reached, you are responsible for calling `reset()`
         to reset this environment's state.
         Accepts an action and returns a tuple (observation, reward, done, info).
-        Args:
-            action (object): an action provided by the environment
-        Returns:
+        @param action (dict) an action to be executed by the env. Action must be a 
+        dict  as we assume action_space to be a gym Dict
+        @Return:
             observation (object): agent's observation of the current environment
             reward (float) : amount of reward returned after previous action
             done (bool): whether the episode has ended, in which case further step() calls will return undefined results
