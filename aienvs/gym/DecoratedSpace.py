@@ -59,7 +59,6 @@ class DecoratedSpace(ABC):
         the space can change over time. May return math.inf
         to indicate infinite number of  discrete values are possible.
         '''
-        raise NotImplementedError
     
     def getSubSpaces(self) -> list:  # list<DecoratedSpace>
         '''

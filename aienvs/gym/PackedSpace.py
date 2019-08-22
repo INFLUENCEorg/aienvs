@@ -1,6 +1,6 @@
 from gym.spaces import Space, Dict, Discrete
-from aienvs.DecoratedSpace import DecoratedSpace. DictSpaceDecorator
-from aienvs.ModifiedActionSpace import ModifiedActionSpace
+from aienvs.gym.DecoratedSpace import DecoratedSpace, DictSpaceDecorator
+from aienvs.gym.ModifiedActionSpace import ModifiedActionSpace
 from aienvs.gym.DecoratedSpace import DictSpaceDecorator
 from _collections import OrderedDict
 
@@ -23,7 +23,9 @@ class PackedSpace(ModifiedActionSpace):
         The keys in the list are to be removed from the 
         actionspace and the new dict keys are added. 
         IMPORTANT packing keys must NOT be in actionspace.
-        eg {'a_b':['a','b']}.
+        example. Say your actionspace has keys a,b,c.
+        Then packing could be {'a_b':['a','b']}. The new 
+        space will then have keys 'a_b' and 'c'
         
         '''
         self._originalspace = DecoratedSpace.create(actionspace)
@@ -32,12 +34,15 @@ class PackedSpace(ModifiedActionSpace):
         # now replace keys according to packing instructions.
         for id in packing:
             subdict = self._createSubspace(packing[id])
-            self._subdicts[id]=subdict
+            self._subdicts[id] = subdict
             newdict[id] = subdict.getSpace()
             for oldkey in packing[id]:
+                if not oldkey in newdict:
+                    raise Exception("Packing instruction " + str(packing) + " refers unknown key " + oldkey)
                 newdict.pop(oldkey)
         # we set this up as if it is a dict
-        super(Dict, self).__init__(newdict)
+        # NOTE    super(Dict, self).__init__(newdict) does NOT work as intended
+        Dict.__init__(self, newdict)
 
     def _createSubspace(self, subids: list) -> DictSpaceDecorator:
         '''
@@ -46,19 +51,20 @@ class PackedSpace(ModifiedActionSpace):
         @return DictSpaceDecorator that contains only the subid's
         from the original space. 
         '''
-        newdict = { id:space for id,space in actionspace.spaces.items() if id in subids }
+        newdict = { id:space \
+                   for id, space in self._originalspace.getSpace().spaces.items() \
+                   if id in subids }
         return DictSpaceDecorator(Dict(newdict))
     
-    
-    def unpack(self, action: OrderedDict)->OrderedDict:
+    def unpack(self, action: OrderedDict) -> OrderedDict:
         newactions = {}
         for actid, value in action.items():
             if actid in self._subdicts:
                 origactions = self._subdicts[actid].get(value)
                 for origid, origact in origactions.items():
-                    newactions[origid]=origact
+                    newactions[origid] = origact
             else:
-                newactions[actid]=value
+                newactions[actid] = value
         return OrderedDict(newactions)
     
     def getOriginalSpace(self) -> OrderedDict: 
