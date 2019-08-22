@@ -126,7 +126,7 @@ class DictSpaceDecorator(DecoratedSpace):
     def get(self, n:int):
         nrList = self.numberToList(n, [space.getSize() for space in self.getSubSpaces()])
         nrList = list(zip(self.getIds(), nrList))
-        return OrderedDict([self.getSubSpace(id).get(n) for id, n in nrList])
+        return OrderedDict([(id, self.getSubSpace(id).get(m)) for id, m in nrList])
 
 
 class DiscreteSpaceDecorator(DecoratedSpace):
@@ -174,8 +174,12 @@ class TupleSpaceDecorator(DecoratedSpace):
         return [DecoratedSpace.create(space) for space in self.getSpace().spaces]
 
     def get(self, n:int):
-        nrList = self.numberToList(n, [space.getSize() for space in self.getSubSpaces()])
-        return tuple([self.getSubSpace(id).get(n) for n in nrList])
+        subspaces = self.getSubSpaces()
+        nrList = self.numberToList(n, [space.getSize() for space in subspaces])
+        res = []
+        for i in range(0, len(subspaces)):
+            res.append(subspaces[i].get(nrList[i]))
+        return tuple(res)
 
 
 class BoxSpaceDecorator(DecoratedSpace):
@@ -202,4 +206,4 @@ class MultiBinarySpaceDecorator(DecoratedSpace):
         return 2 ** self.getSpace().n
 
     def get(self, n:int):
-        return array([self.numberToList(n, [2] * self.getSpace().n)])
+        return array(self.numberToList(n, [2] * self.getSpace().n))
