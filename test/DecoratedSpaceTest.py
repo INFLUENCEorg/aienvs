@@ -1,6 +1,6 @@
 from LoggedTestCase import LoggedTestCase
 from unittest.mock import Mock
-from aienvs.DecoratedSpace import DecoratedSpace
+from aienvs.gym.DecoratedSpace import DecoratedSpace
 from gym.spaces import Space, Dict, Discrete, MultiDiscrete, Box, Tuple, MultiBinary
 import math
 
