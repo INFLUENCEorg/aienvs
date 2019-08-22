@@ -25,4 +25,4 @@ class PackedSpaceTest(LoggedTestCase):
     def test_smoke(self):
         space = Dict({'a':Discrete(4), 'b':Discrete(3), 'c':Discrete(5)})
         PackedSpace(space, {'a_b':['a', 'b']})
-
+    

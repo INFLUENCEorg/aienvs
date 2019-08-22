@@ -1,7 +1,6 @@
 from aienvs.Environment import Env
 from gym.spaces import Dict
-from aienvs.DecoratedSpace import DecoratedSpace
-from ModifiedActionSpace import ModifiedActionSpace
+from aienvs.gym.ModifiedActionSpace import ModifiedActionSpace
 from collections import OrderedDict
 
 
@@ -28,3 +27,33 @@ class ModifiedGymEnv(Env):
     def action_space(self) -> Dict:
         return self._newactionspace
 
+    ############ Forward other commands directly to self._env
+
+    # Set this in SOME subclasses
+    @property
+    def metadata(self):
+        return self._env.metadata()
+
+    @property
+    def reward_range(self):
+        return self._env.reward_range()
+
+    @property
+    def spec(self):
+        return self._env.spec()
+
+    def observation_space(self):
+        return self._env.observation_space()
+
+    def reset(self):
+        return self._env.reset()
+
+    def render(self, mode='human'):
+        return self._env.render(mode)
+    
+    def close(self):
+        return self._env.close()
+
+    def seed(self, seed=None):
+        return self._env.seed(seed)
+   
