@@ -54,6 +54,7 @@ class ModifiedGymEnv(Env):
     def spec(self):
         return self._env.spec()
 
+    @property
     def observation_space(self):
         return self._env.observation_space
 
