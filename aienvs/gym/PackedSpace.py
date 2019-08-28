@@ -68,5 +68,5 @@ class PackedSpace(ModifiedActionSpace):
         return OrderedDict(newactions)
     
     def getOriginalSpace(self) -> OrderedDict: 
-        return self._origactionspace.getSpace()
+        return self._originalspace.getSpace()
     

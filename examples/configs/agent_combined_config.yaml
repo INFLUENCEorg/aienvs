@@ -1,0 +1,35 @@
+aliases:
+  - &BasicComplexAgent aiagents.multi.BasicComplexAgent.BasicComplexAgent
+  - &MctsAgent aiagents.single.mcts.MctsAgent.MctsAgent
+  - &RandomAgent aiagents.single.RandomAgent.RandomAgent
+  - &FactoryFloorAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
+
+config:
+  - &RobotAgent aiagents.single.mcts.MctsAgent.MctsAgent
+    #- &RobotAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
+    # - &RobotAgent aiagents.single.RandomAgent.RandomAgent
+  - &timeLimit 6
+  - &explorationConstant 10
+  - &samplingLimit 20
+
+# do not edit here
+parameters:
+      class: *BasicComplexAgent
+      parameters: {}
+      subAgentList:
+          - class: *RobotAgent
+            id: "robots"
+            parameters:
+              treeAgent:
+                class: *RandomAgent
+                id: "robots"
+                parameters: {}
+              rolloutAgent:
+                class: *RandomAgent
+                id: "robots"
+                parameters: {}
+              timeLimit: *timeLimit
+              treeParameters: 
+                  explorationConstant: *explorationConstant
+                  samplingLimit: *samplingLimit
+

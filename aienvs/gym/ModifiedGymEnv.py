@@ -20,10 +20,17 @@ class ModifiedGymEnv(Env):
         self._newactionspace = newactspace
         
     def step(self, actions:OrderedDict):
-        if not self._env.action_space() == self._newactionspace.getOriginalSpace():
+        if not self._env.action_space == self._newactionspace.getOriginalSpace():
             raise Exception("Unsupported: can't handle action space change")
         return self._env.step(self._newactionspace.unpack(actions))
-    
+
+    def setState(self, state):
+        self._env.setState(state)
+
+    def getState(self, state):
+        self._env.getState()
+
+    @property
     def action_space(self) -> Dict:
         return self._newactionspace
 

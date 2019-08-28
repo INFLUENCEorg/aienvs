@@ -1,4 +1,5 @@
 from gym.spaces import Space, Dict, Discrete, MultiDiscrete, Box, Tuple, MultiBinary
+from aienvs.gym.ModifiedActionSpace import ModifiedActionSpace
 import math
 from math import floor
 from abc import ABC, abstractmethod
@@ -42,14 +43,26 @@ class DecoratedSpace(ABC):
             return MultiDiscreteSpaceDecorator(space)
         if (isinstance(space, MultiBinary)):
             return MultiBinarySpaceDecorator(space)
+        if (isinstance(space, DecoratedSpace)):
+            return space
 
         raise Exception("Unsupported space type " + str(space))  
+
+    def getOriginalSpace(self):
+        return self.getSpace()
+
+    def unpack(self, actions):
+        return actions
 
     def getSpace(self):
         '''
         the gym space that is decorated
         '''
         return self._gymspace
+
+    @property
+    def n(self):
+        return self.getSize()
         
     @abstractmethod
     def getSize(self):
