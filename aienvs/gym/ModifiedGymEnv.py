@@ -36,6 +36,11 @@ class ModifiedGymEnv(Env):
 
     ############ Forward other commands directly to self._env
 
+    # dirty hack, remove
+    @property
+    def ACTIONS(self)
+        return self._env.ACTIONS
+
     # Set this in SOME subclasses
     @property
     def metadata(self):
