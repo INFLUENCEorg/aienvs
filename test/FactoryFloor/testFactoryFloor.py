@@ -86,8 +86,7 @@ class testFactoryFloor(LoggedTestCase):
         randomagent = 'aiagents.single.RandomAgent.RandomAgent'
         for robotId in env.action_space.spaces.keys():
             params = {'treeAgent':{'class': randomagent, 'id':robotId, 'parameters':{} },
-                      'rolloutAgent':{'class': randomagent, 'id':robotId, 'parameters':{} },
-                      'otherAgents': None} 
+                      'rolloutAgent':{'class': randomagent, 'id':robotId, 'parameters':{} }} 
             mctsAgents.append(MctsAgent(agentId=robotId, environment=env, parameters=params))
 
         complexAgent = BasicComplexAgent(mctsAgents)
