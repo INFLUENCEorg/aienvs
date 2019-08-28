@@ -5,8 +5,8 @@ aliases:
   - &FactoryFloorAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
 
 config:
-  - &RobotAgent aiagents.single.mcts.MctsAgent.MctsAgent
-    # - &RobotAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
+  #- &RobotAgent aiagents.single.mcts.MctsAgent.MctsAgent
+  - &RobotAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
     #- &RobotAgent aiagents.single.RandomAgent.RandomAgent
   - &otherAgent aiagents.single.TrainedAgent.TrainedAgent.TrainedAgent
   - &otherAgentParameters {"modelFile": "models/robot.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {}} 

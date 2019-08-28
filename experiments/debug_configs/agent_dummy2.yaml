@@ -6,7 +6,7 @@ aliases:
 
 config:
   - &RobotAgent aiagents.single.mcts.MctsAgent.MctsAgent
-    #- &RobotAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
+  #- &RobotAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
     #- &RobotAgent aiagents.single.RandomAgent.RandomAgent
     #- &otherAgent aiagents.single.TrainedAgent.TrainedAgent.TrainedAgent
   - &otherAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent

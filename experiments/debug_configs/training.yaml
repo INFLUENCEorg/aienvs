@@ -1,7 +1,5 @@
 parameters:
-    data: "data/"
     width: 5
     height: 4
-    robotIds: ["robot1"]
+    robotIds: ["robot1", "robot2", "robot3"]
     evaluate: "False"
-    output_file: "models/robot.h5"

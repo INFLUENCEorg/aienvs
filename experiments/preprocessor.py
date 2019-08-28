@@ -43,24 +43,21 @@ from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import KFold
 from keras.preprocessing.image import ImageDataGenerator
 from aienvs.utils import getParameters
+import os
 
 def classification_model():
     model = Sequential()
-   # model.add(Convolution2D(16,(2,2), input_shape=(5,4,3), activation='relu'))
+    model.add(Convolution2D(16,(2,2), input_shape=(5,4,3), activation='relu'))
+    model.add(Convolution2D(32,(2,2), input_shape=(5,4,3), activation='relu'))
+ #   model.add(Convolution2D(4,(2,2), activation='relu'))
    # model.add(Dropout(0.5))
    # model.add(Flatten())
-    model.add(Flatten(input_shape=(5,4,3)))
-    model.add(Dense(128, activation='relu'))
-    model.add(Dropout(0.7))
-    model.add(Dense(192, activation='relu'))
-    model.add(Dropout(0.7))
+    model.add(Flatten())
+  #  model.add(Dense(192, activation='relu'))
  #   model.add(Dense(128, input_dim=1, activation='relu'))
-    model.add(Dense(128, activation='relu'))
-    model.add(Dropout(0.7))
+  #  model.add(Dense(128, activation='relu'))
     model.add(Dense(64, activation='relu'))
-    model.add(Dropout(0.7))
     model.add(Dense(16, activation='relu'))
-    model.add(Dropout(0.7))
     model.add(Dense(5, activation='softmax'))
 
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -71,15 +68,16 @@ def classification_model():
 
 
 def main():
-    if(len(sys.argv) == 2):
+    if(len(sys.argv) == 3):
         param_filename = str(sys.argv[1])
         parametersDict = getParameters(param_filename)
-        dirname = parametersDict["data"]
+        dirname = str(sys.argv[2])
         width = parametersDict["width"]
         height = parametersDict["height"]
         robotIds = parametersDict["robotIds"]
         evaluate = parametersDict["evaluate"]
-        output_file = parametersDict["output_file"]
+        os.makedirs(dirname+"../models", exist_ok=True)
+        output_file = dirname+"../models/robot.h5"
     elif(len(sys.argv) == 7):
         dirname = str(sys.argv[1])
         width = int(sys.argv[2])
@@ -88,13 +86,10 @@ def main():
         evaluate = bool(int(sys.argv[5]))
         output_file = str(sys.argv[6])
     else:
-        raise "Either 1 or 6 arguments"
+        raise "Either 2 or 6 arguments"
 
     X_train, y_train = preprocess(dirname, width, height, robotIds)
     print(np.histogram(y_train))
-    import pdb
-    pdb.set_trace()
-    breakpoint()
 
     datagen = ImageDataGenerator(
         featurewise_center=False,
@@ -114,6 +109,9 @@ def main():
 
     if(eval(evaluate)):
         estimator = KerasClassifier(classification_model, epochs=epochs, batch_size=batch_size, verbose=True)
+        #import pdb
+        #pdb.set_trace()
+        #incorrects = np.nonzero(estimator.predict_class(X_train).reshape((-1,)) != y_train)
         kfold = KFold(n_splits=5, shuffle=True)
         results = cross_val_score(estimator, X_train, dummy_y, cv=kfold)
         print("Accuracy, stdev %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))	

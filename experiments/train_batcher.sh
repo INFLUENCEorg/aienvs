@@ -29,12 +29,13 @@
 
 # Uncomment these lines when your job requires this software
 echo "PYTHONPATH: "$PYTHONPATH
+DIRNAME=$2
+echo $DIRNAME
+echo $DIRNAME/data$1/
 
 module use /opt/insy/modulefiles
 module load cuda/10.0 cudnn/10.0-7.4.2.24
 module list
 
-ln -sfn data$1 data
-
-srun python3 preprocessor.py debug_configs/training.yaml
-cp models/robot.h5 models/robot_gen$1.h5
+srun python3 preprocessor.py debug_configs/training.yaml $DIRNAME/data$1/
+cp $DIRNAME/models/robot.h5 $DIRNAME/models/robot_gen$1.h5
