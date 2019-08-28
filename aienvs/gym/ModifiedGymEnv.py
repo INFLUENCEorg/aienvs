@@ -38,7 +38,7 @@ class ModifiedGymEnv(Env):
 
     # dirty hack, remove
     @property
-    def ACTIONS(self)
+    def ACTIONS(self):
         return self._env.ACTIONS
 
     # Set this in SOME subclasses
@@ -55,7 +55,7 @@ class ModifiedGymEnv(Env):
         return self._env.spec()
 
     def observation_space(self):
-        return self._env.observation_space()
+        return self._env.observation_space
 
     def reset(self):
         return self._env.reset()
