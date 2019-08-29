@@ -80,7 +80,7 @@ class DecoratedSpace(ABC):
         return []
 
     @abstractmethod
-    def get(self, n:int):
+    def getById(self, n:int):
         '''
         @return: the nth element of this space.
         n>=0, n < getSize().
@@ -105,6 +105,12 @@ class DecoratedSpace(ABC):
             n = floor(n / max)
         return selection
 
+    # calling other methods from self._gymspace
+    def __getattr__(self, attr):
+        #avoid recursion
+        gymspace = self.__getattribute__('_gymspace')
+        return getattr(gymspace, attr)
+   
 
 class DictSpaceDecorator(DecoratedSpace):
     '''
@@ -135,10 +141,13 @@ class DictSpaceDecorator(DecoratedSpace):
             size = size * space.getSize()
         return size
     
-    def get(self, n:int):
+    def getById(self, n:int):
         nrList = self.numberToList(n, [space.getSize() for space in self.getSubSpaces()])
         nrList = list(zip(self.getIds(), nrList))
-        return OrderedDict([(id, self.getSubSpace(id).get(m)) for id, m in nrList])
+        return OrderedDict([(id, self.getSubSpace(id).getById(m)) for id, m in nrList])
+
+    def get(self, id:str):
+        return self.getSubSpace(id)
 
 
 class DiscreteSpaceDecorator(DecoratedSpace):
@@ -150,7 +159,7 @@ class DiscreteSpaceDecorator(DecoratedSpace):
     def getSize(self):
         return self.getSpace().n
 
-    def get(self, n:int):
+    def getById(self, n:int):
         return n
 
 
@@ -166,7 +175,7 @@ class MultiDiscreteSpaceDecorator(DecoratedSpace):
             size = size * n
         return size
 
-    def get(self, n:int):
+    def getById(self, n:int):
         return array(self.numberToList(n, self.getSpace().nvec))
 
 
@@ -185,12 +194,12 @@ class TupleSpaceDecorator(DecoratedSpace):
     def getSubSpaces(self):
         return [DecoratedSpace.create(space) for space in self.getSpace().spaces]
 
-    def get(self, n:int):
+    def getById(self, n:int):
         subspaces = self.getSubSpaces()
         nrList = self.numberToList(n, [space.getSize() for space in subspaces])
         res = []
         for i in range(0, len(subspaces)):
-            res.append(subspaces[i].get(nrList[i]))
+            res.append(subspaces[i].getById(nrList[i]))
         return tuple(res)
 
 
@@ -204,7 +213,7 @@ class BoxSpaceDecorator(DecoratedSpace):
     def getSize(self):
         return math.inf
 
-    def get(self, n:int):
+    def getById(self, n:int):
         raise Exception("Box space can not be sampled discretely")
 
 
@@ -217,5 +226,5 @@ class MultiBinarySpaceDecorator(DecoratedSpace):
     def getSize(self):
         return 2 ** self.getSpace().n
 
-    def get(self, n:int):
+    def getById(self, n:int):
         return array(self.numberToList(n, [2] * self.getSpace().n))

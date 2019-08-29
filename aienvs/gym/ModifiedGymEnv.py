@@ -24,36 +24,12 @@ class ModifiedGymEnv(Env):
             raise Exception("Unsupported: can't handle action space change")
         return self._env.step(self._newactionspace.unpack(actions))
 
-    def setState(self, state):
-        self._env.setState(state)
-
-    def getState(self, state):
-        self._env.getState()
-
     @property
     def action_space(self) -> Dict:
         return self._newactionspace
 
     ############ Forward other commands directly to self._env
-
-    # dirty hack, remove
-    @property
-    def ACTIONS(self):
-        return self._env.ACTIONS
-
-    # Set this in SOME subclasses
-    @property
-    def metadata(self):
-        return self._env.metadata()
-
-    @property
-    def reward_range(self):
-        return self._env.reward_range()
-
-    @property
-    def spec(self):
-        return self._env.spec()
-
+ 
     @property
     def observation_space(self):
         return self._env.observation_space
@@ -69,4 +45,10 @@ class ModifiedGymEnv(Env):
 
     def seed(self, seed=None):
         return self._env.seed(seed)
+     
+    # calling other methods from self._env
+    def __getattr__(self, attr):
+        #avoid recursion
+        env = self.__getattribute__('_env')
+        return getattr(env, attr)
    

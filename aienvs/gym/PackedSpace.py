@@ -60,7 +60,7 @@ class PackedSpace(ModifiedActionSpace):
         newactions = {}
         for actid, value in action.items():
             if actid in self._subdicts:
-                origactions = self._subdicts[actid].get(value)
+                origactions = self._subdicts[actid].getById(value)
                 for origid, origact in origactions.items():
                     newactions[origid] = origact
             else:
