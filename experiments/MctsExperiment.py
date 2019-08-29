@@ -59,7 +59,7 @@ def main():
     obs = env.reset()
     complexAgent = createAgent(env, agent_parameters)
 
-    experiment = Experiment(complexAgent, env, maxSteps, render=False)
+    experiment = Experiment(complexAgent, env, maxSteps, render=True)
     experiment.addListener(JsonLogger(logoutput))
     experiment.addListener(PickleLogger(logoutputpickle))
     stats, confidence_ints = experiment.run()

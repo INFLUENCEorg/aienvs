@@ -3,18 +3,16 @@ aliases:
   - &MctsAgent aiagents.single.mcts.MctsAgent.MctsAgent
   - &RandomAgent aiagents.single.RandomAgent.RandomAgent
   - &FactoryFloorAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
+  - &TrainedAgent aiagents.single.TrainedAgent.TrainedAgent.TrainedAgent
 
 config:
   - &RobotAgent aiagents.single.mcts.MctsAgent.MctsAgent
     #- &RobotAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
     #- &RobotAgent aiagents.single.RandomAgent.RandomAgent
-  - &otherAgent aiagents.single.TrainedAgent.TrainedAgent.TrainedAgent
-  - &otherAgentParameters {"modelFile": "models/robot.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {}} 
   - &timeLimit 2
   - &explorationConstant 10
   - &samplingLimit 20
 
-# do not edit here
 parameters:
       class: *BasicComplexAgent
       parameters: {}
@@ -34,12 +32,12 @@ parameters:
                     class: *BasicComplexAgent
                     parameters: {}
                     subAgentList:
-                      - class: *otherAgent
+                      - class: *RandomAgent
                         id: "robot2"
-                        parameters: *otherAgentParameters
-                      - class: *otherAgent
+                        parameters: {}
+                      - class: *RandomAgent
                         id: "robot3"
-                        parameters: *otherAgentParameters
+                        parameters: {}
               timeLimit: *timeLimit
               treeParameters: 
                   explorationConstant: *explorationConstant
@@ -59,12 +57,15 @@ parameters:
                   class: *BasicComplexAgent
                   parameters: {}
                   subAgentList:
-                      - class: *otherAgent
+                      - class: *TrainedAgent
                         id: "robot1"
-                        parameters: *otherAgentParameters
-                      - class: *otherAgent
+                        parameters:
+                          modelFile: "models/robot1.h5" 
+                          backupClass: aiagents.single.RandomAgent.RandomAgent
+                          backupClassParameters: {}
+                      - class: *RandomAgent
                         id: "robot3"
-                        parameters: *otherAgentParameters
+                        parameters: {}
               timeLimit: *timeLimit
               treeParameters: 
                   explorationConstant: *explorationConstant
@@ -84,12 +85,18 @@ parameters:
                   class: *BasicComplexAgent
                   parameters: {}
                   subAgentList:
-                      - class: *otherAgent
+                      - class: *TrainedAgent
                         id: "robot1"
-                        parameters: *otherAgentParameters
-                      - class: *otherAgent
+                        parameters:
+                          modelFile: "models/robot1.h5" 
+                          backupClass: aiagents.single.RandomAgent.RandomAgent
+                          backupClassParameters: {}
+                      - class: *TrainedAgent
                         id: "robot2"
-                        parameters: *otherAgentParameters
+                        parameters:
+                          modelFile: "models/robot2.h5" 
+                          backupClass: aiagents.single.RandomAgent.RandomAgent
+                          backupClassParameters: {}
               timeLimit: *timeLimit
               treeParameters: 
                   explorationConstant: *explorationConstant

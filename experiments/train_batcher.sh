@@ -38,4 +38,4 @@ module load cuda/10.0 cudnn/10.0-7.4.2.24
 module list
 
 srun python3 preprocessor.py debug_configs/training.yaml $DIRNAME/data$1/
-cp $DIRNAME/models/robot.h5 $DIRNAME/models/robot_gen$1.h5
+#cp $DIRNAME/models/robot.h5 $DIRNAME/models/robot_gen$1.h5
