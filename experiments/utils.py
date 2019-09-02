@@ -40,8 +40,8 @@ from keras.utils import plot_model
 
 def classification_model():
     model = Sequential()
-    model.add(Convolution2D(16,(2,2), input_shape=(5,4,3), activation='relu'))
-    model.add(Convolution2D(32,(2,2), input_shape=(5,4,3), activation='relu'))
+    model.add(Convolution2D(16,(2,2), input_shape=(4,4,3), activation='relu'))
+    model.add(Convolution2D(32,(2,2), activation='relu'))
  #   model.add(Convolution2D(4,(2,2), activation='relu'))
    # model.add(Dropout(0.5))
    # model.add(Flatten())

@@ -3,7 +3,7 @@
 # (see 'man sbatch' for more information on setting these parameters)
 
 # The default partition is the 'general' partition
-#SBATCH --partition=influence
+#SBATCH --partition=influence,general
 
 # The default Quality of Service is the 'short' QoS (maximum run time: 4 hours)
 #SBATCH --qos=short

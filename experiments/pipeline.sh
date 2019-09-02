@@ -14,7 +14,11 @@ do
   echo $TJOB
 
   DJOBS=()
+<<<<<<< Updated upstream
   for (( djob = 1 ; djob <= $NDJOBS-1; djob++ )) ### Inner for loop ###
+=======
+  for (( djob = 1 ; djob < $NDJOBS; djob++ )) ### Inner for loop ###
+>>>>>>> Stashed changes
   do
       DJOBS+=$(./runner.sh $DATADIR $TJOB)
       DJOBS+=:

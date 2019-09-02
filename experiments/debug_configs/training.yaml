@@ -1,5 +1,5 @@
 parameters:
-    width: 5
+    width: 4
     height: 4
-    robotIds: ["robot1", "robot2", "robot3"]
+    robotIds: ["robot1", "robot2", "robot3", "robot4"]
     evaluate: "False"

@@ -1,6 +1,6 @@
 #!/bin/sh
 ENV_FILE=${3:-./debug_configs/factory_floor_cluster.yaml}
-AGENT_FILE=${4:-./debug_configs/agent_config.yaml}
+AGENT_FILE=${4:-./debug_configs/agent_config_seq.yaml}
 DATA_DIR=${1:-data/}
 DEPENDENCY=${2:-NONE}
 
