@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 TJOB=(NONE)
 EXPERIMENT=$1
 NGENERATIONS=$2
@@ -14,7 +14,7 @@ do
   echo $TJOB
 
   DJOBS=()
-  for (( djob = 1 ; djob <= $NDJOBS; djob++ )) ### Inner for loop ###
+  for (( djob = 1 ; djob <= $NDJOBS-1; djob++ )) ### Inner for loop ###
   do
       DJOBS+=$(./runner.sh $DATADIR $TJOB)
       DJOBS+=:

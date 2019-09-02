@@ -68,6 +68,7 @@ class FactoryFloor(Env):
         tasks = []
         self._state = FactoryFloorState(robots, tasks)
 
+        # TODO: remove code duplication
         for item in self._parameters['robots']:
             pos = item['pos']
             robotId = item['id']
@@ -81,7 +82,16 @@ class FactoryFloor(Env):
                 raise ValueError("Unknown robot position, expected list but got " + str(type(pos)))
             self._state.addRobot(robot)
         for pos in self._parameters['tasks']:
-            self._state.addTask(FactoryFloorTask(array(pos)))
+            if isinstance(pos, list):
+                if len(pos) != 2:
+                    raise ValueError("position vector must be length 2 but got " + str(pos))
+                task = FactoryFloorTask(array(pos))
+            elif pos == 'random':
+                task = FactoryFloorTask(self._getFreeMapPosition())
+            else:
+                raise ValueError("Unknown task position, expected list but got " + str(type(pos)))
+            self._state.addTask(task)
+                
     
         if not USE_PossibleActionsSpace:
             self._actSpace = spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) for robot in self._state.robots})
