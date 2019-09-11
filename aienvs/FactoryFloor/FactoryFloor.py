@@ -16,6 +16,7 @@ import random
 from aiagents.FixedActionsSpace import FixedActionsSpace
 import pdb
 import numbers
+from aienvs.gym.CustomObjectSpace import CustomObjectSpace
 
 USE_PossibleActionsSpace = False
 
@@ -91,7 +92,6 @@ class FactoryFloor(Env):
             else:
                 raise ValueError("Unknown task position, expected list but got " + str(type(pos)))
             self._state.addTask(task)
-                
     
         if not USE_PossibleActionsSpace:
             self._actSpace = spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) for robot in self._state.robots})
@@ -151,12 +151,9 @@ class FactoryFloor(Env):
 
     @property
     def observation_space(self):
-        """
-        Returns 2 layers: first is for the robot positions, second for the task positions
-        """
-        obsSpace = spaces.MultiDiscrete([2, self._map.getWidth(), self._map.getHeight()]) 
-        obsSpace.seed(self._parameters['seed'])
-        return obsSpace
+        # obsSpace = spaces.MultiDiscrete([2, self._map.getWidth(), self._map.getHeight()]) 
+        # obsSpace.seed(self._parameters['seed'])
+        return CustomObjectSpace(self._state);
 
     @property
     def action_space(self):
