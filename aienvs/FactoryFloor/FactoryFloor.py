@@ -3,6 +3,7 @@ from gym import spaces
 from aienvs.FactoryFloor.FactoryFloorRobot import FactoryFloorRobot
 from aienvs.FactoryFloor.FactoryFloorTask import FactoryFloorTask
 from aienvs.FactoryFloor.FactoryFloorState import FactoryFloorState
+from aienvs.gym.FixedActionsSpace import FixedActionsSpace
 from aienvs.Environment import Env
 from numpy import set_printoptions, transpose, zeros
 from numpy import array, dstack, ndarray
@@ -13,7 +14,6 @@ from numpy.random import seed as npseed
 from numpy.random import choice as weightedchoice
 import time
 import random
-from aienvs.gym.FixedActionsSpace import FixedActionsSpace
 import pdb
 import numbers
 from aienvs.gym.CustomObjectSpace import CustomObjectSpace
