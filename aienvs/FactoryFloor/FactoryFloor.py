@@ -13,7 +13,7 @@ from numpy.random import seed as npseed
 from numpy.random import choice as weightedchoice
 import time
 import random
-from aiagents.FixedActionsSpace import FixedActionsSpace
+from aienvs.gym.FixedActionsSpace import FixedActionsSpace
 import pdb
 import numbers
 from aienvs.gym.CustomObjectSpace import CustomObjectSpace
