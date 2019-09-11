@@ -3,20 +3,22 @@ import numpy as np
 from gettext import _current_domain
 from aienvs.Sumo.LDM import ldm
 
+
 class State:
     """
     Abstract superclass for the concrete states
     @param ldm the LDM connection with sumo
     @param lights the list of traffic light IDs (strings)
     """
+
     def __init__(self, ldm, lights:list):
         """
         @param lights list of traffic light ids
         """
-        self._ldm=ldm
+        self._ldm = ldm
             # get height - the number of lanes in total
         self._lanes = []
-        if( lights ):
+        if(lights):
             self._lights = lights
             for lightid in lights:
                 lanes = self._ldm.getControlledLanes(lightid)
@@ -54,9 +56,6 @@ class State:
         raise Exception("not implemented")
 
 
-
-
-
 class LinearFeatureState(State):
     """
     [sum of wait, sum of vehicle delay, number of vehicle, 
@@ -65,25 +64,24 @@ class LinearFeatureState(State):
     as described in elise's master thesis
     only support one-light scenario
     """
+
     def __init__(self, ldm):
-        State.__init__(self, ldm,["0"])
+        State.__init__(self, ldm, ["0"])
         self._prev_speed = {}
         self._actions = ['GrGr', 'ryry', 'rGrG', 'yryr']
-        self._current_state = np.zeros((len(self._actions)*len(self._ldm.getControlledLanes("0"))*7,1,1))
-
+        self._current_state = np.zeros((len(self._actions) * len(self._ldm.getControlledLanes("0")) * 7, 1, 1))
     
     def update_state(self):
         lane_states, self._prev_speed, stops = self._get_lane_states(self._prev_speed)
         state = np.array(self._get_linear_state(lane_states, self._ldm.getControlledLanes("0")))
-        self._current_state = np.reshape(state, (len(self._actions)*len(self._ldm.getControlledLanes("0"))*7,1,1))
+        self._current_state = np.reshape(state, (len(self._actions) * len(self._ldm.getControlledLanes("0")) * 7, 1, 1))
         return self._current_state
 
-    #Override
+    # Override
     def get_action_space(self):
         return ['GrGr', 'rGrG']
-
     
-    def _get_lane_states(self,  prev_speed):
+    def _get_lane_states(self, prev_speed):
         '''
         Go through the list of vehicles, and use each vehicle's state
         to determine the state of the lane it's currently on.
@@ -258,7 +256,6 @@ class LinearFeatureState(State):
         return state
 
 
-
 class DenseState(State):
     """
     the dense state representation as described in my dissertation
@@ -266,6 +263,7 @@ class DenseState(State):
     '3' is a one-hot vector for three light status (red, yellow, green)
 
     """
+
     def __init__(self, lights, width, frames, ldm):
         State.__init__(self, ldm, lights)
 
@@ -291,7 +289,6 @@ class DenseState(State):
         # Get the size of the state in meters
         tl_state_size = self._get_state_size(self.all_coordinates)
         self.scale_factor = self._get_scale_factor(tl_state_size)
-
 
     def update_state(self):
         """
@@ -338,7 +335,6 @@ class DenseState(State):
                 a2 += 'G'
         return [a1, a2]
     
-    
     def get_height(self):
         """
         @return the height of the matrix
@@ -363,7 +359,6 @@ class DenseState(State):
         """
         one_lane = all_coordinates[0]
         return np.abs(one_lane[0][0] - one_lane[1][0]) + np.abs(one_lane[0][1] - one_lane[1][1])
-
  
     def _add_state_matrix(self, state_matrix):
         """
@@ -376,15 +371,13 @@ class DenseState(State):
         self._current_state[:, :, 1:] = temp_state
 
 
-
-
-
 class MatrixState():
     """
     WARNING THIS CLASS HAS NOT BEEN FIXED YET (does not extend State)
     This is the super class that describes some basic functions
     of a matrix respresentation of a state
     """
+
     def __init__(self, lights, width, height, frames, traci):
         """
         This class stores the lanes it represents and calculates everything
@@ -427,7 +420,6 @@ class MatrixState():
         the lanes that this state is working with
         """
         return self._lanes
-
 
     def getMaxSpeed(self, lane):
         """
@@ -484,8 +476,8 @@ class MatrixState():
 
         Returns: list
         """
-        scale_width = state_size[0]/float(self.width)
-        scale_height = state_size[1]/float(self.height)
+        scale_width = state_size[0] / float(self.width)
+        scale_height = state_size[1] / float(self.height)
         return [scale_height, scale_width]
 
     def reshape_location(self, location):
@@ -498,7 +490,7 @@ class MatrixState():
 
             Returns: coordinates rescaled to the matrix size
         """
-        reshaped_location = [0,0]
+        reshaped_location = [0, 0]
         reshaped_location[0] = int((location[0] - self.bottom_left[0]) // self.scale_factor[0])
         reshaped_location[1] = int((location[1] - self.bottom_left[1]) // self.scale_factor[1])
         # if the location is exactly the maximum horizontal or vertical value it will be out of bounds
@@ -529,6 +521,7 @@ class PositionMatrix(MatrixState):
     WARNING THIS CLASS HAS NOT BEEN FIXED YET (does not extend State)
     TODO document what this is and does
     """
+
     def __init__(self, lights, width, height, frames, traci):
         """
         This class stores the state as a binary position matrix as used
@@ -559,7 +552,7 @@ class PositionMatrix(MatrixState):
             vehicles = traci.lane.getLastStepVehicleIDs(lane)
             for vehicle in vehicles:
                 location = traci.vehicle.getPosition(vehicle)
-                [x,y] = self.reshape_location(location)
+                [x, y] = self.reshape_location(location)
                 state_matrix[x][y] = 1
 
         if rotation > 0:
@@ -568,7 +561,6 @@ class PositionMatrix(MatrixState):
 
         self._add_state_matrix(state_matrix)
         return self._current_state
-
 
     def _add_state_matrix(self, state_matrix):
         """
@@ -582,11 +574,12 @@ class PositionMatrix(MatrixState):
         Returns: None
         """
         # Deepcopy to prevent overwriting due to Python referencing
-        temp_state = copy.deepcopy(self._current_state[:,:,0:-1])
+        temp_state = copy.deepcopy(self._current_state[:, :, 0:-1])
         # First element is the latest state
-        self._current_state[:,:,0] = state_matrix
+        self._current_state[:, :, 0] = state_matrix
         # Rest is the 2nd, 3rd and 4th latest
-        self._current_state[:,:,1:] = temp_state
+        self._current_state[:, :, 1:] = temp_state
+
 
 class PositionLightMatrix(MatrixState):
     """
@@ -594,6 +587,7 @@ class PositionLightMatrix(MatrixState):
     This class contains the positions of the cars and the current states
     of the traffic lights.
     """
+
     def __init__(self, lights, width, height, frames, traci):
         """
         This class is an instance of MatrixState
@@ -617,7 +611,7 @@ class PositionLightMatrix(MatrixState):
             vehicles = traci.lane.getLastStepVehicleIDs(lane)
             for vehicle in vehicles:
                 location = traci.vehicle.getPosition(vehicle)
-                [x,y] = self.reshape_location(location)
+                [x, y] = self.reshape_location(location)
                 # Vehicle location
                 state_matrix[x][y] = 1
 
@@ -647,11 +641,11 @@ class PositionLightMatrix(MatrixState):
         Returns: None
         """
         # Deepcopy to prevent overwriting due to Python referencing
-        temp_state = copy.deepcopy(self._current_state[:,:,0:-1])
+        temp_state = copy.deepcopy(self._current_state[:, :, 0:-1])
         # First element is the latest state
-        self._current_state[:,:,0] = state_matrix
+        self._current_state[:, :, 0] = state_matrix
         # Rest is the 2nd, 3rd and 4th latest
-        self._current_state[:,:,1:] = temp_state
+        self._current_state[:, :, 1:] = temp_state
 
     def stop_light_locations(self, state_matrix, light_color, traci):
         """
@@ -672,11 +666,12 @@ class PositionLightMatrix(MatrixState):
                 val = 0.5
             elif light_color[index] == 'r':
                 val = 0.2
-            x,y = self.reshape_location(lane_end)
+            x, y = self.reshape_location(lane_end)
             state_matrix[x][y] = val
 
             index += 1
         return state_matrix
+
 
 class ValueMatrix(MatrixState):
     """
@@ -684,6 +679,7 @@ class ValueMatrix(MatrixState):
     This class contains the positions of the cars, the speed of the cars,
     the acceleration of the cars and the states of the traffic lights.
     """
+
     def __init__(self, lights, width, height, frames, traci, y_t=4):
         """
         This class is an instance of MatrixState
@@ -727,15 +723,15 @@ class ValueMatrix(MatrixState):
                 vehicle_speed = traci.vehicle.getSpeed(vehicle)
                 lane = traci.vehicle.getLaneID(vehicle)
                 vehicle_max_speed = traci.lane.getMaxSpeed(lane)
-                current_speed = vehicle_speed/vehicle_max_speed
+                current_speed = vehicle_speed / vehicle_max_speed
 
                 location = traci.vehicle.getPosition(vehicle)
-                [x,y] = self.reshape_location(location)
+                [x, y] = self.reshape_location(location)
                 # Vehicle location
                 state_matrix[x][y][0] = 1
                 # Vehicle speed
                 state_matrix[x][y][1] = current_speed
-                #Vehicle deceleration/acceleration
+                # Vehicle deceleration/acceleration
                 try:
                     old_speed = self.state_speed[vehicle]
                 except KeyError:
@@ -795,17 +791,19 @@ class ValueMatrix(MatrixState):
                 val = 0.6
             elif light_color[index] == 'r':
                 val = 0.2
-            x,y = self.reshape_location(lane_end)
-            state_matrix[x][y][3+i] = val
+            x, y = self.reshape_location(lane_end)
+            state_matrix[x][y][3 + i] = val
 
             index += 1
 
         return state_matrix
 
+
 class LdmMatrixState(State):
     """
     TODO document how this state works and achieves
     """
+
     def __init__(self, ldm, data, type="byCorners"):
         State.__init__(self, ldm, None)
 
@@ -821,4 +819,9 @@ class LdmMatrixState(State):
 
     def update_state(self):
         return self._ldm.getMapSliceByCorners(self.bottomLeftCoords, self.topRightCoords)
-
+    
+    def size(self) -> list: 
+        """
+        returns the size of the matrix as a list of 2 elements.
+        """
+        return [self.topRightCoords[0] - self.bottomLeftCoords[0], self.topRightCoords[1] - self.bottomLeftCoords[1] ]
