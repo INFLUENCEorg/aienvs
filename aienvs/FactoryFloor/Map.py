@@ -6,11 +6,13 @@ import copy
 
 class Map():
     """
-    Contains a static discrete square map
+    Contains a static (immutable) discrete square map
     Each position in the map can have various values, 
     eg a free space or a wall.
     This map is like a paper map of the environment,
     so without moving parts.
+    immutable means nobody should access private variables
+    and there are no setters so this object will never change.
     """
 
     def __init__(self, map:list, ptask:float, rng:Random=Random()):
@@ -36,14 +38,14 @@ class Map():
         for line in map:
             if width != len(line):
                 raise ValueError("Map must be square")
-        self._cachedTaskPositions = Map._getTasksList(map)
+        self._cachedTaskPositions = tuple(Map._getTasksList(map))
         
         weights = Map._getWeightsList(map)
         totalweight = sum(weights)
         if totalweight == 0:
-            self._cachedTaskWeights = []
+            self._cachedTaskWeights = tuple([])
         else:
-            self._cachedTaskWeights = [w / totalweight for w in weights]
+            self._cachedTaskWeights = tuple([w / totalweight for w in weights])
 
     def getWidth(self) -> int:
         return len(self._map[0])
@@ -71,13 +73,13 @@ class Map():
         """
         return self._map[pos[1]][pos[0]]
     
-    def getTaskPositions(self) -> list:
+    def getTaskPositions(self) -> tuple:
         """
         @return: the list of task positions ( (x,y) tuples )
         """
         return self._cachedTaskPositions
     
-    def getTaskWeights(self) -> list:
+    def getTaskWeights(self) -> tuple:
         """
         @return: list of task weights, ordered to match getTaskPositions
         """
@@ -141,7 +143,7 @@ class Map():
             newtaskp = self._taskProbability * sum(Map._getWeightsList(newmap)) / oldweight
         return Map(newmap, newtaskp)
     
-    #A MAP IS IMMUTABLE
-    def __deepcopy__(self,memo):
+    # A MAP IS IMMUTABLE
+    def __deepcopy__(self, memo):
         # create a copy with self.linked_to *not copied*, just referenced.
         return self

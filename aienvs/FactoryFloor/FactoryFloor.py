@@ -302,8 +302,8 @@ class FactoryFloor(Env):
         """
         Add one new task to the task pool
         """
-        map = self._state.getMap()
-        poslist = map.getTaskPositions()
+        themap = self._state.getMap()
+        poslist = list(themap.getTaskPositions())
         if not self._parameters['allow_task_overlap']:
             if len(self._state.tasks) >= len(poslist):
                 return
@@ -311,7 +311,8 @@ class FactoryFloor(Env):
         # samplingSpace = spaces.MultiDiscrete([self._parameters['x_size'], self._parameters['y_size']])
         while True:  # do until newpos is not yet tasked, or task overlap allowed
             # work around numpy bug when list contains tuples
-            i = weightedchoice(list(range(len(poslist))), 1, p=map.getTaskWeights())[0]
+            weights = list(themap.getTaskWeights())
+            i = weightedchoice(list(range(len(poslist))), 1, p=weights)[0]
             newpos = poslist[i]
             if self._parameters['allow_task_overlap'] or self._getTask(newpos) == None:
                 break;
