@@ -1,4 +1,5 @@
 from random import Random
+import random
 from numpy import array, ndarray
 import copy
 
@@ -140,3 +141,7 @@ class Map():
             newtaskp = self._taskProbability * sum(Map._getWeightsList(newmap)) / oldweight
         return Map(newmap, newtaskp)
     
+    #A MAP IS IMMUTABLE
+    def __deepcopy__(self,memo):
+        # create a copy with self.linked_to *not copied*, just referenced.
+        return self
