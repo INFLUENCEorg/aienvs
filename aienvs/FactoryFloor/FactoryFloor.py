@@ -60,7 +60,7 @@ class FactoryFloor(Env):
         self._random = Random(x=self._parameters['seed'])
         if isinstance(self._parameters['seed'], numbers.Number):
             npseed(self._parameters['seed'])
-        map = Map(self._parameters['map'], self._parameters['P_task_appears'], self._random)
+        map = Map(self._parameters['map'], self._parameters['P_task_appears'])
         # use "set" to get rid of weird wrappers
         # if set(self._parameters['P_action_succeed'].keys()) != set(FactoryFloor.ACTIONS.values()):
         #    raise ValueError("P_action_succeed must contain values for all actions")
@@ -274,7 +274,7 @@ class FactoryFloor(Env):
         @return:random map position (x,y) that is not occupied by robot or wall.
         """
         while True:
-            pos = self._state.getMap().getRandomPosition()
+            pos = self._state.getMap().getRandomPosition(self._random)
             if self._isFree(pos):
                 return pos
 
