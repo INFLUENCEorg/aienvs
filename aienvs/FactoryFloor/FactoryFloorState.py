@@ -1,9 +1,16 @@
 import numpy as np
+from aienvs.FactoryFloor.Map import Map
+
 
 class FactoryFloorState():
-    def __init__(self, robotList, taskList):
+
+    def __init__(self, robotList, taskList, map:Map):
+        """
+        @param map the floor map, immutable
+        """
         self.robots = robotList
         self.tasks = taskList
+        self._map = map
         self.step = 0
 
     def addRobot(self, robot):
@@ -12,6 +19,9 @@ class FactoryFloorState():
     def addTask(self, task):
         self.tasks.append(task)
 
+    def getMap(self):
+        return self._map
+    
     def __str__(self):
         """
         for hashing
@@ -38,14 +48,13 @@ def encodeStateAsArray(state:FactoryFloorState, width:int, height:int, currentRo
     if sum(sum(bitmapThisRobot)) > 1:
         raise "Something went wrong"
    
-    return np.stack([bitmapOtherRobots,bitmapTasks,bitmapThisRobot], axis=2)
+    return np.stack([bitmapOtherRobots, bitmapTasks, bitmapThisRobot], axis=2)
 
-#TODO: make this snippet a test
-#obs=env.reset()
-#from aienvs.FactoryFloor.FactoryFloorTask import FactoryFloorTask
-#import numpy as np
-#obs.addTask(FactoryFloorTask(np.array([2,2])))
-#obs.addTask(FactoryFloorTask(np.array([0,0])))
-#encoded=encodeStateAsArray(obs, env.observation_space.nvec[1],env.observation_space.nvec[2], "robot1")
-
+# TODO: make this snippet a test
+# obs=env.reset()
+# from aienvs.FactoryFloor.FactoryFloorTask import FactoryFloorTask
+# import numpy as np
+# obs.addTask(FactoryFloorTask(np.array([2,2])))
+# obs.addTask(FactoryFloorTask(np.array([0,0])))
+# encoded=encodeStateAsArray(obs, env.observation_space.nvec[1],env.observation_space.nvec[2], "robot1")
 
