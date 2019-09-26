@@ -228,8 +228,7 @@ class FactoryFloor(Env):
         """
         robot tries to execute given action.
         @param robot a FactoryFloorRobot
-        @param action the ACTION number. If ACT, then the robot executes all
-        tasks that are in the tasks list and at the robot's location 
+        @param action the ACTION number. 
         """
         actstring = self.ACTIONS.get(action)
         try:
