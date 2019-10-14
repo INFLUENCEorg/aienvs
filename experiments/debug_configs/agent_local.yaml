@@ -1,0 +1,65 @@
+aliases:
+  - &BasicComplexAgent aiagents.multi.BasicComplexAgent.BasicComplexAgent
+  - &MctsAgent aiagents.single.mcts.MctsAgent.MctsAgent
+  - &RandomAgent aiagents.single.RandomAgent.RandomAgent
+  - &FactoryFloorAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
+
+config:
+  - &RobotAgent aiagents.single.mcts.MctsAgent.MctsAgent
+    #- &RobotAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
+    #- &RobotAgent aiagents.single.RandomAgent.RandomAgent
+  - &otherAgent aiagents.single.TrainedAgent.TrainedAgent.TabularAgent
+  - &timeLimit 1
+  - &explorationConstant 10
+  - &samplingLimit 20
+
+# do not edit here
+parameters:
+      class: *BasicComplexAgent
+      parameters: {}
+      subAgentList:
+          - class: *RobotAgent
+            id: "robot1"
+            parameters:
+              treeAgent:
+                class: *RandomAgent
+                id: "robot1"
+                parameters: {}
+              rolloutAgent:
+                class: *FactoryFloorAgent
+                id: "robot1"
+                parameters: {}
+              otherAgents:
+                    class: *BasicComplexAgent
+                    parameters: {}
+                    subAgentList:
+                      - class: *otherAgent
+                        id: "robot2"
+                        parameters: {"modelFile": "models/agent1/robot2.yaml", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {}} 
+              timeLimit: *timeLimit
+              treeParameters: 
+                  explorationConstant: *explorationConstant
+                  samplingLimit: *samplingLimit
+          - class: *RobotAgent
+            id: "robot2"
+            parameters:
+              treeAgent:
+                class: *RandomAgent
+                id: "robot2"
+                parameters: {}
+              rolloutAgent:
+                class: *FactoryFloorAgent
+                id: "robot2"
+                parameters: {}
+              otherAgents:
+                  class: *BasicComplexAgent
+                  parameters: {}
+                  subAgentList:
+                      - class: *otherAgent
+                        id: "robot1"
+                        parameters: {"modelFile": "models/agent2/robot1.yaml", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {}} 
+              timeLimit: *timeLimit
+              treeParameters: 
+                  explorationConstant: *explorationConstant
+                  samplingLimit: *samplingLimit
+

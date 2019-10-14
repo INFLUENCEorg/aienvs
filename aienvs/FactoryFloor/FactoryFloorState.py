@@ -27,28 +27,48 @@ class FactoryFloorState():
         for hashing
         """
         return "Robots: " + str([str(robot) for robot in self.robots ]) + "Tasks: " + str([str(task) for task in self.tasks ])
+
+    def __eq__(self, other):
+        return str(self)==str(other)
+
+    def __hash__(self):
+        return str(self)
  
 
-def encodeStateAsArray(state:FactoryFloorState, width:int, height:int, currentRobotId:str=None):
-    bitmapThisRobot = np.zeros((width, height))
-    bitmapOtherRobots = np.zeros((width, height))
-    bitmapTasks = np.zeros((width, height))
+def encodeStateAsArray(state:FactoryFloorState):
+    width = state.getMap().getWidth()
+    height = state.getMap().getHeight()
+    # first one for the tasks, then each layer for one robot in lexicographic order
+    result = np.zeros([width, height,2+len(state.robots)])
 
+    robots = {}
     for robot in state.robots:
-        pos = robot.getPosition()
-        if (robot.getId() == currentRobotId):
-            bitmapThisRobot[pos[0], pos[1]] += 1
-        else:
-            bitmapOtherRobots[pos[0], pos[1]] += 1
+        robots[robot.getId()]=robot.getPosition()
+
+    sortedIds = sorted(robots.keys(), key=str.lower)
+    
+    idx=0
+    while idx < len(sortedIds):
+        pos=robots[sortedIds[idx]]
+        result[pos[0], pos[1], idx+2] += 1
+        if sum(sum(result[:,:,idx+2])) != 1:
+            breakpoint()
+            raise "Something went wrong"
+        idx+=1
 
     for task in state.tasks:
         pos = task.getPosition()
-        bitmapTasks[pos[0], pos[1]] += 1
+        result[pos[0], pos[1], 1] += 1
 
-    if sum(sum(bitmapThisRobot)) > 1:
-        raise "Something went wrong"
+    result[:,:,0] += state.step*np.ones([width,height])
    
-    return np.stack([bitmapOtherRobots, bitmapTasks, bitmapThisRobot], axis=2)
+    return result
+
+def toTuple(a):
+    try:
+        return tuple(toTuple(i) for i in a)
+    except TypeError:
+        return a
 
 # TODO: make this snippet a test
 # obs=env.reset()

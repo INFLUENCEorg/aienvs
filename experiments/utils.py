@@ -4,8 +4,8 @@ import pickle
 from aienvs.FactoryFloor.FactoryFloorState import encodeStateAsArray
 import numpy as np
 
-def preprocess(dirname, width, height, robotIdList):
-    all_pickle_files = glob.glob( dirname + '**/*.pickle', recursive=True )
+def preprocess(dirname, robotIdList):
+    all_pickle_files = glob.glob( dirname + '/**/*.pickle', recursive=True )
 
     states = []
     actions = []
@@ -19,7 +19,7 @@ def preprocess(dirname, width, height, robotIdList):
                     data=pickle.load(instream)
                     for robotId in robotIdList:
                         actions.append(data.get("actions").get(robotId))
-                        states.append(encodeStateAsArray(data.get("observation"), width, height, robotId))
+                        states.append(encodeStateAsArray(data.get("observation")))
                 except EOFError:
                     break
 

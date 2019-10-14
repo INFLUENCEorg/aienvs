@@ -31,7 +31,7 @@ def main():
         horizontal_flip=False)
     
     for robotId in robotIds:
-        X_train, y_train = preprocess(dirname, width, height, [robotId])
+        X_train, y_train = preprocess(dirname, [robotId])
         print(np.histogram(y_train))
 
         print(X_train.shape)
