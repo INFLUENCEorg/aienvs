@@ -21,14 +21,14 @@ class SumoGymAdapter(Env):
     An adapter that makes Sumo behave as a proper Gym environment.
     At top level, the actionspace and percepts are in a Dict with the
     trafficPHASES as keys.
-    
-    @param maxConnectRetries the max number of retries to connect. 
-        A retry is needed if the randomly chosen port 
-        to connect to SUMO is already in use. 
+
+    @param maxConnectRetries the max number of retries to connect.
+        A retry is needed if the randomly chosen port
+        to connect to SUMO is already in use.
     """
     _DEFAULT_PARAMETERS = {'gui':True,  # gui or not
-                'scene':'four_grid',  # subdirectory in the aienvs/scenarios/Sumo directory where 
-                'tlphasesfile':'cross.net.xml',  # file 
+                'scene':'four_grid',  # subdirectory in the aienvs/scenarios/Sumo directory where
+                'tlphasesfile':'cross.net.xml',  # file
                 'box_bottom_corner':(0, 0),  # bottom left corner of the observable frame
                 'box_top_corner':(10, 10),  # top right corner of the observable frame
                 'resolutionInPixelsPerMeterX': 1,  # for the observable frame
@@ -36,7 +36,7 @@ class SumoGymAdapter(Env):
                 'y_t': 6,  # yellow time
                 'car_pr': 0.5,  # for automatic route/config generation probability that a car appears
                 'car_tm': 2,  #  for automatic route/config generation when the first car appears?
-                'route_starts' : [],  #  for automatic route/config generation, ask Rolf 
+                'route_starts' : [],  #  for automatic route/config generation, ask Rolf
                 'route_min_segments' : 0,  #  for automatic route/config generation, ask Rolf
                 'route_max_segments' : 0,  #  for automatic route/config generation, ask Rolf
                 'route_ends' : [],  #  for automatic route/config generation, ask Rolf
@@ -53,7 +53,7 @@ class SumoGymAdapter(Env):
         """
         @param path where results go, like "Experiment ID"
         @param parameters the configuration parameters.
-        gui: whether we show a GUI. 
+        gui: whether we show a GUI.
         scenario: the path to the scenario to use
         """
         logging.debug(parameters)
@@ -64,13 +64,13 @@ class SumoGymAdapter(Env):
         tlPhasesFile = os.path.join(dirname, "../../scenarios/Sumo/", self._parameters['scene'], self._parameters['tlphasesfile'])
         self._tlphases = TrafficLightPhases(tlPhasesFile)
         self.ldm = ldm(using_libsumo=self._parameters['libsumo'])
-        
+
         self._takenActions = {}
         self._yellowTimer = {}
         self._chosen_action = None
         self.seed(42)  # in case no seed is given
         self._action_space = self._getActionSpace()
-    
+
     def step(self, actions:dict):
         self._set_lights(actions)
         self.ldm.step()
@@ -80,7 +80,7 @@ class SumoGymAdapter(Env):
 
         # as in openai gym, last one is the info list
         return obs, global_reward, done, []
-    
+
     def reset(self):
         try:
             logging.debug("LDM closed by resetting")
@@ -88,13 +88,13 @@ class SumoGymAdapter(Env):
         except:
             logging.debug("No LDM to close. Perhaps it's the first instance of training")
 
-        logging.info("Starting SUMO environment...")
+        logging.debug("Starting SUMO environment...")
         self._startSUMO()
         # TODO: Wouter: make state configurable ("state factory")
         self._state = LdmMatrixState(self.ldm, [self._parameters['box_bottom_corner'], self._parameters['box_top_corner']], "byCorners")
 
         return self._observe()
-        
+
         # TODO: change the defaults to something sensible
     def render(self, delay=0.0):
         import colorama
@@ -112,7 +112,7 @@ class SumoGymAdapter(Env):
         np.set_printoptions(linewidth=100)
         print(self._observe())
         time.sleep(delay)
-    
+
     def seed(self, seed):
         self._seed = seed
 
@@ -151,8 +151,8 @@ class SumoGymAdapter(Env):
                 self._port = random.SystemRandom().choice(list(range(10000, 20000)))
                 self._sumo_helper = SumoHelper(self._parameters, self._port, self._seed)
                 conf_file = self._sumo_helper.sumocfg_file
-                logging.info("Configuration: " + str(conf_file))
-                sumoCmd = [sumo_binary, "-c", conf_file, "--seed", str(self._seed)]
+                logging.debug("Configuration: " + str(conf_file))
+                sumoCmd = [sumo_binary, "-c", conf_file, "-W", "-v", "false", "--seed", str(self._seed)] # shut up SUMO
                 self.ldm.start(sumoCmd, self._port)
             except Exception as e:
                 if str(e) == "connection closed by SUMO" and maxRetries > 0:
@@ -168,10 +168,10 @@ class SumoGymAdapter(Env):
         self.ldm.setPositionOfTrafficLights(self._parameters['lightPositions'])
 
         if list(self.ldm.getTrafficLights()) != self._tlphases.getIntersectionIds():
-            raise Exception("environment traffic lights do not match those in the tlphasesfile " 
+            raise Exception("environment traffic lights do not match those in the tlphasesfile "
                     +self._parameters['tlphasesfile'] + str(self.ldm.getTrafficLights())
                     +str(self._tlphases.getIntersectionIds()))
-            
+
     def _intToPhaseString(self, intersectionId:str, lightPhaseId: int):
         """
         @param intersectionid the intersection(light) id
@@ -180,8 +180,8 @@ class SumoGymAdapter(Env):
         """
         logging.debug("lightPhaseId" + str(lightPhaseId))
         return self._tlphases.getPhase(intersectionId, lightPhaseId)
-                
-    def _observe(self): 
+
+    def _observe(self):
         """
         Fetches the Sumo state and converts in a proper gym observation.
         The keys of the dict are the intersection IDs (roughly, the trafficLights)
@@ -194,10 +194,10 @@ class SumoGymAdapter(Env):
         Computes the global reward
         """
         return self._state.update_reward() / self._parameters['scaling_factor']
-    
+
     def _getActionSpace(self):
         """
-        @returns the actionspace: a dict containing <id,phases> where 
+        @returns the actionspace: a dict containing <id,phases> where
         id is the intersection id and value is
          all possible actions for each id as specified in tlphases
         """
@@ -230,7 +230,7 @@ class SumoGymAdapter(Env):
             self._takenActions[intersectionId].append(action)
 
     def _correct_action(self, prev_action, action, timer):
-    
+
         """
         Check what we are going to do with the given action based on the
         previous action.
@@ -257,4 +257,3 @@ class SumoGymAdapter(Env):
                 timer = 0
 
         return new_action, timer
-

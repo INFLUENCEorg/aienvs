@@ -61,22 +61,22 @@ class ldm():
         """
         @param sumoCmd the sumo command for the start, list of init arguments
         """
-        logging.info("Sumo command:" + str(sumoCmd))
+        logging.debug("Sumo command:" + str(sumoCmd))
         # traci needs a port, libsumo doesn't
         if( self.SUMO_client.__name__ == "traci" ):
            self.SUMO_client.start(sumoCmd, port=PORT)
         else:
             self.SUMO_client.start(sumoCmd)
 
-        
-        
+
+
     def step(self):
         '''
         This updates the vehicles' states with information from the simulation
         '''
         try:
             self.SUMO_client.simulationStep()
-        except self.SUMO_client.TraCIException as exc: 
+        except self.SUMO_client.TraCIException as exc:
             logging.error(str(exc) + str(" This is some problem of libsumo, but everything still seems to work correctly"))
 
         self.subscribedVehs = list(self.SUMO_client.vehicle.getIDList())
@@ -95,14 +95,14 @@ class ldm():
 
 
         self._resetMap()
-     
+
         if( len(self.subscriptionResults.keys())>0 ):
             self._updateMapWithVehicles( self._getVehiclePositions(self.subscriptionResults) )
 
         tlState = {}
         for lightid in self._lightids:
     	    tlState[lightid] = self.SUMO_client.trafficlight.getSubscriptionResults(lightid)
-        
+
         self._updateTrafficLights(tlState)
 
         if(self._lightids != None):
@@ -111,7 +111,7 @@ class ldm():
                     self._add_stop_lights(self._lightstate[lightid], list(self._tlPositions.get(lightid)) )
         return True
 
-    
+
     def close(self):
         """
         close sumo env
@@ -120,7 +120,7 @@ class ldm():
 
     def isSimulationFinished(self):
         """
-        @return minimum number of vehicles that are still expected to leave the net (id 0x7d) 
+        @return minimum number of vehicles that are still expected to leave the net (id 0x7d)
         """
         return (self.SUMO_client.simulation.getMinExpectedNumber() <= 0)
 
@@ -264,14 +264,14 @@ class ldm():
         @return vehicle co2 emission
         """
         return self.SUMO_client.vehicle.getCO2Emission(vehicleid)
-    
+
     def getFuelConsumption(self, vehicleid):
         """
         @param vehicleid the id of the vehicle
         @return vehicle fuel consumption
         """
         return self.SUMO_client.vehicle.getFuelConsumption(vehicleid)
-    
+
     def getSpeed(self, vehicleid):
         """
         @param vehicleid the id of the vehicle
@@ -308,7 +308,7 @@ class ldm():
     ########################## private functions ##############################
 
     def _subscribeToTrafficLights(self):
-        logging.info("LightID subscriptions" + str(self._lightids))
+        logging.debug("LightID subscriptions" + str(self._lightids))
         for lightid in self._lightids:
             self.SUMO_client.trafficlight.subscribe(lightid, (self.SUMO_client.constants.TL_RED_YELLOW_GREEN_STATE, self.SUMO_client.constants.TL_CURRENT_PHASE))
 
@@ -436,7 +436,7 @@ class ldm():
             arrayPosition = self._coordMetersToArray( position[index] )
             self._arrayMap[arrayPosition[0], arrayPosition[1]] += val
             index += 1
-            
+
     def setRedYellowGreenState(self, agent:string, state:string ):
         """
         set new state for a traffic  light
@@ -466,5 +466,3 @@ class ldm():
         close sumo env
         """
         self.SUMO_client.close()
-
-

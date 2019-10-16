@@ -37,20 +37,20 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
         if self._seedcycle is not None:
             return next(self._seedcycle)
         else:
-            return int(time()) 
-        
+            return int(time())
+
     def run(self):
         """
         Resets env. Loop env.step and agent.step() until number of steps have been made.
         If an env is done before the number of steps have been reached, the env is reset.
-        @return the total reward divided by the total number of episodes 
+        @return the total reward divided by the total number of episodes
         """
         steps = 0
         episodeCount = 0
         totalReward = 0
 
         episodeRewards = []
-    
+
         while steps < self._maxSteps:
             self._env.seed(self._getSeed())
             obs = self._env.reset()
@@ -62,13 +62,13 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
             totalReward += episodeReward
             episodeRewards.append(episodeReward)
             logging.info("Episode reward: " + str(episodeReward))
+            logging.info("-"*100)
             episodeCount += 1
-    
-        try:    
+
+        try:
             return stats.describe(episodeRewards), stats.bayes_mvs(episodeRewards)
         except ValueError as err:
             print(err)
 
     def notifyChange(self, data):
         self.notifyAll(data)
-    
