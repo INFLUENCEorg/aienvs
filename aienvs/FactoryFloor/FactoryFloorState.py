@@ -26,14 +26,11 @@ class FactoryFloorState():
         """
         for hashing
         """
-        return "Robots: " + str([str(robot) for robot in self.robots ]) + "Tasks: " + str([str(task) for task in self.tasks ])
+        return str(encodeStateAsArray(self))
 
     def __eq__(self, other):
         return str(self)==str(other)
 
-    def __hash__(self):
-        return str(self)
- 
 
 def encodeStateAsArray(state:FactoryFloorState):
     width = state.getMap().getWidth()

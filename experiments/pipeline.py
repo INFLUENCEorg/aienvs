@@ -1,5 +1,8 @@
 import subprocess
-import os
+import shutil
+import os, sys
+import tempfile
+from time import time
 from experiments.preprocessorTabular import formTabularModels
 
 env_file = "./debug_configs/factory_floor_local.yaml" 
@@ -10,22 +13,34 @@ def runDjob(datadir,jobid):
     my_env = os.environ.copy()
     my_env["SLURM_JOB_ID"] = str(jobid)
     os.makedirs(datadir+"/"+str(jobid))
-    return subprocess.call(["python3", "MctsExperiment.py", env_file, agent_file, datadir], env=my_env)
+
+    f=open(datadir+"/"+str(jobid)+".out","w+")
+    return subprocess.Popen(["python3", "MctsExperiment.py", env_file, agent_file, datadir], 
+            env=my_env, stdout=f)
 
 def runTjob(datadir, config):
     outputDir = config["outputDir"]
-    os.makedirs(outputDir, exist_ok=True)
+    if os.path.exists(outputDir):
+       shutil.rmtree(outputDir)
+    os.makedirs(outputDir, exist_ok=False)
     robotIds = config["robotIds"]
     formTabularModels(datadir, outputDir, robotIds)
     
     #return subprocess.call(["python3", "preprocessorTabular.py", training_file, experiment+"/data"+str(gen)+"/"])
 
-experiment="testexp3"
-ngenerations=2
+ngenerations=6
 nagents=2
-ndjobs=3
+ndjobs=10
+robotIdsToLearn = ["robot1", "robot2"]
 
 def main():
+    experiment="./data/test"+(str(time()).replace('.',''))
+    os.makedirs(experiment+"/models")
+    models_link="./models"
+    if(os.path.exists(models_link)):
+        os.unlink(models_link)
+    os.symlink(experiment+"/models", models_link)
+
     for gen in range(1,ngenerations+1):
         print("\nNEW GENERATION\n")
         tjob=None
@@ -34,13 +49,17 @@ def main():
             os.makedirs(datadir, exist_ok=True)
         except:
             pass
-        for djobid in range(1,ndjobs+1):
-            print("\nNEW DJOB\n")
-            runDjob(datadir, djobid)
 
-        agentTrained = gen
-        robotIdsToLearn = list(set(["robot1", "robot2"]) - set(["robot"+str(agentTrained)]))
-        tjobConfig = {"outputDir": "./models/agent"+str(agentTrained)+"/", "robotIds": robotIdsToLearn}
+        processes=[]
+        for djobid in range(1,ndjobs+1):
+            processes.append( runDjob(datadir, djobid) )
+
+        for p in processes:
+            p.wait()
+
+        agentTrained = (gen % nagents) + 1
+
+        tjobConfig = {"outputDir": "./"+experiment+"/models/agent"+str(agentTrained)+"/", "robotIds": robotIdsToLearn}
         tjob=runTjob(datadir, tjobConfig)
 
 if __name__=="__main__":

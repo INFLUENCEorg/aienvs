@@ -4,6 +4,7 @@ from aienvs.FactoryFloor.FactoryFloorState import toTuple
 import yaml
 import sys
 import os
+from scipy import stats as s
 
 def formTabularModels(dirname, outputdir, robotIds):
     os.makedirs(outputdir, exist_ok=True)
@@ -15,9 +16,15 @@ def formTabularModels(dirname, outputdir, robotIds):
 
         idx=0
         while idx < len(states):
-            actionDict[toTuple(states[idx])]=actions[idx]
+            try:
+                actionDict[toTuple(states[idx])].append(actions[idx])
+            except KeyError:
+                actionDict[toTuple(states[idx])]=[actions[idx]]
             idx+=1
 
+        for key in actionDict.keys():
+            actionDict[key]=s.mode(actionDict[key])[0][0]
+        
         with open(outputdir + "/" + robotId + '.yaml', 'w+') as outfile:
             yaml.dump(actionDict, outfile, default_flow_style=False)
 

@@ -6,11 +6,13 @@ aliases:
 
 config:
   - &RobotAgent aiagents.single.mcts.MctsAgent.MctsAgent
+  - &ConstantAgent aiagents.single.ConstantAgent.ConstantAgent
     #- &RobotAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
     #- &RobotAgent aiagents.single.RandomAgent.RandomAgent
   - &otherAgent aiagents.single.TrainedAgent.TrainedAgent.TabularAgent
   - &timeLimit 1
-  - &explorationConstant 10
+  - &iterationLimit 20000
+  - &explorationConstant 1
   - &samplingLimit 20
 
 # do not edit here
@@ -28,21 +30,26 @@ parameters:
               rolloutAgent:
                 class: *FactoryFloorAgent
                 id: "robot1"
-                parameters: {}
+                parameters: {"action": 0}
               otherAgents:
                     class: *BasicComplexAgent
                     parameters: {}
                     subAgentList:
                       - class: *otherAgent
                         id: "robot2"
-                        parameters: {"modelFile": "models/agent1/robot2.yaml", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {}} 
-              timeLimit: *timeLimit
+                        parameters: {"modelFile": "models/agent1/robot2.yaml", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
+                        #                      - class: *otherAgent
+                        #                        id: "robot3"
+                        #                        parameters: {"modelFile": "models/agent1/robot3.yaml", "backupClass": aiagents.single.RandomAgent.RandomAgent, "backupClassParameters": {}} 
+              iterationLimit: *iterationLimit
               treeParameters: 
                   explorationConstant: *explorationConstant
                   samplingLimit: *samplingLimit
+                  maxSteps: 2
           - class: *RobotAgent
             id: "robot2"
             parameters:
+              action: 0
               treeAgent:
                 class: *RandomAgent
                 id: "robot2"
@@ -50,16 +57,45 @@ parameters:
               rolloutAgent:
                 class: *FactoryFloorAgent
                 id: "robot2"
-                parameters: {}
+                parameters: {"action": 0}
               otherAgents:
                   class: *BasicComplexAgent
                   parameters: {}
                   subAgentList:
                       - class: *otherAgent
                         id: "robot1"
-                        parameters: {"modelFile": "models/agent2/robot1.yaml", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {}} 
-              timeLimit: *timeLimit
+                        parameters: {"modelFile": "models/agent2/robot1.yaml", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
+                        #                      - class: *otherAgent
+                        #                        id: "robot3"
+                        #                        parameters: {"modelFile": "models/agent2/robot3.yaml", "backupClass": aiagents.single.RandomAgent.RandomAgent, "backupClassParameters": {}} 
+              iterationLimit: *iterationLimit
               treeParameters: 
                   explorationConstant: *explorationConstant
                   samplingLimit: *samplingLimit
-
+                  maxSteps: 2
+                  #          - class: *RobotAgent
+                  #            id: "robot3"
+                  #            parameters:
+                  #              treeAgent:
+                  #                class: *RandomAgent
+                  #                id: "robot3"
+                  #                parameters: {}
+                  #              rolloutAgent:
+                  #                class: *RandomAgent
+                  #                id: "robot3"
+                  #                parameters: {}
+                  #              otherAgents:
+                  #                  class: *BasicComplexAgent
+                  #                  parameters: {}
+                  #                  subAgentList:
+                  #                      - class: *otherAgent
+                  #                        id: "robot1"
+                  #                        parameters: {"modelFile": "models/agent3/robot1.yaml", "backupClass": aiagents.single.RandomAgent.RandomAgent, "backupClassParameters": {}} 
+                  #                      - class: *otherAgent
+                  #                        id: "robot2"
+                  #                        parameters: {"modelFile": "models/agent3/robot2.yaml", "backupClass": aiagents.single.RandomAgent.RandomAgent, "backupClassParameters": {}} 
+                  #              timeLimit: *timeLimit
+                  #              treeParameters: 
+                  #                  explorationConstant: *explorationConstant
+                  #                  samplingLimit: *samplingLimit
+                  #
