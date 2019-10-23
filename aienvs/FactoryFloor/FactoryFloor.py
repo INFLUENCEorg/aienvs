@@ -65,7 +65,7 @@ class FactoryFloor(Env):
         #    raise ValueError("P_action_succeed must contain values for all actions")
         self.seed(self._parameters['seed'])
 
-        robots = []
+        robots = {}
         tasks = []
         self._state = FactoryFloorState(robots, tasks, map)
 
@@ -94,7 +94,7 @@ class FactoryFloor(Env):
             self._state.addTask(task)
     
         if not USE_PossibleActionsSpace:
-            self._actSpace = spaces.Dict({robot.getId():spaces.Discrete(len(self.ACTIONS)) for robot in self._state.robots})
+            self._actSpace = spaces.Dict({robotId:spaces.Discrete(len(self.ACTIONS)) for robotId in self._state.robots.keys()})
             #seed = self._random.randint(0, 10 * len(self._state.robots))
             #self._actSpace.seed(seed)
 
@@ -102,7 +102,7 @@ class FactoryFloor(Env):
     def step(self, actions:dict):
         global_reward = self._computePenalty()
         if(actions):
-            for robot in self._state.robots:
+            for robot in self._state.robots.values():
                 self._applyAction(robot, actions[robot.getId()])
         global_reward -= self._computePenalty()
  
@@ -161,8 +161,8 @@ class FactoryFloor(Env):
     @property
     def action_space(self):
         if USE_PossibleActionsSpace:
-            actSpace = spaces.Dict({robot.getId():PossibleActionsSpace(self, robot) 
-                for robot in self._state.robots})
+            actSpace = spaces.Dict({robotId:PossibleActionsSpace(self, robot) 
+                for robotId, robot in self._state.robots.items()})
         else:        
             actSpace = self._actSpace
         return actSpace
@@ -187,7 +187,7 @@ class FactoryFloor(Env):
         parameters['map'] = newmap.getFullMap()
         parameters['robots'] = [\
             { 'id':robot.getId(), 'pos':robot.getPosition().tolist() }\
-            for robot in self._state.robots if self._state.getMap().isInside(robot.getPosition())]
+            for robot in self._state.robots.values() if self._state.getMap().isInside(robot.getPosition())]
         parameters['tasks'] = [task.getPosition().tolist() \
             for task in self._state.tasks if self._state.getMap().isInside(task.getPosition())]
         parameters['P_task_appears'] = newmap.getTaskProbability()
@@ -217,7 +217,7 @@ class FactoryFloor(Env):
         map = self._state.getMap()
         bitmapRobots = zeros((map.getWidth(), map.getHeight()))
         bitmapTasks = zeros((map.getWidth(), map.getHeight()))
-        for robot in self._state.robots:
+        for robot in self._state.robots.values():
             pos = robot.getPosition()
             bitmapRobots[pos[0], pos[1]] += 1
 
@@ -244,15 +244,14 @@ class FactoryFloor(Env):
         
         if actstring == "ACT":
             newpos=pos
+            task = self._getTask(newpos)
+            if task != None:
+                self._state.tasks.remove(task)
+                logging.debug("removed " + str(task))
         else: # move
             newpos = self._newPos(pos, action)
             if self._isFree(newpos):
                 robot.setPosition(newpos)
-
-        task = self._getTask(newpos)
-        if task != None:
-            self._state.tasks.remove(task)
-            logging.debug("removed " + str(task))
   
     def _newPos(self, pos:ndarray, action):
         """
@@ -287,7 +286,7 @@ class FactoryFloor(Env):
         @param position a numpy ndarray [x,y] that must be checked
         @return: true iff a robot occupies position
         """        
-        for robot in self._state.robots:
+        for robot in self._state.robots.values():
             if (position == robot.getPosition()).all():
                 return True
         return False

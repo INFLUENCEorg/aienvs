@@ -14,7 +14,7 @@ class FactoryFloorState():
         self.step = 0
 
     def addRobot(self, robot):
-        self.robots.append(robot)
+        self.robots.update({robot.getId(): robot})
 
     def addTask(self, task):
         self.tasks.append(task)
@@ -39,7 +39,7 @@ def encodeStateAsArray(state:FactoryFloorState):
     result = np.zeros([width, height,2+len(state.robots)])
 
     robots = {}
-    for robot in state.robots:
+    for robot in state.robots.values():
         robots[robot.getId()]=robot.getPosition()
 
     sortedIds = sorted(robots.keys(), key=str.lower)
