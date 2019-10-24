@@ -28,9 +28,9 @@ def runTjob(datadir, config):
     
     #return subprocess.call(["python3", "preprocessorTabular.py", training_file, experiment+"/data"+str(gen)+"/"])
 
-ngenerations=6
+ngenerations=3
 nagents=2
-ndjobs=10
+ndjobs=2
 robotIdsToLearn = ["robot1", "robot2"]
 
 def main():

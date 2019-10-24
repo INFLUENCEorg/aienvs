@@ -11,7 +11,7 @@ config:
     #- &RobotAgent aiagents.single.RandomAgent.RandomAgent
   - &otherAgent aiagents.single.TrainedAgent.TrainedAgent.TabularAgent
   - &timeLimit 1
-  - &iterationLimit 20000
+  - &iterationLimit 200
   - &explorationConstant 1
   - &samplingLimit 20
 
