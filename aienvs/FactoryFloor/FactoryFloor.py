@@ -33,6 +33,7 @@ class FactoryFloor(Env):
                 'tasks': [ [1, 1] ],  # initial task positions
                 'P_action_succeed':{'LEFT':0.9, 'RIGHT':0.9, 'ACT':0.5, 'UP':0.9, 'DOWN':0.9},
                 'P_task_appears':0.99,  # P(new task appears in step) 
+                'N_task_appears': 1,
                 'allow_robot_overlap':False,
                 'allow_task_overlap':False,
                 'seed':None,
@@ -106,8 +107,11 @@ class FactoryFloor(Env):
                 self._applyAction(robot, actions[robot.getId()])
         global_reward -= self._computePenalty()
  
-        if random.random() < self._state.getMap().getTaskProbability():
-            self._addTask()
+        idx=0
+        while( idx < int(self._parameters["N_task_appears"]) ):
+            if random.random() < self._state.getMap().getTaskProbability():
+                self._addTask()
+            idx+=1
 
         self._state.step += 1
         done = (self._parameters['steps'] <= self._state.step)
@@ -182,6 +186,9 @@ class FactoryFloor(Env):
         with Map#getPart(area) of this map, and only those bots and tasks that 
         are in that area. The new factoryfloor is completely independent of this floor.
         """
+        if( int(self._parameters["N_task_appears"]) > 1 ):
+            raise Exception("Multiple task appears not supported for getting part of the map")
+
         parameters = copy.deepcopy(self._parameters)
         newmap = self._state.getMap().getPart(area)
         parameters['map'] = newmap.getFullMap()
