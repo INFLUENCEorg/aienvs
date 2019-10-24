@@ -35,8 +35,11 @@ def main():
     print(gens)
     print(rewardMeans)
     print(confBoundList)
-
-    plt.errorbar(gens,rewardMeans, yerr=confBoundList)
+    
+    plt.xlabel("Generation")
+    plt.ylabel("Mean total reward")
+    plt.scatter(gens, rewardMeans, color="m")
+    plt.errorbar(gens,rewardMeans, yerr=confBoundList, ecolor="k", ls="none", uplims=True, lolims=True)
     plt.show()
 
 if __name__=="__main__":
