@@ -242,7 +242,15 @@ class FactoryFloor(Env):
         """
         actstring = self.ACTIONS.get(action)
         try:
-            if random.random() > self._parameters['P_action_succeed'][actstring]:
+            randNo = random.random()
+            try:
+                # first check for individual success probabilities
+                pSucceed = self._parameters['P_action_succeed'][robot.getId()][actstring]
+            except KeyError:
+                # then use common ones
+                pSucceed = self._parameters['P_action_succeed'][actstring]
+
+            if randNo > pSucceed:
                 return False
         except:
             pdb.post_mortem()
