@@ -34,7 +34,15 @@ ndjobs=5
 robotIdsToLearn = ["robot1", "robot2"]
 
 def main():
-    experiment="./data/test"+(str(time()).replace('.',''))
+    if(len(sys.argv) == 2):
+        path=str(sys.argv[1])
+    else:
+        path="test"+(str(time()).replace('.',''))
+
+    experiment="./data/"+path
+    if(os.path.exists(experiment)):
+        raise Exception("Path to experiment exists")
+
     os.makedirs(experiment+"/models")
     models_link="./models"
     if(os.path.exists(models_link)):

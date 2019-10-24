@@ -24,7 +24,6 @@ def main():
                 newRewards = yaml.load(instream)
                 rewardList.extend(newRewards)
 
-        print(rewardList)
         rewardMeans.append(np.mean(rewardList))
         confBound = list(st.t.interval(0.95, len(rewardList)-1, loc=np.mean(rewardList), scale=st.sem(rewardList)))
         confBoundList.append((rewardMeans-confBound[0])[0])
@@ -32,9 +31,6 @@ def main():
     confBoundArray = np.transpose(np.array(confBoundList))
 
     gens = np.arange(generationCount)
-    print(gens)
-    print(rewardMeans)
-    print(confBoundList)
     
     plt.xlabel("Generation")
     plt.ylabel("Mean total reward")
