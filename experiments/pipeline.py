@@ -26,6 +26,7 @@ def runDjob(datadir, jobid, batching=False, dependencyList=None):
 def batchJob(commandList, dependencyList, runnerFile):
     command = ["sbatch", "--parsable"]
     if dependencyList[0] is not None:
+        dependencyList = [item.decode("utf-8") for item in dependencyList]
         command.append("--dependency=afterok:"+":".join(dependencyList))
     command.extend([runnerFile, " ".join(commandList)])
     return subprocess.Popen(command, stdout=subprocess.PIPE)
