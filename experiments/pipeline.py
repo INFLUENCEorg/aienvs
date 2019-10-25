@@ -51,7 +51,7 @@ def runTjob(datadir, config, batching=False, dependencyList=None):
     if(batching):
         job = batchJob(command, dependencyList, "./train_batcher.sh")
         job.wait()
-        slurmJobId, err = batchJob.communicate()
+        slurmJobId, err = job.communicate()
         return slurmJobId
     else:
        subprocess.call(command)
