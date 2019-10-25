@@ -50,7 +50,7 @@ def runTjob(datadir, config, batching=False, dependencyList=None):
         job = batchJob(command, dependencyList, "./train_batcher.sh")
         job.wait()
         slurmJobId, err = job.communicate()
-        return slurmJobId
+        return slurmJobId.rstrip()
     else:
        subprocess.call(command)
 
@@ -95,9 +95,8 @@ def main():
         for djob in processes:
             djob.wait()
             slurmJobId, err = djob.communicate()
-            import pdb
-            pdb.set_trace()
-            dJobDep.append(slurmJobId)
+            #rstrip to remove trailing new line
+            dJobDep.append(slurmJobId.rstrip())
 
         agentTrained = (gen % nagents) + 1
 
