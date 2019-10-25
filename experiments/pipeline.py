@@ -25,8 +25,8 @@ def runDjob(datadir, jobid, batching=False, dependencyList=None):
 
 def batchJob(commandList, dependencyList, runnerFile):
     command = ["sbatch", "--parsable"]
-    if dependencyList is not None:
-        command.append("--dependency=afterok"+":".join(dependencyList))
+    if dependencyList[0] is not None:
+        command.append("--dependency=afterok:"+":".join(dependencyList))
     command.extend([runnerFile, " ".join(commandList)])
     import pdb 
     pdb.set_trace()
