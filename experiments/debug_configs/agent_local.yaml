@@ -9,7 +9,7 @@ config:
   - &ConstantAgent aiagents.single.ConstantAgent.ConstantAgent
     #- &RobotAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
     #- &RobotAgent aiagents.single.RandomAgent.RandomAgent
-  - &otherAgent aiagents.single.TrainedAgent.TrainedAgent.TabularAgent
+  - &otherAgent aiagents.single.TrainedAgent.TrainedAgent.TrainedAgent
   - &timeLimit 1
   - &iterationLimit 200
   - &explorationConstant 1
@@ -37,7 +37,7 @@ parameters:
                     subAgentList:
                       - class: *otherAgent
                         id: "robot2"
-                        parameters: {"modelFile": "models/agent1/robot2.yaml", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
+                        parameters: {"modelFile": "models/agent1/robot2.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
                         #                      - class: *otherAgent
                         #                        id: "robot3"
                         #                        parameters: {"modelFile": "models/agent1/robot3.yaml", "backupClass": aiagents.single.RandomAgent.RandomAgent, "backupClassParameters": {}} 
@@ -64,7 +64,7 @@ parameters:
                   subAgentList:
                       - class: *otherAgent
                         id: "robot1"
-                        parameters: {"modelFile": "models/agent2/robot1.yaml", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
+                        parameters: {"modelFile": "models/agent2/robot1.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
                         #                      - class: *otherAgent
                         #                        id: "robot3"
                         #                        parameters: {"modelFile": "models/agent2/robot3.yaml", "backupClass": aiagents.single.RandomAgent.RandomAgent, "backupClassParameters": {}} 

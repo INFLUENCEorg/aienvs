@@ -3,7 +3,6 @@ import shutil
 import os, sys
 import tempfile
 from time import time
-from experiments.preprocessorTabular import formTabularModels
 
 env_file = "./debug_configs/factory_floor_local.yaml" 
 agent_file = "./debug_configs/agent_local.yaml"
@@ -15,23 +14,53 @@ def runDjob(datadir,jobid):
     os.makedirs(datadir+"/"+str(jobid))
 
     f=open(datadir+"/"+str(jobid)+".out","w+")
-    return subprocess.Popen(["python3", "MctsExperiment.py", env_file, agent_file, datadir], 
+    return subprocess.Popen(["python3", "MctsExperiment.py", 
+        "-e", env_file,
+        "-a", agent_file,
+        "-d", datadir], 
             env=my_env, stdout=f)
 
-def runTjob(datadir, config):
+def batchDjob(datadir, dependency):
+    return subprocess.Popen(["sbatch", "runner.sh", 
+        env_file,
+        dependency,
+        agent_file,
+        datadir])
+
+
+def runTjob(datadir, config, batching=False, dependencyList=None):
     outputDir = config["outputDir"]
     if os.path.exists(outputDir):
        shutil.rmtree(outputDir)
     os.makedirs(outputDir, exist_ok=False)
-    robotIds = config["robotIds"]
-    formTabularModels(datadir, outputDir, robotIds)
-    
-    #return subprocess.call(["python3", "preprocessorTabular.py", training_file, experiment+"/data"+str(gen)+"/"])
 
-ngenerations=6
+    command=["python3", "preprocessorDeep.py", 
+        "-d", datadir,
+        "-o", outputDir]
+
+    robotIds = config["robotIds"]
+    for robotId in robotIds:
+        command.append("-r")
+        command.append(robotId)
+    print(command)
+
+    if(batching):
+        dependency=":".join(dependencyList)
+        batchCommand = ["sbatch", "--parsable", "--dependency=afterok:"+str(dependency), " ".join(command)]
+        batchJob = subProcess.Popen(batchCommand)
+        batchJob.wait()
+        slurmJobId, err = batchJob.communicate()
+        return slurmJobId
+    else:
+       subprocess.call(command)
+
+
+
+ngenerations=4
 nagents=2
-ndjobs=5
+ndjobs=3
 robotIdsToLearn = ["robot1", "robot2"]
+sbatch=False
 
 def main():
     if(len(sys.argv) == 2):
@@ -49,9 +78,9 @@ def main():
         os.unlink(models_link)
     os.symlink(experiment+"/models", models_link)
 
+    tDependency="NONE"
     for gen in range(1,ngenerations+1):
         print("\nNEW GENERATION\n")
-        tjob=None
         datadir=experiment+"/data/"+str(gen)
         try: 
             os.makedirs(datadir, exist_ok=True)
@@ -60,15 +89,21 @@ def main():
 
         processes=[]
         for djobid in range(1,ndjobs+1):
-            processes.append( runDjob(datadir, djobid) )
-
-        for p in processes:
-            p.wait()
+            if( sbatch ):
+                processes.append( batchDjob(datadir, tDependency) )
+            else:
+                processes.append( runDjob(datadir, djobid) )
+        
+        dJobDep = []
+        for djob in processes:
+            djob.wait()
+            slurmJobId, err = djob.communicate()
+            dJobDep.append(slurmJobId)
 
         agentTrained = (gen % nagents) + 1
 
         tjobConfig = {"outputDir": "./"+experiment+"/models/agent"+str(agentTrained)+"/", "robotIds": robotIdsToLearn}
-        tjob=runTjob(datadir, tjobConfig)
+        tDependency = runTjob(datadir, tjobConfig, sbatch, dJobDep)
 
 if __name__=="__main__":
     main()

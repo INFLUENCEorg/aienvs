@@ -38,9 +38,10 @@ from keras.layers import Flatten, Dense, Conv2D, MaxPooling2D, Cropping2D, Dropo
 from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import plot_model
 
-def classification_model():
+#need to change def. arg manually for evaluation
+def classification_model(shape=(4,4,4)):
     model = Sequential()
-    model.add(Convolution2D(16,(2,2), input_shape=(4,4,3), activation='relu'))
+    model.add(Convolution2D(16,(2,2), input_shape=shape, activation='relu'))
     model.add(Convolution2D(32,(2,2), activation='relu'))
  #   model.add(Convolution2D(4,(2,2), activation='relu'))
    # model.add(Dropout(0.5))

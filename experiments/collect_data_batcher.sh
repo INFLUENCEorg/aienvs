@@ -28,5 +28,5 @@
 echo $1 $2 $3
 echo "PYTHONPATH: "$PYTHONPATH
 
-srun python3 MctsExperiment.py $1 $2 $3
+srun python3 MctsExperiment.py -e=$1 -a=$2 -d=$3
 mv slurm-${SLURM_JOB_ID}.out ./$3/${SLURM_JOB_ID}/stdout.txt

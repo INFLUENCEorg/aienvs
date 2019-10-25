@@ -1,10 +1,10 @@
 from utils import preprocess
-from aienvs.utils import getParameters
 from aienvs.FactoryFloor.FactoryFloorState import toTuple
 import yaml
 import sys
 import os
 from scipy import stats as s
+import configargparse
 
 def formTabularModels(dirname, outputdir, robotIds):
     os.makedirs(outputdir, exist_ok=True)
@@ -30,16 +30,14 @@ def formTabularModels(dirname, outputdir, robotIds):
 
 
 def main():
-    if(len(sys.argv) == 3):
-        param_filename = str(sys.argv[1])
-        parametersDict = getParameters(param_filename)
-        dirname = str(sys.argv[2])
-        outputdir = parametersDict["outputDir"]
-        robotIds = parametersDict["robotIds"]
-    else:
-        raise "3 arguments needed"
-
-    formTabularModels(dirname, outputdir, robotIds)
+    parser = configargparse.ArgParser()
+    parser.add('-c', '--my-config', is_config_file=True, help='config file path')
+    parser.add('-d', '--dirname', dest="dirname")
+    parser.add('-o', '--outputdir', dest="outputdir")
+    parser.add('-r', '--robotIds', dest="robotIds", action="append")
+    argums = parser.parse_args()
+ 
+    formTabularModels(argums.dirname, argums.outputdir, argums.robotIds)
 
 if __name__ == "__main__":
         main()

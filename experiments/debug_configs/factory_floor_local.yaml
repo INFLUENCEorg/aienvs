@@ -15,4 +15,8 @@ parameters:
         P_task_appears: 1.0  # P(new task appears in step) 
         allow_robot_overlap: True
         allow_task_overlap: True
-        map: ['9009']
+        map: ['9009',
+              '0000',
+              '0000',
+              '0000'
+              ]
