@@ -8,25 +8,25 @@ env_file = "./debug_configs/factory_floor_local.yaml"
 agent_file = "./debug_configs/agent_local.yaml"
 slurm_job_id = 0
 
-def runDjob(datadir,jobid):
-    my_env = os.environ.copy()
-    my_env["SLURM_JOB_ID"] = str(jobid)
-    os.makedirs(datadir+"/"+str(jobid))
-
-    f=open(datadir+"/"+str(jobid)+".out","w+")
-    return subprocess.Popen(["python3", "MctsExperiment.py", 
+def runDjob(datadir, jobid, batching=False, dependencyList=None):
+    commandList = ["python3", "MctsExperiment.py", 
         "-e", env_file,
         "-a", agent_file,
-        "-d", datadir], 
-            env=my_env, stdout=f)
+        "-d", datadir]
 
-def batchDjob(datadir, dependency):
-    return subprocess.Popen(["sbatch", "runner.sh", 
-        datadir,
-        dependency,
-        env_file,
-        agent_file])
+    if(batching):
+        return batchJob(commandList, dependencyList)
+    else:
+        my_env = os.environ.copy()
+        my_env["SLURM_JOB_ID"] = str(jobid)
+        os.makedirs(datadir+"/"+str(jobid))
+        with open(datadir+"/"+str(jobid)+".out","w+") as f:
+            return subprocess.Popen(commandList, env=my_env, stdout=f)
 
+def batchJob(commandList, dependencyList):
+    dependency=":".join(dependencyList)
+    return subprocess.Popen(["sbatch", "--parsable", 
+        "--dependency=afterok:"+str(dependency), " ".join(commandList)])
 
 def runTjob(datadir, config, batching=False, dependencyList=None):
     outputDir = config["outputDir"]
@@ -45,10 +45,8 @@ def runTjob(datadir, config, batching=False, dependencyList=None):
     print(command)
 
     if(batching):
-        dependency=":".join(dependencyList)
-        batchCommand = ["sbatch", "--parsable", "--dependency=afterok:"+str(dependency), " ".join(command)]
-        batchJob = subProcess.Popen(batchCommand)
-        batchJob.wait()
+        job = batchJob(batchCommand, dependencyList)
+        job.wait()
         slurmJobId, err = batchJob.communicate()
         return slurmJobId
     else:
@@ -89,10 +87,7 @@ def main():
 
         processes=[]
         for djobid in range(1,ndjobs+1):
-            if( sbatch ):
-                processes.append( batchDjob(datadir, tDependency) )
-            else:
-                processes.append( runDjob(datadir, djobid) )
+            processes.append( batchDjob(datadir, djobid, sbatch, [tDependency]) )
         
         dJobDep = []
         for djob in processes:
