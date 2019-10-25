@@ -37,6 +37,7 @@ def main():
 
     try:
         data_outputdir = os.path.join(dirname, "./"+ args.data_dirname + "/"+os.environ["SLURM_JOB_ID"])
+        os.makedirs(data_outputdir)
         logoutputpickle = open('./' + data_outputdir +'/output.pickle', 'wb')
         rewardsFile = open('./' + data_outputdir + '/rewards.yaml', 'w+') 
     except KeyError:
