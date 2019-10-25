@@ -22,10 +22,10 @@ def runDjob(datadir,jobid):
 
 def batchDjob(datadir, dependency):
     return subprocess.Popen(["sbatch", "runner.sh", 
-        env_file,
+        datadir,
         dependency,
-        agent_file,
-        datadir])
+        env_file,
+        agent_file])
 
 
 def runTjob(datadir, config, batching=False, dependencyList=None):
