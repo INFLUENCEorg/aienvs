@@ -28,7 +28,7 @@ def batchJob(commandList, dependencyList, runnerFile):
     if dependencyList[0] is not None:
         command.append("--dependency=afterok:"+":".join(dependencyList))
     command.extend([runnerFile, " ".join(commandList)])
-    return subprocess.Popen(command)
+    return subprocess.Popen(command, stdout=subprocess.PIPE)
 
 def runTjob(datadir, config, batching=False, dependencyList=None):
     outputDir = config["outputDir"]
