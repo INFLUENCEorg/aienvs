@@ -24,9 +24,11 @@ def runDjob(datadir, jobid, batching=False, dependencyList=None):
             return subprocess.Popen(commandList, env=my_env, stdout=f)
 
 def batchJob(commandList, dependencyList):
-    dependency=":".join(dependencyList)
-    return subprocess.Popen(["sbatch", "--parsable", 
-        "--dependency=afterok:"+str(dependency), " ".join(commandList)])
+    command = ["sbatch", "--parsable"]
+    if dependencyList is not None:
+        command.append("--dependency=afterok"+":".join(dependencyList))
+    command.append(" ".join(commandList))
+    return subprocess.Popen(command)
 
 def runTjob(datadir, config, batching=False, dependencyList=None):
     outputDir = config["outputDir"]
@@ -45,7 +47,7 @@ def runTjob(datadir, config, batching=False, dependencyList=None):
     print(command)
 
     if(batching):
-        job = batchJob(batchCommand, dependencyList)
+        job = batchJob(command, dependencyList)
         job.wait()
         slurmJobId, err = batchJob.communicate()
         return slurmJobId
@@ -58,7 +60,7 @@ ngenerations=4
 nagents=2
 ndjobs=3
 robotIdsToLearn = ["robot1", "robot2"]
-sbatch=False
+sbatch=True
 
 def main():
     if(len(sys.argv) == 2):
@@ -87,7 +89,7 @@ def main():
 
         processes=[]
         for djobid in range(1,ndjobs+1):
-            processes.append( batchDjob(datadir, djobid, sbatch, [tDependency]) )
+            processes.append( runDjob(datadir, djobid, sbatch, [tDependency]) )
         
         dJobDep = []
         for djob in processes:
