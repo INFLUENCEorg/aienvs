@@ -95,6 +95,8 @@ def main():
         for djob in processes:
             djob.wait()
             slurmJobId, err = djob.communicate()
+            import pdb
+            pdb.set_trace()
             dJobDep.append(slurmJobId)
 
         agentTrained = (gen % nagents) + 1
