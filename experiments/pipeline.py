@@ -23,8 +23,8 @@ def runDjob(datadir, jobid, batching=False, dependencyList=None):
         with open(datadir+"/"+str(jobid)+".out","w+") as f:
             return subprocess.Popen(commandList, env=my_env, stdout=f)
 
-def batchJob(commandList, dependencyList):
-    command = ["sbatch", "--parsable"]
+def batchJob(commandList, dependencyList, runnerFile):
+    command = ["sbatch", "--parsable", runnerFile]
     if dependencyList is not None:
         command.append("--dependency=afterok"+":".join(dependencyList))
     command.append(" ".join(commandList))
@@ -47,7 +47,7 @@ def runTjob(datadir, config, batching=False, dependencyList=None):
     print(command)
 
     if(batching):
-        job = batchJob(command, dependencyList)
+        job = batchJob(command, dependencyList, "./train_batcher.sh")
         job.wait()
         slurmJobId, err = batchJob.communicate()
         return slurmJobId
