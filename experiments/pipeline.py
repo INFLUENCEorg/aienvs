@@ -80,7 +80,7 @@ def main():
         os.unlink(models_link)
     os.symlink(experiment+"/models", models_link)
 
-    tDependency="NONE"
+    tDependency=None
     for gen in range(1,ngenerations+1):
         print("\nNEW GENERATION\n")
         datadir=experiment+"/data/"+str(gen)
