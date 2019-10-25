@@ -28,8 +28,6 @@ def batchJob(commandList, dependencyList, runnerFile):
     if dependencyList[0] is not None:
         command.append("--dependency=afterok:"+":".join(dependencyList))
     command.extend([runnerFile, " ".join(commandList)])
-    import pdb 
-    pdb.set_trace()
     return subprocess.Popen(command)
 
 def runTjob(datadir, config, batching=False, dependencyList=None):
