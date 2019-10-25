@@ -24,10 +24,12 @@ def runDjob(datadir, jobid, batching=False, dependencyList=None):
             return subprocess.Popen(commandList, env=my_env, stdout=f)
 
 def batchJob(commandList, dependencyList, runnerFile):
-    command = ["sbatch", "--parsable", runnerFile]
+    command = ["sbatch", "--parsable"]
     if dependencyList is not None:
         command.append("--dependency=afterok"+":".join(dependencyList))
-    command.append(" ".join(commandList))
+    command.extend([runnerFile, " ".join(commandList)])
+    import pdb 
+    pdb.set_trace()
     return subprocess.Popen(command)
 
 def runTjob(datadir, config, batching=False, dependencyList=None):
