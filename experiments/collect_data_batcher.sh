@@ -26,6 +26,6 @@
 # Your job commands go below here
 
 echo $1
-echo "PYTHONPATH: "$PYTHONPATH
-
 srun $1
+
+mv slurm-${SLURM_JOB_ID}.out ./OLD_SLURM/slurm-${SLURM_JOB_ID}.out

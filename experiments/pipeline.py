@@ -11,7 +11,7 @@ def runDjob(env_file, agent_file, datadir, jobid, batching=False, dependencyList
         "-d", datadir]
 
     if(batching):
-        return batchJob("./collect_data_batcher.sh", commandList, dependencyList)
+        return batchJob("./collect_data_batcher.sh", commandList, datadir, dependencyList)
     else:
         my_env = os.environ.copy()
         my_env["SLURM_JOB_ID"] = str(jobid)
@@ -26,21 +26,15 @@ def batchJob(runnerFile, commandList, dependencyList=[None]):
     command.extend([runnerFile, " ".join(commandList)])
     return subprocess.Popen(command, stdout=subprocess.PIPE)
 
-def runTjob(datadir, config, batching=False, dependencyList=None):
-    outputDir = config["outputDir"]
+def runTjob(datadir, outputDir, dlFile, batching=False, dependencyList=None):
     if os.path.exists(outputDir):
        shutil.rmtree(outputDir)
     os.makedirs(outputDir, exist_ok=False)
 
     command=["python3", "preprocessorDeep.py", 
+        "-c", dlFile,
         "-d", datadir,
         "-o", outputDir]
-
-    robotIds = config["robotIds"]
-    for robotId in robotIds:
-        command.append("-r")
-        command.append(robotId)
-    print(command)
 
     if(batching):
         job = batchJob("./train_batcher.sh", command, dependencyList)
@@ -60,11 +54,11 @@ def main():
     parser.add("-g", "--ngenerations", dest="ngenerations", type=int)
     parser.add("-a", "--nagents", dest="nagents", type=int)
     parser.add("-d", "--ndjobs", dest="ndjobs", type=int)
-    parser.add("-r", "--robotIdsToLearn", dest="robotIdsToLearn", action="append")
     parser.add("-s", "--sbatch", dest="sbatch", action="store_true")
     parser.add("-e", "--expname", dest="expname", default="test"+(str(time()).replace('.','')))
     parser.add("-n", "--envFile", dest="envFile")
     parser.add("-t", "--agentFile", dest="agentFile")
+    parser.add("-l", "--dlFile", dest="dlFile")
    
     argums = parser.parse_args()
 
@@ -103,8 +97,8 @@ def main():
 
         agentTrained = (gen % argums.nagents) + 1
 
-        tjobConfig = {"outputDir": "./"+experiment+"/models/agent"+str(agentTrained)+"/", "robotIds": argums.robotIdsToLearn}
-        tDependency = runTjob(datadir, tjobConfig, argums.sbatch, dJobDep)
+        outputDir = "./"+experiment+"/models/agent"+str(agentTrained)+"/"
+        tDependency = runTjob(datadir, outputDir, argums.dlFile, argums.sbatch, dJobDep)
 
 if __name__=="__main__":
     main()

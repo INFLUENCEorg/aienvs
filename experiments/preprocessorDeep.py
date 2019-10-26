@@ -15,7 +15,10 @@ def main():
     parser.add('-d', '--dirname', dest="dirname")
     parser.add('-o', '--outputdir', dest="outputdir")
     parser.add('-r', '--robotIds', dest="robotIds", action="append")
-    parser.add('-e', '--evaluate', dest="evaluate", type=bool, default=False)
+    parser.add('-e', '--evaluate', dest="evaluate", action="store_true", default=False)
+    parser.add('-b', '--batchSize', dest="batchSize", type=int)
+    parser.add('-p', '--epochs', dest="epochs", type=int)
+
     argums = parser.parse_args()
 
     datagen = ImageDataGenerator(
@@ -35,19 +38,16 @@ def main():
 
         dummy_y = np_utils.to_categorical(y_train, num_classes=5)
         
-        batch_size=600
-        epochs=10
-
         if(argums.evaluate):
-            estimator = KerasClassifier(classification_model, epochs=epochs, batch_size=batch_size, verbose=True)
+            estimator = KerasClassifier(classification_model, epochs=argums.epochs, batch_size=argums.batchSize, verbose=True)
             kfold = KFold(n_splits=5, shuffle=True)
             results = cross_val_score(estimator, X_train, dummy_y, cv=kfold)
             print("Accuracy, stdev %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))	
         else:
             os.makedirs(argums.outputdir, exist_ok=True)
-            generator = datagen.flow(X_train, dummy_y, batch_size=batch_size)
+            generator = datagen.flow(X_train, dummy_y, batch_size=argums.batchSize)
             model=classification_model(X_train.shape[1:4])
-            model.fit_generator(generator, steps_per_epoch=len(X_train) / batch_size, nb_epoch=epochs)
+            model.fit_generator(generator, steps_per_epoch=len(X_train) / argums.batchSize, nb_epoch=argums.epochs)
             output_file = argums.outputdir + "/" + robotId + ".h5"
             model.save(output_file)
 

@@ -1,5 +1,4 @@
-parameters:
-    width: 4
-    height: 4
-    robotIds: ["robot1", "robot2", "robot3", "robot4"]
-    evaluate: "False"
+robotIds: [robot1, robot2]
+batchSize: 600
+epochs: 10
+

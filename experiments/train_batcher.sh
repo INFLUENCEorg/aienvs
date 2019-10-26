@@ -28,10 +28,12 @@
 # Your job commands go below here
 
 # Uncomment these lines when your job requires this software
-echo "PYTHONPATH: "$PYTHONPATH
 
 module use /opt/insy/modulefiles
 module load cuda/10.0 cudnn/10.0-7.4.2.24
 module list
 
+echo $1
 srun $1
+
+mv slurm-${SLURM_JOB_ID}.out ./OLD_SLURM/slurm-${SLURM_JOB_ID}.out
