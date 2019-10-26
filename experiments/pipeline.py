@@ -11,33 +11,34 @@ def runDjob(env_file, agent_file, datadir, jobid, batching=False, dependencyList
         "-d", datadir]
 
     if(batching):
-        return batchJob("./collect_data_batcher.sh", commandList, dependencyList)
+        return batchJob("./collect_data_batcher.sh", commandList, datadir, dependencyList)
     else:
         my_env = os.environ.copy()
         my_env["SLURM_JOB_ID"] = str(jobid)
         with open(datadir+"/"+str(jobid)+".out","w+") as f:
             return subprocess.Popen(commandList, env=my_env, stdout=f)
 
-def batchJob(runnerFile, commandList, dependencyList=[None]):
+def batchJob(runnerFile, commandList, outputdir, dependencyList=[None]):
     command = ["sbatch", "--parsable"]
     if dependencyList[0] is not None:
         dependencyList = [item.decode("utf-8") for item in dependencyList]
         command.append("--dependency=afterok:"+":".join(dependencyList))
     command.extend([runnerFile, " ".join(commandList)])
+    command.append(outputdir)
     return subprocess.Popen(command, stdout=subprocess.PIPE)
 
-def runTjob(datadir, outputDir, dlFile, batching=False, dependencyList=None):
-    if os.path.exists(outputDir):
-       shutil.rmtree(outputDir)
-    os.makedirs(outputDir, exist_ok=False)
+def runTjob(datadir, modelDir, dlFile, batching=False, dependencyList=None):
+    if os.path.exists(modelDir):
+       shutil.rmtree(modelDir)
+    os.makedirs(modelDir, exist_ok=False)
 
     command=["python3", "preprocessorDeep.py", 
         "-c", dlFile,
         "-d", datadir,
-        "-o", outputDir]
+        "-o", modelDir]
 
     if(batching):
-        job = batchJob("./train_batcher.sh", command, dependencyList)
+        job = batchJob("./train_batcher.sh", command, datadir, dependencyList)
         job.wait()
         slurmJobId, err = job.communicate()
         if(slurmJobId):
@@ -97,8 +98,8 @@ def main():
 
         agentTrained = (gen % argums.nagents) + 1
 
-        outputDir = "./"+experiment+"/models/agent"+str(agentTrained)+"/"
-        tDependency = runTjob(datadir, outputDir, argums.dlFile, argums.sbatch, dJobDep)
+        modelDir = "./"+experiment+"/models/agent"+str(agentTrained)+"/"
+        tDependency = runTjob(datadir, modelDir, argums.dlFile, argums.sbatch, dJobDep)
 
 if __name__=="__main__":
     main()

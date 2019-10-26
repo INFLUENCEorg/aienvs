@@ -36,4 +36,4 @@ module list
 echo $1
 srun $1
 
-mv slurm-${SLURM_JOB_ID}.out ./OLD_SLURM/slurm-${SLURM_JOB_ID}.out
+mv slurm-${SLURM_JOB_ID}.out $2/slurm-${SLURM_JOB_ID}.out
