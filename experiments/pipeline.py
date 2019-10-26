@@ -11,7 +11,7 @@ def runDjob(env_file, agent_file, datadir, jobid, batching=False, dependencyList
         "-d", datadir]
 
     if(batching):
-        return batchJob("./collect_data_batcher.sh", commandList, datadir, dependencyList)
+        return batchJob("./collect_data_batcher.sh", commandList, dependencyList)
     else:
         my_env = os.environ.copy()
         my_env["SLURM_JOB_ID"] = str(jobid)
