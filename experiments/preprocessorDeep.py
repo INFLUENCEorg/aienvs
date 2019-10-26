@@ -33,7 +33,7 @@ def main():
         print(X_train.shape)
         print(y_train.shape)
 
-        dummy_y = np_utils.to_categorical(y_train)
+        dummy_y = np_utils.to_categorical(y_train, num_classes=5)
         
         batch_size=600
         epochs=10
