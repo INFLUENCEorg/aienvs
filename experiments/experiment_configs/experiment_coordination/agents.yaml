@@ -1,0 +1,69 @@
+aliases:
+  - &BasicComplexAgent aiagents.multi.BasicComplexAgent.BasicComplexAgent
+  - &MctsAgent aiagents.single.mcts.MctsAgent.MctsAgent
+  - &RandomAgent aiagents.single.RandomAgent.RandomAgent
+  - &FactoryFloorAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
+
+config:
+  - &RobotAgent aiagents.single.mcts.MctsAgent.MctsAgent
+  - &ConstantAgent aiagents.single.ConstantAgent.ConstantAgent
+    #- &RobotAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
+    #- &RobotAgent aiagents.single.RandomAgent.RandomAgent
+  - &otherAgent aiagents.single.TrainedAgent.TrainedAgent.TrainedAgent
+  - &timeLimit 1
+  - &iterationLimit 20000
+  - &explorationConstant 1
+  - &samplingLimit 20
+
+# do not edit here
+parameters:
+      class: *BasicComplexAgent
+      parameters: {}
+      subAgentList:
+          - class: *RobotAgent
+            id: "robot1"
+            parameters:
+              treeAgent:
+                class: *RandomAgent
+                id: "robot1"
+                parameters: {}
+              rolloutAgent:
+                class: *FactoryFloorAgent
+                id: "robot1"
+                parameters: {"action": 0}
+              otherAgents:
+                    class: *BasicComplexAgent
+                    parameters: {}
+                    subAgentList:
+                      - class: *otherAgent
+                        id: "robot2"
+                        parameters: {"modelFile": "models/agent1/robot2.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
+              iterationLimit: *iterationLimit
+              treeParameters: 
+                  explorationConstant: *explorationConstant
+                  samplingLimit: *samplingLimit
+                  maxSteps: 10
+          - class: *RobotAgent
+            id: "robot2"
+            parameters:
+              treeAgent:
+                class: *RandomAgent
+                id: "robot2"
+                parameters: {}
+              rolloutAgent:
+                class: *FactoryFloorAgent
+                id: "robot2"
+                parameters: {"action": 0}
+              otherAgents:
+                    class: *BasicComplexAgent
+                    parameters: {}
+                    subAgentList:
+                      - class: *otherAgent
+                        id: "robot1"
+                        parameters: {"modelFile": "models/agent2/robot1.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
+              iterationLimit: *iterationLimit
+              treeParameters: 
+                  explorationConstant: *explorationConstant
+                  samplingLimit: *samplingLimit
+                  maxSteps: 10
+
