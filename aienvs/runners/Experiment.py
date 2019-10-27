@@ -7,7 +7,6 @@ from aienvs.listener.Listener import Listener
 from time import time
 from itertools import cycle
 import logging
-from scipy import stats
 
 class Experiment(DefaultRunner, DefaultListenable, Listener):
     """
@@ -65,7 +64,7 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
             episodeCount += 1
     
         try:    
-            return stats.describe(episodeRewards), stats.bayes_mvs(episodeRewards)
+            return episodeRewards
         except ValueError as err:
             print(err)
 

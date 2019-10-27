@@ -1,0 +1,7 @@
+ngenerations: 4
+nagents: 2
+ndjobs: 3
+sbatch: False
+envFile: ./debug_configs/factory_floor_local.yaml  
+agentFile: ./debug_configs/agent_local.yaml 
+dlFile: ./debug_configs/training.yaml

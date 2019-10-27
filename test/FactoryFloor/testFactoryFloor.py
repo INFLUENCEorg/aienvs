@@ -61,9 +61,9 @@ class testFactoryFloor(LoggedTestCase):
         env = FactoryFloor({'seed':42})
         # convert to string as array needs equalsAll which is 
         # not supported by assertEquals FAIK
+        self.assertEquals("[4 1]", str(env._getFreeMapPosition()))
         self.assertEquals("[3 1]", str(env._getFreeMapPosition()))
-        self.assertEquals("[2 0]", str(env._getFreeMapPosition()))
-        self.assertEquals("[8 0]", str(env._getFreeMapPosition()))
+        self.assertEquals("[1 4]", str(env._getFreeMapPosition()))
         
 
 if __name__ == '__main__':

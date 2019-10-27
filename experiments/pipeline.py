@@ -1,47 +1,105 @@
 import subprocess
-import os
-from experiments.preprocessorTabular import formTabularModels
+import shutil
+import os, sys
+from time import time
+import configargparse
 
-env_file = "./debug_configs/factory_floor_local.yaml" 
-agent_file = "./debug_configs/agent_local.yaml"
-slurm_job_id = 0
+def runDjob(env_file, agent_file, datadir, jobid, batching=False, dependencyList=None):
+    commandList = ["python3", "MctsExperiment.py", 
+        "-e", env_file,
+        "-a", agent_file,
+        "-d", datadir]
 
-def runDjob(datadir,jobid):
-    my_env = os.environ.copy()
-    my_env["SLURM_JOB_ID"] = str(jobid)
-    os.makedirs(datadir+"/"+str(jobid))
-    return subprocess.call(["python3", "MctsExperiment.py", env_file, agent_file, datadir], env=my_env)
+    if(batching):
+        return batchJob("./collect_data_batcher.sh", commandList, datadir, dependencyList)
+    else:
+        my_env = os.environ.copy()
+        my_env["SLURM_JOB_ID"] = str(jobid)
+        with open(datadir+"/"+str(jobid)+".out","w+") as f:
+            return subprocess.Popen(commandList, env=my_env, stdout=f)
 
-def runTjob(datadir, config):
-    outputDir = config["outputDir"]
-    os.makedirs(outputDir, exist_ok=True)
-    robotIds = config["robotIds"]
-    formTabularModels(datadir, outputDir, robotIds)
-    
-    #return subprocess.call(["python3", "preprocessorTabular.py", training_file, experiment+"/data"+str(gen)+"/"])
+def batchJob(runnerFile, commandList, outputdir, dependencyList=[None]):
+    command = ["sbatch", "--parsable"]
+    if dependencyList[0] is not None:
+        dependencyList = [item.decode("utf-8") for item in dependencyList]
+        command.append("--dependency=afterok:"+":".join(dependencyList))
+    command.extend([runnerFile, " ".join(commandList)])
+    command.append(outputdir)
+    return subprocess.Popen(command, stdout=subprocess.PIPE)
 
-experiment="testexp3"
-ngenerations=2
-nagents=2
-ndjobs=3
+def runTjob(datadir, modelDir, dlFile, batching=False, dependencyList=None):
+    if os.path.exists(modelDir):
+       shutil.rmtree(modelDir)
+    os.makedirs(modelDir, exist_ok=False)
+
+    command=["python3", "preprocessorDeep.py", 
+        "-c", dlFile,
+        "-d", datadir,
+        "-o", modelDir]
+
+    if(batching):
+        job = batchJob("./train_batcher.sh", command, datadir, dependencyList)
+        job.wait()
+        slurmJobId, err = job.communicate()
+        if(slurmJobId):
+            slurmJobId=slurmJobId.rstrip()
+        print("Tjob: "+str(slurmJobId))
+        return slurmJobId.rstrip()
+    else:
+       subprocess.call(command)
+
 
 def main():
-    for gen in range(1,ngenerations+1):
-        print("\nNEW GENERATION\n")
-        tjob=None
+    parser = configargparse.ArgParser()
+    parser.add("-c", "--configFile", is_config_file=True, help="config file path")
+    parser.add("-g", "--ngenerations", dest="ngenerations", type=int)
+    parser.add("-a", "--nagents", dest="nagents", type=int)
+    parser.add("-d", "--ndjobs", dest="ndjobs", type=int)
+    parser.add("-s", "--sbatch", dest="sbatch", action="store_true")
+    parser.add("-e", "--expname", dest="expname", default="test"+(str(time()).replace('.','')))
+    parser.add("-n", "--envFile", dest="envFile")
+    parser.add("-t", "--agentFile", dest="agentFile")
+    parser.add("-l", "--dlFile", dest="dlFile")
+   
+    argums = parser.parse_args()
+
+    experiment="./data/"+argums.expname
+    if(os.path.exists(experiment)):
+        raise Exception("Path to experiment exists")
+
+    os.makedirs(experiment+"/models")
+    models_link="./models"
+    if(os.path.exists(models_link)):
+        os.unlink(models_link)
+    os.symlink(experiment+"/models", models_link)
+
+    tDependency=None
+    for gen in range(1,argums.ngenerations+1):
         datadir=experiment+"/data/"+str(gen)
         try: 
             os.makedirs(datadir, exist_ok=True)
         except:
             pass
-        for djobid in range(1,ndjobs+1):
-            print("\nNEW DJOB\n")
-            runDjob(datadir, djobid)
 
-        agentTrained = gen
-        robotIdsToLearn = list(set(["robot1", "robot2"]) - set(["robot"+str(agentTrained)]))
-        tjobConfig = {"outputDir": "./models/agent"+str(agentTrained)+"/", "robotIds": robotIdsToLearn}
-        tjob=runTjob(datadir, tjobConfig)
+        processes=[]
+        for djobid in range(1,argums.ndjobs+1):
+            processes.append( runDjob(argums.envFile, argums.agentFile, datadir, 
+                djobid, argums.sbatch, [tDependency]) )
+        
+        dJobDep = []
+        for djob in processes:
+            djob.wait()
+            slurmJobId, err = djob.communicate()
+            #rstrip to remove trailing new line
+            if(slurmJobId):
+                slurmJobId=slurmJobId.rstrip()
+            print("Djob: "+str(slurmJobId))
+            dJobDep.append(slurmJobId)
+
+        agentTrained = (gen % argums.nagents) + 1
+
+        modelDir = "./"+experiment+"/models/agent"+str(agentTrained)+"/"
+        tDependency = runTjob(datadir, modelDir, argums.dlFile, argums.sbatch, dJobDep)
 
 if __name__=="__main__":
     main()

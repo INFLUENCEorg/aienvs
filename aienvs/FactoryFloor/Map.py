@@ -110,7 +110,7 @@ class Map():
                     weightlist += [ int(value) ]
         return weightlist
     
-    def getRandomPosition(self, random:Random) -> array:
+    def getRandomPosition(self) -> array:
         """
         @param random number generator,  instance of Random()
         @return: numpy array : random position on the map. The returned position 

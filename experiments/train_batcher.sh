@@ -28,14 +28,12 @@
 # Your job commands go below here
 
 # Uncomment these lines when your job requires this software
-echo "PYTHONPATH: "$PYTHONPATH
-DIRNAME=$2
-echo $DIRNAME
-echo $DIRNAME/data$1/
 
 module use /opt/insy/modulefiles
 module load cuda/10.0 cudnn/10.0-7.4.2.24
 module list
 
-srun python3 preprocessor2.py debug_configs/training.yaml $DIRNAME/data$1/
-#cp $DIRNAME/models/robot.h5 $DIRNAME/models/robot_gen$1.h5
+echo $1
+srun $1
+
+mv slurm-${SLURM_JOB_ID}.out $2/slurm-${SLURM_JOB_ID}.out

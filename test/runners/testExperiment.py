@@ -2,6 +2,7 @@ from aienvs.listener.DefaultListenable import DefaultListenable
 from test.LoggedTestCase import LoggedTestCase
 from unittest.mock import Mock
 from aienvs.runners.Experiment import Experiment
+import numpy as np
 
 
 class test_Experiment(LoggedTestCase):
@@ -13,9 +14,9 @@ class test_Experiment(LoggedTestCase):
         env.step = Mock(return_value=('observation', 3.0, True, {}))
         firstAction = Mock()
         exp = Experiment(agent, env, 100, None, False, 0)
-        result, interval = exp.run()
+        result = np.mean(exp.run())
         
-        self.assertEqual(3.0, result.mean)
+        self.assertEqual(3.0, result)
  
     def testRun3steps(self):
         agent = Mock()
@@ -26,9 +27,9 @@ class test_Experiment(LoggedTestCase):
         env.step.side_effect = [('observation1', 3.0, False, {}), ('observation2', 4.0, False, {}), ('observation3', 5.0, True, {})] * 10
         firstAction = Mock()
         exp = Experiment(agent, env, 30, None, False, 0)
-        result, interval = exp.run()
+        result = np.mean(exp.run())
         # each episode has reward 12
-        self.assertEqual(12.0 , result.mean)
+        self.assertEqual(12.0 , result)
         
     def testListener(self):
         agent = Mock()
