@@ -19,4 +19,6 @@ parameters:
         allow_robot_overlap: True
         allow_task_overlap: True
         map: ['1001',
+              '1001',
+              '1001',
               '1001']
