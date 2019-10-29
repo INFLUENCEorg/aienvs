@@ -1,0 +1,24 @@
+parameters:
+    # Common hyperparameters
+    seed: null
+    max_steps: 50
+
+    environment:
+        steps: 10
+        robots: #initial robot positions
+          - id: 'robot1'
+            pos: [3,1]
+          - id: 'robot2'
+            pos: [3,2]
+        tasks: [[5,1],[5,1],[5,2],[5,2], [0,1], [0,2], [1,1], [1,2]]  # initial task positions
+        P_action_succeed: 
+          robot1: {'LEFT':0.9, 'RIGHT':0.9, 'ACT':1.0, 'UP':0.9, 'DOWN':0.9}
+          robot2: {'LEFT':0.9, 'RIGHT':0.9, 'ACT':1.0, 'UP':0.9, 'DOWN':0.9}
+        P_task_appears: 0.0  # P(new task appears in step) 
+        N_task_appears: 1
+        allow_robot_overlap: True
+        allow_task_overlap: True
+        map: ['100001',
+              '100001',
+              '100001',
+              '100001']
