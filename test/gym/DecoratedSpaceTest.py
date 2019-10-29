@@ -33,6 +33,10 @@ class DecoratedSpaceTest(LoggedTestCase):
         self.assertEquals(2, len(space.getSubSpaces()))
         space.getById(8)  # smoke test 
         self.assertEquals({'a':3, 'b':1}, space.getById(8))
+        
+    def test_emptyDict(self):
+        space = DecoratedSpace.create(Dict({}))
+        self.assertEquals(0, space.getSize())
 
     def test_Dict_with_Dict(self):
         space = DecoratedSpace.create(Dict({'p':Dict({'a':Discrete(5), 'b':Discrete(2)}), 'q':Discrete(7)}))
