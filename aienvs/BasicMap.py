@@ -26,6 +26,9 @@ class BasicMap():
         - '.' indicates a free floor tile
         - digit 1..9 indicates a location where a task can appear. The number indicates
         the weight of the task: the task location is picked by weighted random choice.
+        But these are optional and only to ensure a reasonable standard interpretation.
+        This BasicMap does not care what characters
+        are placed on the map and what they mean. 
         """
         self._map = map
         width = self.getWidth()
