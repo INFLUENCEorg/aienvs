@@ -36,15 +36,21 @@ class TestBasicMap(LoggedTestCase):
         self.assertEquals('5', part.get(array([0, 0])))
 
     def test_smoke_getRandomPos(self):
-        map = BasicMap(['abc', 'ABC', '25.'])
-        p1 = map.getRandomPosition()
+        themap = BasicMap(['abc', 'ABC', '25.'])
+        p1 = themap.getRandomPosition()
         
     def test_getSquaresDict(self):
-        map = BasicMap(['.a.', '.b.', '..c'])
-        squares = map._getSquaresDict()
+        themap = BasicMap(['.a.', '.b.', '..c'])
+        squares = themap._getSquaresDict()
         self.assertEquals(6, len(squares['.']))
         self.assertEquals(1, len(squares['a']))
         self.assertEquals(1, len(squares['b']))
         self.assertEquals(1, len(squares['c']))
         self.assertTrue(array_equal(array([1, 0]), squares['a'][0]))
-        
+
+    def test_getMapPositions(self):
+        themap = BasicMap(['.a.', '.b.', '..c'])
+        self.assertTrue(array_equal(array([1, 0]), themap.getMapPositions('a')[0]))
+        self.assertEqual(6, len(themap.getMapPositions('.')))
+        self.assertEqual(7, len(themap.getMapPositions('.a')))
+

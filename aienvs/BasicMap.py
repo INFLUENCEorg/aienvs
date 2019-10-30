@@ -56,6 +56,16 @@ class BasicMap():
         """
         return self._map[pos[1]][pos[0]]
     
+    def getMapPositions(self, allowed:str) -> list:
+        """
+        @param allowed string containing all allowed characters
+        @return the map positions (list of ndarray) that contain allowed chars
+        """
+        poslist = []
+        for char in allowed:
+            poslist = poslist + self._squares[char]
+        return poslist
+    
     def getFreeMapPosition(self):
         """
         @return:random map position (x,y) that is not occupied by a wall.
