@@ -38,6 +38,7 @@ class TestBasicMap(LoggedTestCase):
     def test_smoke_getRandomPos(self):
         themap = BasicMap(['abc', 'ABC', '25.'])
         p1 = themap.getRandomPosition()
+        self.assertTrue(themap.isInside(p1))
         
     def test_getSquaresDict(self):
         themap = BasicMap(['.a.', '.b.', '..c'])
@@ -53,4 +54,16 @@ class TestBasicMap(LoggedTestCase):
         self.assertTrue(array_equal(array([1, 0]), themap.getMapPositions('a')[0]))
         self.assertEqual(6, len(themap.getMapPositions('.')))
         self.assertEqual(7, len(themap.getMapPositions('.a')))
+        self.assertEqual(0, len(themap.getMapPositions('X')))
+
+    def test_getFreeMapPosition(self):
+        themap = BasicMap(['.a.', '.b.', '..c'])
+        pos = themap.getFreeMapPosition()
+        self.assertTrue(themap.isInside(pos))
+        
+    def test_getFreeMapPositionNoFreeTile(self):
+        themap = BasicMap(['ful', 'lyo', 'cup'])
+        with self.assertRaises(Exception) as context:
+            themap.getFreeMapPosition()
+        self.assertEquals("The map does not contain any free tiles" , str(context.exception))
 

@@ -63,19 +63,24 @@ class BasicMap():
         """
         poslist = []
         for char in allowed:
-            poslist = poslist + self._squares[char]
+            if char in self._squares.keys():
+                poslist = poslist + self._squares[char]
         return poslist
     
-    def getFreeMapPosition(self):
+    def getFreeMapPosition(self) -> array:
         """
         @return:random map position (x,y) that is not occupied by a wall.
         WARNING: this may hang indefinitely if there are no positions without walls
         on the map.
         """
-        while True:
-            pos = self.getRandomPosition()
-            if self.isFree(pos):
-                return pos
+        freepos = self.getMapPositions(".")
+        if (len(freepos) == 0):
+            raise Exception("The map does not contain any free tiles")
+        return random.choice(freepos)
+#         while True:
+#             pos = self.getRandomPosition()
+#             if self.isFree(pos):
+#                 return pos
             
     def getRandomPosition(self) -> array:
         """
