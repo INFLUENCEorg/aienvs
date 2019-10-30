@@ -1,4 +1,4 @@
-from numpy import array, ndarray
+from numpy import array, ndarray, array_equal
 
 
 class Robot():
@@ -34,3 +34,5 @@ class Robot():
      """
      return "Id: " + self._id + " Pos: " + str(self._pos)
         
+    def __eq__(self, other):
+        return self._id == other._id and array_equal(self._pos, other._pos)

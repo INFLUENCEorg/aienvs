@@ -91,8 +91,8 @@ class WorldState:
         """
         robots = set()
         for robot in self._robots.values():
-            for otherrobot in self._robot.values():
-                if robot != otherrobot and robot.getPosition().array_equals(otherrobot.getPosition()):
+            for otherrobot in self._robots.values():
+                if robot != otherrobot and array_equal(robot.getPosition(), otherrobot.getPosition()):
                     robots.add(robot)
         return robots
 
