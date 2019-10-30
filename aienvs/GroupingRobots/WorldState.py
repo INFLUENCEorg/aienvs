@@ -151,13 +151,13 @@ class WorldState:
         position may run off the map or on a wall.
         """
         newpos = pos
-        if self.ACTIONS.get(action) == "DOWN":
+        if self.ACTIONS[action] == "DOWN":
             newpos = pos + [0, 1]
-        elif self.ACTIONS.get(action) == "RIGHT":
+        elif self.ACTIONS[action] == "RIGHT":
             newpos = pos + [1, 0]
-        elif self.ACTIONS.get(action) == "UP":
+        elif self.ACTIONS[action] == "UP":
             newpos = pos + [0, -1]
-        elif self.ACTIONS.get(action) == "LEFT":
+        elif self.ACTIONS[action] == "LEFT":
             newpos = pos + [-1, 0]
         return newpos
 

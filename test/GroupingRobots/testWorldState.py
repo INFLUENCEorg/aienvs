@@ -70,6 +70,14 @@ class testWorldState(LoggedTestCase):
         s = WorldState({ROBOT1:robot1, ROBOT2:robot2, ROBOT3:robot3}, env, 1)
         self.assertEquals(set([robot3, robot1]), set(s.getGroupedRobots()))
 
+    def test_withAction(self):
+        env = Mock()
+        robot1 = self._mockRobot(ROBOT1, A)
+        s = WorldState({ROBOT1:robot1}, env, 1)
+        s = s.withAction(robot1, 0)
+        newrobot = s.getRobots()[0]
+        self.assertTrue(array_equal(array([1, 0]), newrobot.getPosition()))
+
     ################# private #################
     def _mockRobot(self, id:str, pos) -> Robot:
         robot = Mock()
