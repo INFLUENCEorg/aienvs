@@ -77,10 +77,6 @@ class BasicMap():
         if (len(freepos) == 0):
             raise Exception("The map does not contain any free tiles")
         return random.choice(freepos)
-#         while True:
-#             pos = self.getRandomPosition()
-#             if self.isFree(pos):
-#                 return pos
             
     def getRandomPosition(self) -> array:
         """
