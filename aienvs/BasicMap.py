@@ -52,8 +52,10 @@ class BasicMap():
     def get(self, pos:ndarray) -> str:
         """
         @param pos the map position as (x,y) tuple 
-        @return character at given pos 
+        @return character at given pos or None if point is outside map
         """
+        if not self.isInside(pos):
+            return None
         return self._map[pos[1]][pos[0]]
     
     def getMapPositions(self, allowed:str) -> list:

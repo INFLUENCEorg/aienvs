@@ -34,13 +34,6 @@ class GroupingRobots(Env):
                        '.......*..']
                 }
 
-    ACTIONS = {
-        0: "UP",
-        1: "DOWN",
-        2: "LEFT",
-        3: "RIGHT"
-    }   
-
     def __init__(self, parameters:dict={}):
         """
         @param parameters a dict containing the following keys
@@ -68,18 +61,19 @@ class GroupingRobots(Env):
                     raise ValueError("position vector must be length 2 but got " + str(pos))
                 robot = Robot(robotId, array(pos))
             elif pos == 'random':
-                robot = Robot(robotId, self._state.getFreePosNoRobot())
+                robot = Robot(robotId, self._state.getFreeWithoutRobot())
             else:
                 raise ValueError("Unknown robot position, expected list but got " + str(type(pos)))
             self._state = self._state.withRobot(robot)
     
-        self._actSpace = spaces.Dict({robotId:spaces.Discrete(len(self.ACTIONS)) for robotId in self._state.robots.keys()})
+        self._actSpace = spaces.Dict({robot.getId():spaces.Discrete(len(self._state.ACTIONS)) for robot in self._state.getRobots()})
 
     # Override
     def step(self, actions:dict):
-        if(actions):
-            for robot in self._state.robots.values():
-                self._applyAction(robot, actions[robot.getId()])
+        for robot in self._state.robots.values():
+            rid = robot.getId()
+            if rid in actions.keys():
+                self._state = self._state.withAction(robot, actions[rid])
         global_reward = self._state.getReward()
         self._state = self._state.withTeleport();
         self._state = self._state.withStep()
@@ -87,7 +81,7 @@ class GroupingRobots(Env):
 
         return self._state, global_reward, done, []
     
-    def reset(self):
+    def reset(self) -> State:
         self.__init__(self._parameters)
         return self._state
         
@@ -127,55 +121,8 @@ class GroupingRobots(Env):
         @return: the map of this floor
         """
         return self._state.getMap()
- 
-    def isPossible(self, robot:Robot, action):
-        """
-        @param robot a Robot requesting an action
-        @param action (integer) the action to be performed
-        @return: true iff the action will be possible (can succeed) at this point.
-        ACT is considered possible if there is a task at the current position.
-        """
-        return self.getMap().isFree(self._newPos(robot.getPosition(), action))
-        
-    def getPossibleActions(self, robot:Robot):
-        """
-        @return the possible actions for the given robot on the floor
-        """
-        return [action for action in self.ACTIONS if self.isPossible(robot, action)]
 
     ########## Private functions ##########################
-   
-    def _withAction(self, robot, action) -> State:
-        """
-        robot tries to execute given action.
-        @param robot a FactoryFloorRobot
-        @param action the ACTION number.
-        @return new State if this action would be applied
-        """
-        pos = robot.getPosition()
-        newpos = self._newPos(pos, action)
-        if self._isFree(newpos):
-            newrobot = Robot(robot.getId(), newpos)
-            self._state = self._state.withRobot(newrobot)
-  
-    def _newPos(self, pos:ndarray, action):
-        """
-        @param pos the current (old) position of the robot (numpy array)
-        @param action the action to be done in given position
-        @return:  what would be the new position (ndarray) if robot did action.
-        This does not check any legality of the new position, so the 
-        position may run off the map or on a wall.
-        """
-        newpos = pos
-        if self.ACTIONS.get(action) == "DOWN":
-            newpos = pos + [0, 1]
-        elif self.ACTIONS.get(action) == "RIGHT":
-            newpos = pos + [1, 0]
-        elif self.ACTIONS.get(action) == "UP":
-            newpos = pos + [0, -1]
-        elif self.ACTIONS.get(action) == "LEFT":
-            newpos = pos + [-1, 0]
-        return newpos
 
     def _isRobot(self, position:ndarray):
         """
