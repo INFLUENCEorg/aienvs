@@ -39,3 +39,12 @@ class TestBasicMap(LoggedTestCase):
         map = BasicMap(['abc', 'ABC', '25.'])
         p1 = map.getRandomPosition()
         
+    def test_getSquaresDict(self):
+        map = BasicMap(['.a.', '.b.', '..c'])
+        squares = map._getSquaresDict()
+        self.assertEquals(6, len(squares['.']))
+        self.assertEquals(1, len(squares['a']))
+        self.assertEquals(1, len(squares['b']))
+        self.assertEquals(1, len(squares['c']))
+        self.assertTrue(array_equal(array([1, 0]), squares['a'][0]))
+        

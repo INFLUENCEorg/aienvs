@@ -35,6 +35,7 @@ class BasicMap():
         for line in map:
             if width != len(line):
                 raise ValueError("All lines in map must have width " + str(self.getWidth()) + " but found " + str(line))
+        self._squares = self._getSquaresDict()
 
     def getWidth(self) -> int:
         return len(self._map[0])
@@ -55,6 +56,17 @@ class BasicMap():
         """
         return self._map[pos[1]][pos[0]]
     
+    def getFreeMapPosition(self):
+        """
+        @return:random map position (x,y) that is not occupied by a wall.
+        WARNING: this may hang indefinitely if there are no positions without walls
+        on the map.
+        """
+        while True:
+            pos = self.getRandomPosition()
+            if self.isFree(pos):
+                return pos
+            
     def getRandomPosition(self) -> array:
         """
         @param random number generator,  instance of Random()
@@ -69,6 +81,14 @@ class BasicMap():
         """
         return pos[0] >= 0 and pos[0] < self.getWidth() and pos[1] >= 0 and pos[1] < self.getHeight()
     
+    def isFree(self, pos:ndarray):
+        """
+        @return true iff the given pos has space for a robot,
+        so it must be on the map and not on a wall.
+        This assumes the conventional "*" char is used to indicate walls.
+        """
+        return self.isInside(pos) and self.get(pos) != "*"         
+
     def getPart(self, area:ndarray):  # -> Map
         """
         @param area a numpy array of the form [[xmin,ymin],[xmax,ymax]]. 
@@ -79,6 +99,23 @@ class BasicMap():
         for y in range(area[0, 1], area[1, 1] + 1):
             newmap = newmap + [self._map[y][area[0, 0]:area[1, 0] + 1]]
         return BasicMap(newmap)
+    
+    def _getSquaresDict(self) -> dict:
+        """
+        Build the squares dict
+        """
+        squares = {}
+        for y in range(0, len(self._map)):
+            row = self._map[y]
+            for x in range(0, len(row)):
+                char = row[x]
+                pos = array([x, y])
+                if char in squares.keys():
+                    squares[char].append(pos)
+                else:
+                    squares[char] = [pos]
+        
+        return squares
     
     def __deepcopy__(self, memo):
         # A MAP IS IMMUTABLE so this is easy
