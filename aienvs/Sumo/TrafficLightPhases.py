@@ -40,7 +40,7 @@ class TrafficLightPhases():
         '''
         @return all intersection ids (list of str)
         '''
-        return list(self._phases.keys())
+        return sorted(list(self._phases.keys()))
 
     def getNrPhases(self, intersectionId:str) -> int:
         '''
