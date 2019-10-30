@@ -5,7 +5,7 @@ from aienvs.GroupingRobots.Robot import Robot
 from numpy import array, ndarray, delete, array_equal
 from xml.etree.ElementPath import prepare_self
 import random
-from aienvs.utils import rm
+from aienvs.utils import rm, hashf
 
 from typing import TypeVar, Generic
 
@@ -165,6 +165,5 @@ class WorldState:
         return self._robots == other._robots and self._map == other._map
 
     def __hash__(self) -> int:
-        return hash(self._robots) + hash(self._map) + hash(self._steps)
-    
+        return hashf(self._robots) + hashf(self._map) + hashf(self._steps)
     

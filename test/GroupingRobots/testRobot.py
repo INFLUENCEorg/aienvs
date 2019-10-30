@@ -45,8 +45,17 @@ class testRobot(LoggedTestCase):
         with self.assertRaises(Exception) as context:
             Robot(ROBOT1, 1)
         self.assertEquals("pos must be numpy array but got <class 'int'>" , str(context.exception))
-    
-    def test_equals(self):
-        self.assertEquals(Robot(ROBOT1, A), Robot(ROBOT1, A))
-        self.assertNotEqual(Robot(ROBOT1, A), Robot(ROBOT1, B))
-        self.assertNotEqual(Robot(ROBOT1, A), Robot(ROBOT2, A))
+
+    def test_equal_and_hash(self):
+        bot1 = Robot(ROBOT1, A)
+        bot1a = Robot(ROBOT1, A)
+        bot2 = Robot(ROBOT2, A)
+        bot3 = Robot(ROBOT1, B)
+
+        self.assertEquals(bot1, bot1a)        
+        self.assertEquals(hash(bot1), hash(bot1a))
+        self.assertNotEqual(bot1, bot2)        
+        self.assertNotEqual(hash(bot1), hash(bot2))
+        self.assertNotEqual(bot1, bot3)        
+        self.assertNotEqual(hash(bot1), hash(bot3))
+

@@ -1,4 +1,5 @@
 from numpy import array, ndarray, array_equal
+from aienvs.utils import hashf
 
 
 class Robot():
@@ -36,3 +37,7 @@ class Robot():
         
     def __eq__(self, other):
         return self._id == other._id and array_equal(self._pos, other._pos)
+    
+    def __hash__(self) -> int:
+        return hash(self._id) + hashf(self._pos)
+

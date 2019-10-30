@@ -1,6 +1,6 @@
 import yaml
 import logging
-from numpy import array, array_equal
+from numpy import array, array_equal, ndarray
 
 
 def getParameters(filename:str) -> dict:
@@ -31,7 +31,7 @@ def hashf(obj) -> int:
     """
     Forced computation of hash code. Also hashes dict and list
     """
-    if isinstance(obj, list):
+    if isinstance(obj, list) or isinstance(obj, ndarray):
         total = 0
         for x in obj:
             total = total + hashf(x)

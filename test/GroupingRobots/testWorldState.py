@@ -90,6 +90,29 @@ class testWorldState(LoggedTestCase):
         # robot1 and robot3 have to teleport to C and D.
         self.assertEquals(set([]), s.getGroupedRobots())
 
+    def test_equal_and_hash(self):
+        env1 = Mock()
+        env2 = Mock()
+        self.assertNotEqual(env1, env2)
+        robot1 = Robot(ROBOT1, A)
+        robot2 = Robot(ROBOT2, B)
+        robot3 = Robot(ROBOT3, A)
+
+        s1 = WorldState({ROBOT1:robot1, ROBOT2:robot2}, env1, 1)
+        s2 = WorldState({ROBOT1:robot1, ROBOT2:robot2}, env1, 1)
+        s3 = WorldState({ROBOT1:robot1, ROBOT2:robot2, ROBOT3:robot3}, env1, 1)
+        s4 = WorldState({ROBOT1:robot1, ROBOT2:robot2}, env2, 1)
+        s5 = WorldState({ROBOT1:robot1, ROBOT2:robot2}, env2, 2)
+
+        self.assertEquals(s1, s2)        
+        self.assertEquals(hash(s1), hash(s2))        
+        self.assertNotEquals(s1, s3)        
+        self.assertNotEquals(hash(s1), hash(s3))        
+        self.assertNotEquals(s1, s4)        
+        self.assertNotEquals(hash(s1), hash(s4))        
+        self.assertNotEquals(s1, s5)        
+        self.assertNotEquals(hash(s1), hash(s5))        
+
     ################# private #################
     def _mockRobot(self, id:str, pos) -> Robot:
         robot = Mock()
