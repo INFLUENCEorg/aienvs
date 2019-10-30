@@ -2,7 +2,7 @@ import numpy as np
 from aienvs.BasicMap import BasicMap
 import copy
 from aienvs.GroupingRobots.Robot import Robot
-from numpy import array, ndarray, delete
+from numpy import array, ndarray, delete, array_equal
 from xml.etree.ElementPath import prepare_self
 import random
 
@@ -81,8 +81,19 @@ class WorldState:
         """
         free = self._map.getFreeMapPositions()
         for robot in self._robots.values():
-            free = delete(free, robot.getPosition())
+            free = WorldState.rm(free, robot.getPosition())
         return free
+    
+    @staticmethod
+    def rm(array:list, element: array):
+        """
+        @param array the list to delete element from
+        @param element a numpy array : the element to be deleted
+        @return list with all occurences of element 
+        deleted from array, if np is there
+        """
+        # np does not even support this standard?!? 
+        return [x for x in array if not array_equal(element, x)]
             
     def getGroupedRobots(self):
         """
