@@ -30,6 +30,7 @@ ROBOT3 = "robot3"
 A = array([1, 1])
 B = array([2, 2])
 C = array([3, 3])
+D = array([4, 4])
 
 
 class testWorldState(LoggedTestCase):
@@ -77,6 +78,17 @@ class testWorldState(LoggedTestCase):
         s = s.withAction(robot1, 0)
         newrobot = s.getRobots()[0]
         self.assertTrue(array_equal(array([1, 0]), newrobot.getPosition()))
+
+    def test_withTeleport(self):
+        env = Mock()
+        env.getFreeMapPositions = Mock(return_value=[A, B, C, D])
+        robot1 = self._mockRobot(ROBOT1, A)
+        robot2 = self._mockRobot(ROBOT2, B)
+        robot3 = self._mockRobot(ROBOT3, A)
+        s = WorldState({ROBOT1:robot1, ROBOT2:robot2, ROBOT3:robot3}, env, 1)
+        s = s.withTeleport()
+        # robot1 and robot3 have to teleport to C and D.
+        self.assertEquals(set([]), s.getGroupedRobots())
 
     ################# private #################
     def _mockRobot(self, id:str, pos) -> Robot:

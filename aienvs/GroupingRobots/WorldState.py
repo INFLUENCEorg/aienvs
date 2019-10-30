@@ -43,7 +43,7 @@ class WorldState:
         """
         newrobots = self._robots.copy()
         newrobots.update({robot.getId(): robot})
-        return WorldState(newrobots, map, self._steps)
+        return WorldState(newrobots, self._map, self._steps)
     
     def withStep(self) -> 'WorldState':
         """
@@ -59,7 +59,7 @@ class WorldState:
         newstate = self
         for robot in self.getGroupedRobots():
             newpos = random.choice(newstate.getFreeWithoutRobot())
-            newstate = newstate.withRobot(Robot(robot.getId, newpos))
+            newstate = newstate.withRobot(Robot(robot.getId(), newpos))
             
         return newstate
     
@@ -85,7 +85,7 @@ class WorldState:
             free = rm(free, robot.getPosition())
         return free
             
-    def getGroupedRobots(self):
+    def getGroupedRobots(self) -> set:
         """
         @return set of all robots that are in a group now
         """
