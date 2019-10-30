@@ -66,4 +66,14 @@ class TestBasicMap(LoggedTestCase):
         with self.assertRaises(Exception) as context:
             themap.getFreeMapPosition()
         self.assertEquals("The map does not contain any free tiles" , str(context.exception))
+        
+    def test_equal_and_hash(self):
+        themap1 = BasicMap(['.a.', '.b.', '..c'])
+        themap2 = BasicMap(['.a.', '.b.', '..c'])
+        themap3 = BasicMap(['.a.', '.b.', '.c.'])
 
+        self.assertEquals(themap1, themap2)        
+        self.assertNotEqual(themap1, themap3)        
+        self.assertEquals(hash(themap1), hash(themap2))
+        self.assertNotEqual(hash(themap1), hash(themap3))
+        

@@ -164,3 +164,7 @@ class WorldState:
     def __eq__(self, other):
         return self._robots == other._robots and self._map == other._map
 
+    def __hash__(self) -> int:
+        return hash(self._robots) + hash(self._map) + hash(self._steps)
+    
+    

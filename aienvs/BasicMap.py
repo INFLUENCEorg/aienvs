@@ -2,6 +2,7 @@ from random import Random
 import random
 from numpy import array, ndarray
 import copy
+from aienvs.utils import hashf
 
 
 class BasicMap():
@@ -11,7 +12,7 @@ class BasicMap():
     eg a free space or a wall.
     This map is like a paper map of the environment,
     so without moving parts.
-    immutable means nobody should access private variables
+    immutable: nobody should access private variables
     and there are no setters so this object will never change.
     """
 
@@ -133,3 +134,10 @@ class BasicMap():
     def __deepcopy__(self, memo):
         # A MAP IS IMMUTABLE so this is easy
         return self
+    
+    def __eq__(self, other):
+        return self._map == other._map
+
+    def __hash__(self) -> int:
+        return hashf(self._map)
+ 
