@@ -6,10 +6,13 @@ from numpy import array, ndarray, delete
 from xml.etree.ElementPath import prepare_self
 import random
 
+from typing import TypeVar, Generic
 
-class State():
+
+class WorldState:
     """
     The state of the GroupingRobots world.
+    This is adding Robot's to the BasicMap.
     Immutable.
     """
     ACTIONS = {
@@ -30,21 +33,24 @@ class State():
         self._map = map
         self._steps = steps
 
-    def withRobot(self, robot) -> State:
+    # see PEP 484: WorldState not yet defined (geez), in that case use ''
+    def withRobot(self, robot:Robot) -> 'WorldState':
         """
-        Adds a new robot to this state, or replaces an existing
-        robot with the same ID with the given one.
+        @param robot a Robot to be added/updated
+        @return:  new state with new robot added to this state, or replaces an 
+        existing robot with the same ID with the given one.
         """
-        newrobots = self.getRobots().update({robot.getId(): robot})
-        return State(newrobots, map, self._steps)
+        newrobots = self._robots.copy()
+        newrobots.update({robot.getId(): robot})
+        return WorldState(newrobots, map, self._steps)
     
-    def withStep(self) -> State:
+    def withStep(self) -> 'WorldState':
         """
         Returns new state with the step counter incremented
         """
-        return State(self._robots, self._map, self._steps + 1)
+        return WorldState(self._robots, self._map, self._steps + 1)
     
-    def withTeleport(self) -> State:
+    def withTeleport(self) -> 'WorldState':
         """
         New state where all grouped robots are teleported to random free position
         May throw if there are not enough free positions on the map
@@ -56,7 +62,7 @@ class State():
             
         return newstate
     
-    def withAction(self, robot:Robot, action) -> State:
+    def withAction(self, robot:Robot, action) -> 'WorldState':
         """
         robot tries to execute given action.
         @param robot a Robot
@@ -68,7 +74,7 @@ class State():
         if self._map.isFree(newpos):
             return self.withRobot(Robot(robot.getId(), newpos))
         return self
-
+    
     def getFreeWithoutRobot(self) -> array:
         """
         @return all positions that are free and do not contain robot.

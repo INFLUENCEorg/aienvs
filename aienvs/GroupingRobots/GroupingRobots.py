@@ -14,7 +14,7 @@ import random
 # import pdb
 # import numbers
 from aienvs.gym.CustomObjectSpace import CustomObjectSpace
-from aienvs.GroupingRobots.State import State
+from aienvs.GroupingRobots.WorldState import WorldState
 from aienvs.BasicMap import BasicMap
 
 
@@ -49,10 +49,8 @@ class GroupingRobots(Env):
         self._parameters.update(parameters)
 
         self.seed(self._parameters['seed'])
+        self._state = WorldState({}, BasicMap(self._parameters['map']))
 
-        self._state = State({}, BasicMap(self._parameters['map']))
-
-        # TODO: remove code duplication
         for item in self._parameters['robots']:
             pos = item['pos']
             robotId = item['id']
@@ -75,13 +73,12 @@ class GroupingRobots(Env):
             if rid in actions.keys():
                 self._state = self._state.withAction(robot, actions[rid])
         global_reward = self._state.getReward()
-        self._state = self._state.withTeleport();
-        self._state = self._state.withStep()
+        self._state = self._state.withTeleport().withStep()
         done = (self._parameters['steps'] <= self._state.getSteps())
 
         return self._state, global_reward, done, []
     
-    def reset(self) -> State:
+    def reset(self) -> WorldState:
         self.__init__(self._parameters)
         return self._state
         
@@ -100,10 +97,12 @@ class GroupingRobots(Env):
     def close(self):
         pass  
 
+    # Override
     def seed(self, seed):
-        random.seed(seed)
+        # FIXME this is setting global seed, affecting everyone!
+        return random.seed(seed)
 
-    def getState(self) -> State:
+    def getState(self) -> WorldState:
         return self._state
 
     @property
@@ -113,24 +112,4 @@ class GroupingRobots(Env):
     @property
     def action_space(self):
         return self._actSpace
-            
-    ########## Getters ###############################
-    
-    def getMap(self):
-        """
-        @return: the map of this floor
-        """
-        return self._state.getMap()
-
-    ########## Private functions ##########################
-
-    def _isRobot(self, position:ndarray):
-        """
-        @param position a numpy ndarray [x,y] that must be checked
-        @return: true iff a robot occupies position
-        """        
-        for robot in self._state.robots.values():
-            if (position == robot.getPosition()).all():
-                return True
-        return False
 
