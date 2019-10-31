@@ -1,6 +1,7 @@
 import yaml
 import logging
 from numpy import array, array_equal, ndarray
+from collections.abc import  Hashable
 
 
 def getParameters(filename:str) -> dict:
@@ -42,4 +43,4 @@ def hashf(obj) -> int:
             total = total + hashf(x) + hashf(obj[x]) 
         return total        
     return hash(obj)
-        
+
