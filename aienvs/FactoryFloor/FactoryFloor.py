@@ -262,7 +262,7 @@ class FactoryFloor(Env):
             task = self._getTask(newpos)
             if task != None:
                 self._state.tasks.remove(task)
-                logging.debug("removed " + str(task))
+                #logging.debug("removed " + str(task))
         else: # move
             newpos = self._newPos(pos, action)
             if self._isFree(newpos):

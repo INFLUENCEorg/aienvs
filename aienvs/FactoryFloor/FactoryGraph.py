@@ -17,10 +17,10 @@ class FactoryGraph(Graph):
                 pos = array([x, y])
                 if map.get(pos) == '*':
                     continue
-                self.add_node(str(pos))
+                self.add_node(tuple(pos))
                 for neighbour in self._neighbours(pos):
                     if map.isInside(neighbour) and map.get(neighbour) != '*':
-                        self.add_edge(str(pos), str(neighbour))
+                        self.add_edge(tuple(pos), tuple(neighbour))
 
     def _neighbours(self, pos:array):
         return [ pos + [0, 1], pos + [0, -1], pos + [1, 0], pos + [-1, 0]]
