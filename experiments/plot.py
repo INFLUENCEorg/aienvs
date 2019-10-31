@@ -14,7 +14,8 @@ def main():
     rewardMeans = []
     confBoundList = []
 
-    for generationDir in os.listdir(dirname+"/data"):
+    for generationDir in sorted(os.listdir(dirname+"/data")):
+        print(generationDir)
         generationCount += 1
         rewardList = []
         allRewardFiles = glob.glob( dirname + '/data/'+generationDir+ "/**/rewards.yaml" ) 
@@ -26,7 +27,9 @@ def main():
 
         rewardMeans.append(np.mean(rewardList))
         confBound = list(st.t.interval(0.95, len(rewardList)-1, loc=np.mean(rewardList), scale=st.sem(rewardList)))
-        confBoundList.append((rewardMeans-confBound[0])[0])
+        confBoundList.append((rewardMeans[-1]-confBound[0]))
+        print(rewardMeans[-1])
+        print(confBound)
 
     confBoundArray = np.transpose(np.array(confBoundList))
 
