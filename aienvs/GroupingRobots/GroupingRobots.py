@@ -49,7 +49,7 @@ class GroupingRobots(Env):
         self._parameters.update(parameters)
 
         self.seed(self._parameters['seed'])
-        self._state = WorldState({}, BasicMap(self._parameters['map']))
+        self._state = WorldState({}, BasicMap(self._parameters['map']), self._parameters['steps'])
 
         for item in self._parameters['robots']:
             pos = item['pos']

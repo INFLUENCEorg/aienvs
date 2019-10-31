@@ -80,7 +80,7 @@ class WorldState:
         """
         @return all positions that are free and do not contain robot.
         """
-        free = self._map.getFreeMapPositions()
+        free = self._map.getMapPositions('.')
         for robot in self._robots.values():
             free = rm(free, robot.getPosition())
         return free
