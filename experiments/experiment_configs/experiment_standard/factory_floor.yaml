@@ -1,7 +1,7 @@
 parameters:
     # Common hyperparameters
     seed: null
-    max_steps: 50
+    max_steps: 20
 
     environment:
         steps: 10
