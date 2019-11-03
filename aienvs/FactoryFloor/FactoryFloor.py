@@ -241,19 +241,16 @@ class FactoryFloor(Env):
         @param action the ACTION number. 
         """
         actstring = self.ACTIONS.get(action)
+        randNo = random.random()
         try:
-            randNo = random.random()
-            try:
-                # first check for individual success probabilities
-                pSucceed = self._parameters['P_action_succeed'][robot.getId()][actstring]
-            except KeyError:
-                # then use common ones
-                pSucceed = self._parameters['P_action_succeed'][actstring]
+            # first check for individual success probabilities
+            pSucceed = self._parameters['P_action_succeed'][robot.getId()][actstring]
+        except KeyError:
+            # then use common ones
+            pSucceed = self._parameters['P_action_succeed'][actstring]
 
-            if randNo > pSucceed:
-                return False
-        except:
-            pdb.post_mortem()
+        if randNo > pSucceed:
+            return False
 
         pos = robot.getPosition()
         
