@@ -14,7 +14,7 @@ config:
     #- &iterationLimit 20000
   - &explorationConstant 1
   - &samplingLimit 20
-  - &diyBonus 0.7
+  - &diyBonus 0.0
 
 # do not edit here
 parameters:
@@ -46,7 +46,8 @@ parameters:
                         id: "robot4"
                         parameters: {"modelFile": "models/agent1/robot4.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
                         #iterationLimit: *iterationLimit
-              timeLimit: &timeLimit
+              timeLimit: *timeLimit
+              diyBonus: *diyBonus
               treeParameters: 
                   explorationConstant: *explorationConstant
                   samplingLimit: *samplingLimit
@@ -76,7 +77,8 @@ parameters:
                         id: "robot4"
                         parameters: {"modelFile": "models/agent2/robot4.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
                         #             iterationLimit: *iterationLimit
-              timeLimit: &timeLimit
+              timeLimit: *timeLimit
+              diyBonus: *diyBonus
               treeParameters: 
                   explorationConstant: *explorationConstant
                   samplingLimit: *samplingLimit
@@ -106,7 +108,8 @@ parameters:
                         id: "robot4"
                         parameters: {"modelFile": "models/agent3/robot4.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
                         # iterationLimit: *iterationLimit
-              timeLimit: &timeLimit
+              timeLimit: *timeLimit
+              diyBonus: *diyBonus
               treeParameters: 
                   explorationConstant: *explorationConstant
                   samplingLimit: *samplingLimit
@@ -135,7 +138,8 @@ parameters:
                       - class: *otherAgent
                         id: "robot3"
                         parameters: {"modelFile": "models/agent4/robot3.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
-              timeLimit: &timeLimit
+              timeLimit: *timeLimit
+              diyBonus: *diyBonus
               #iterationLimit: *iterationLimit
               treeParameters: 
                   explorationConstant: *explorationConstant
