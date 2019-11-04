@@ -10,10 +10,11 @@ config:
     #- &RobotAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
     #- &RobotAgent aiagents.single.RandomAgent.RandomAgent
   - &otherAgent aiagents.single.TrainedAgent.TrainedAgent.TrainedAgent
-  - &timeLimit 1
-  - &iterationLimit 20000
+  - &timeLimit 90
+    #- &iterationLimit 20000
   - &explorationConstant 1
   - &samplingLimit 20
+  - &diyBonus 0.7
 
 # do not edit here
 parameters:
@@ -44,7 +45,8 @@ parameters:
                       - class: *otherAgent
                         id: "robot4"
                         parameters: {"modelFile": "models/agent1/robot4.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
-              iterationLimit: *iterationLimit
+                        #iterationLimit: *iterationLimit
+              timeLimit: &timeLimit
               treeParameters: 
                   explorationConstant: *explorationConstant
                   samplingLimit: *samplingLimit
@@ -66,14 +68,15 @@ parameters:
                     subAgentList:
                       - class: *otherAgent
                         id: "robot1"
-                        parameters: {"modelFile": "models/agent1/robot1.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
+                        parameters: {"modelFile": "models/agent2/robot1.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
                       - class: *otherAgent
                         id: "robot3"
-                        parameters: {"modelFile": "models/agent1/robot3.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
+                        parameters: {"modelFile": "models/agent2/robot3.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
                       - class: *otherAgent
                         id: "robot4"
-                        parameters: {"modelFile": "models/agent1/robot4.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
-              iterationLimit: *iterationLimit
+                        parameters: {"modelFile": "models/agent2/robot4.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
+                        #             iterationLimit: *iterationLimit
+              timeLimit: &timeLimit
               treeParameters: 
                   explorationConstant: *explorationConstant
                   samplingLimit: *samplingLimit
@@ -95,14 +98,15 @@ parameters:
                     subAgentList:
                       - class: *otherAgent
                         id: "robot1"
-                        parameters: {"modelFile": "models/agent1/robot1.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
+                        parameters: {"modelFile": "models/agent3/robot1.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
                       - class: *otherAgent
                         id: "robot2"
-                        parameters: {"modelFile": "models/agent1/robot2.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
+                        parameters: {"modelFile": "models/agent3/robot2.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
                       - class: *otherAgent
                         id: "robot4"
-                        parameters: {"modelFile": "models/agent1/robot4.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
-              iterationLimit: *iterationLimit
+                        parameters: {"modelFile": "models/agent3/robot4.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
+                        # iterationLimit: *iterationLimit
+              timeLimit: &timeLimit
               treeParameters: 
                   explorationConstant: *explorationConstant
                   samplingLimit: *samplingLimit
@@ -124,14 +128,15 @@ parameters:
                     subAgentList:
                       - class: *otherAgent
                         id: "robot1"
-                        parameters: {"modelFile": "models/agent1/robot1.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
+                        parameters: {"modelFile": "models/agent4/robot1.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
                       - class: *otherAgent
                         id: "robot2"
-                        parameters: {"modelFile": "models/agent1/robot2.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
+                        parameters: {"modelFile": "models/agent4/robot2.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
                       - class: *otherAgent
                         id: "robot3"
-                        parameters: {"modelFile": "models/agent1/robot3.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
-              iterationLimit: *iterationLimit
+                        parameters: {"modelFile": "models/agent4/robot3.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
+              timeLimit: &timeLimit
+              #iterationLimit: *iterationLimit
               treeParameters: 
                   explorationConstant: *explorationConstant
                   samplingLimit: *samplingLimit
