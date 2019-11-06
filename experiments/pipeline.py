@@ -66,8 +66,16 @@ def main():
     experiment="./data/"+argums.expname
     if(os.path.exists(experiment)):
         raise Exception("Path to experiment exists")
-
     os.makedirs(experiment+"/models")
+
+    try:
+        configFileDir=os.path.dirname(os.path.realpath(argums.configFile))
+        destDir=experiment+"/config/"
+        shutil.copytree(configFileDir, destDir)
+    except:
+        print("Copying of configs failed")
+        pass
+
     models_link="./models"
     if(os.path.exists(models_link)):
         os.unlink(models_link)
