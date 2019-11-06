@@ -29,7 +29,7 @@ parameters:
                 id: "robot1"
                 parameters: {}
               rolloutAgent:
-                  - class: *otherAgent
+                    class: *otherAgent
                     id: "robot1"
                     parameters: {"modelFile": "models/agent1/robot1.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
               otherAgents:
@@ -60,7 +60,7 @@ parameters:
                 id: "robot2"
                 parameters: {}
               rolloutAgent:
-                  - class: *otherAgent
+                    class: *otherAgent
                     id: "robot2"
                     parameters: {"modelFile": "models/agent2/robot2.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
               otherAgents:
@@ -91,7 +91,7 @@ parameters:
                 id: "robot3"
                 parameters: {}
               rolloutAgent:
-                  - class: *otherAgent
+                    class: *otherAgent
                     id: "robot3"
                     parameters: {"modelFile": "models/agent3/robot3.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
               otherAgents:
@@ -122,7 +122,7 @@ parameters:
                 id: "robot4"
                 parameters: {}
               rolloutAgent:
-                  - class: *otherAgent
+                    class: *otherAgent
                     id: "robot4"
                     parameters: {"modelFile": "models/agent4/robot4.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
               otherAgents:
