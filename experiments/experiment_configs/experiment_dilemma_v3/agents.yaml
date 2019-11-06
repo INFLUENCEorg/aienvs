@@ -107,8 +107,8 @@ parameters:
                       - class: *otherAgent
                         id: "robot4"
                         parameters: {"modelFile": "models/agent3/robot4.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
-                        #             iterationLimit: *iterationLimit
-              timeLimit: *timeLimit
+              iterationLimit: *iterationLimit
+              #            timeLimit: *timeLimit
               diyBonus: *diyBonus
               treeParameters: 
                   explorationConstant: *explorationConstant
@@ -138,8 +138,8 @@ parameters:
                       - class: *otherAgent
                         id: "robot3"
                         parameters: {"modelFile": "models/agent4/robot3.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
-                        #iterationLimit: *iterationLimit
-              timeLimit: *timeLimit
+              iterationLimit: *iterationLimit
+                        #timeLimit: *timeLimit
               diyBonus: *diyBonus
               treeParameters: 
                   explorationConstant: *explorationConstant
