@@ -10,11 +10,11 @@ config:
     #- &RobotAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
     #- &RobotAgent aiagents.single.RandomAgent.RandomAgent
   - &otherAgent aiagents.single.TrainedAgent.TrainedAgent.TrainedAgent
-  - &timeLimit 90
-    #- &iterationLimit 20000
+    #- &timeLimit 90
+  - &iterationLimit 20000
   - &explorationConstant 1
   - &samplingLimit 20
-  - &diyBonus 0.0
+  - &diyBonus 0.7
 
 # do not edit here
 parameters:
