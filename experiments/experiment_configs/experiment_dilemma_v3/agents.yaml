@@ -10,8 +10,9 @@ config:
     #- &RobotAgent aiagents.single.FactoryFloorAgent.FactoryFloorAgent
     #- &RobotAgent aiagents.single.RandomAgent.RandomAgent
   - &otherAgent aiagents.single.TrainedAgent.TrainedAgent.TrainedAgent
-  - &timeLimit 180
-    #- &iterationLimit 20000
+    #- &timeLimit 180
+  - &diyBonus 0.7
+  - &iterationLimit 20000
   - &explorationConstant 1.0
   - &samplingLimit 20
 
@@ -28,9 +29,9 @@ parameters:
                 id: "robot1"
                 parameters: {}
               rolloutAgent:
-                class: *FactoryFloorAgent
-                id: "robot1"
-                parameters: {"action": 0}
+                  - class: *otherAgent
+                    id: "robot1"
+                    parameters: {"modelFile": "models/agent1/robot1.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
               otherAgents:
                     class: *BasicComplexAgent
                     parameters: {}
@@ -44,8 +45,9 @@ parameters:
                       - class: *otherAgent
                         id: "robot4"
                         parameters: {"modelFile": "models/agent1/robot4.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}}               
-                        #iterationLimit: *iterationLimit
-              timeLimit: *timeLimit
+              iterationLimit: *iterationLimit
+              #timeLimit: *timeLimit
+              diyBonus: *diyBonus
               treeParameters: 
                   explorationConstant: *explorationConstant
                   samplingLimit: *samplingLimit
@@ -58,9 +60,9 @@ parameters:
                 id: "robot2"
                 parameters: {}
               rolloutAgent:
-                class: *FactoryFloorAgent
-                id: "robot2"
-                parameters: {"action": 0}
+                  - class: *otherAgent
+                    id: "robot2"
+                    parameters: {"modelFile": "models/agent2/robot2.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
               otherAgents:
                     class: *BasicComplexAgent
                     parameters: {}
@@ -74,8 +76,9 @@ parameters:
                       - class: *otherAgent
                         id: "robot4"
                         parameters: {"modelFile": "models/agent2/robot4.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
-                        #             iterationLimit: *iterationLimit
-              timeLimit: *timeLimit
+              iterationLimit: *iterationLimit
+                        #timeLimit: *timeLimit
+              diyBonus: *diyBonus
               treeParameters: 
                   explorationConstant: *explorationConstant
                   samplingLimit: *samplingLimit
@@ -88,9 +91,9 @@ parameters:
                 id: "robot3"
                 parameters: {}
               rolloutAgent:
-                class: *FactoryFloorAgent
-                id: "robot3"
-                parameters: {"action": 0}
+                  - class: *otherAgent
+                    id: "robot3"
+                    parameters: {"modelFile": "models/agent3/robot3.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
               otherAgents:
                     class: *BasicComplexAgent
                     parameters: {}
@@ -106,6 +109,7 @@ parameters:
                         parameters: {"modelFile": "models/agent3/robot4.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
                         #             iterationLimit: *iterationLimit
               timeLimit: *timeLimit
+              diyBonus: *diyBonus
               treeParameters: 
                   explorationConstant: *explorationConstant
                   samplingLimit: *samplingLimit
@@ -118,9 +122,9 @@ parameters:
                 id: "robot4"
                 parameters: {}
               rolloutAgent:
-                class: *FactoryFloorAgent
-                id: "robot4"
-                parameters: {"action": 0}
+                  - class: *otherAgent
+                    id: "robot4"
+                    parameters: {"modelFile": "models/agent4/robot4.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
               otherAgents:
                     class: *BasicComplexAgent
                     parameters: {}
@@ -136,6 +140,7 @@ parameters:
                         parameters: {"modelFile": "models/agent4/robot3.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}} 
                         #iterationLimit: *iterationLimit
               timeLimit: *timeLimit
+              diyBonus: *diyBonus
               treeParameters: 
                   explorationConstant: *explorationConstant
                   samplingLimit: *samplingLimit
