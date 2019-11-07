@@ -234,7 +234,7 @@ parameters:
                         id: "robot4"
                         parameters: {"modelFile": "models/agent6/robot4.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}}               
                       - class: *otherAgent
-                        id: "robot6"
+                        id: "robot5"
                         parameters: {"modelFile": "models/agent6/robot5.h5", "backupClass": aiagents.single.FactoryFloorAgent.FactoryFloorAgent, "backupClassParameters": {"action": 0}}               
               iterationLimit: *iterationLimit
                         #timeLimit: *timeLimit
