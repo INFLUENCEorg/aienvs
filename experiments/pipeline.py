@@ -19,7 +19,7 @@ def runDjob(env_file, agent_file, datadir, jobid, batching=False, dependencyList
             return subprocess.Popen(commandList, env=my_env, stdout=f)
 
 def batchJob(runnerFile, commandList, outputdir, dependencyList=[None], expName=None):
-    command = ["sbatch", "--parsable", "--job-name="+str(expname)]
+    command = ["sbatch", "--parsable", "--job-name="+str(expName)]
     if dependencyList[0] is not None:
         dependencyList = [item.decode("utf-8") for item in dependencyList]
         command.append("--dependency=afterok:"+":".join(dependencyList))
