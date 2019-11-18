@@ -69,4 +69,7 @@ class PackedSpace(ModifiedActionSpace):
     
     def getOriginalSpace(self) -> OrderedDict: 
         return self._originalspace.getSpace()
+
+    def get(self, id):
+        return self._subdicts[id]
     
