@@ -60,7 +60,7 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
             steps += episodeSteps
             totalReward += episodeReward
             episodeRewards.append(episodeReward)
-            logging.info("Episode reward: " + str(episodeReward))
+            logging.info("Episode return: " + str(episodeReward))
             episodeCount += 1
     
         try:    
