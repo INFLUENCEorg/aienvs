@@ -4,22 +4,22 @@ import os, sys
 from time import time
 import configargparse
 
-def runDjob(env_file, agent_file, datadir, jobid, batching=False, dependencyList=None):
+def runDjob(env_file, agent_file, datadir, jobid, batching=False, dependencyList=None, expName=None):
     commandList = ["python3", "MctsExperiment.py", 
         "-e", env_file,
         "-a", agent_file,
         "-d", datadir]
 
     if(batching):
-        return batchJob("./collect_data_batcher.sh", commandList, datadir, dependencyList)
+        return batchJob("./collect_data_batcher.sh", commandList, datadir, dependencyList, expName)
     else:
         my_env = os.environ.copy()
         my_env["SLURM_JOB_ID"] = str(jobid)
         with open(datadir+"/"+str(jobid)+".out","w+") as f:
             return subprocess.Popen(commandList, env=my_env, stdout=f)
 
-def batchJob(runnerFile, commandList, outputdir, dependencyList=[None]):
-    command = ["sbatch", "--parsable"]
+def batchJob(runnerFile, commandList, outputdir, dependencyList=[None], expName=None):
+    command = ["sbatch", "--parsable", "--job-name="+str(expName)]
     if dependencyList[0] is not None:
         dependencyList = [item.decode("utf-8") for item in dependencyList]
         command.append("--dependency=afterok:"+":".join(dependencyList))
@@ -27,7 +27,7 @@ def batchJob(runnerFile, commandList, outputdir, dependencyList=[None]):
     command.append(outputdir)
     return subprocess.Popen(command, stdout=subprocess.PIPE)
 
-def runTjob(datadir, modelDir, dlFile, batching=False, dependencyList=None):
+def runTjob(datadir, modelDir, dlFile, batching=False, dependencyList=None, expName=None):
     if os.path.exists(modelDir):
        shutil.rmtree(modelDir)
     os.makedirs(modelDir, exist_ok=False)
@@ -38,7 +38,7 @@ def runTjob(datadir, modelDir, dlFile, batching=False, dependencyList=None):
         "-o", modelDir]
 
     if(batching):
-        job = batchJob("./train_batcher.sh", command, datadir, dependencyList)
+        job = batchJob("./train_batcher.sh", command, datadir, dependencyList, expName)
         job.wait()
         slurmJobId, err = job.communicate()
         if(slurmJobId):
@@ -66,8 +66,16 @@ def main():
     experiment="./data/"+argums.expname
     if(os.path.exists(experiment)):
         raise Exception("Path to experiment exists")
-
     os.makedirs(experiment+"/models")
+
+    try:
+        configFileDir=os.path.dirname(os.path.realpath(argums.configFile))
+        destDir=experiment+"/config/"
+        shutil.copytree(configFileDir, destDir)
+    except:
+        print("Copying of configs failed")
+        pass
+
     models_link="./models"
     if(os.path.exists(models_link)):
         os.unlink(models_link)
@@ -84,7 +92,7 @@ def main():
         processes=[]
         for djobid in range(1,argums.ndjobs+1):
             processes.append( runDjob(argums.envFile, argums.agentFile, datadir, 
-                djobid, argums.sbatch, [tDependency]) )
+                djobid, argums.sbatch, [tDependency], argums.expname) )
         
         dJobDep = []
         for djob in processes:
@@ -99,7 +107,7 @@ def main():
         agentTrained = (gen % argums.nagents) + 1
 
         modelDir = "./"+experiment+"/models/agent"+str(agentTrained)+"/"
-        tDependency = runTjob(datadir, modelDir, argums.dlFile, argums.sbatch, dJobDep)
+        tDependency = runTjob(datadir, modelDir, argums.dlFile, argums.sbatch, dJobDep, argums.expname)
 
 if __name__=="__main__":
     main()

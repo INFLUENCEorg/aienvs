@@ -107,7 +107,7 @@ class DecoratedSpace(ABC):
 
     # calling other methods from self._gymspace
     def __getattr__(self, attr):
-        #avoid recursion
+        # avoid recursion
         gymspace = self.__getattribute__('_gymspace')
         return getattr(gymspace, attr)
    
@@ -118,7 +118,7 @@ class DictSpaceDecorator(DecoratedSpace):
 
     '''
 
-    def getSubSpaces(self):
+    def getSubSpaces(self) -> list:
         return [self.getSubSpace(id) for id in self.getIds()]
     
     def getIds(self):
@@ -136,6 +136,8 @@ class DictSpaceDecorator(DecoratedSpace):
     
     # Override
     def getSize(self):
+        if len(self.getSubSpaces()) == 0:
+            return 0
         size = 1
         for space in self.getSubSpaces():
             size = size * space.getSize()

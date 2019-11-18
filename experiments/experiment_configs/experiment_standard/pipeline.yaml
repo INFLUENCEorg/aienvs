@@ -1,0 +1,7 @@
+ngenerations: 8
+nagents: 6
+ndjobs: 32
+sbatch: True
+envFile: ./experiment_configs/experiment_standard/factory_floor.yaml  
+agentFile: ./experiment_configs/experiment_standard/agents.yaml 
+dlFile: ./experiment_configs/experiment_standard/training.yaml

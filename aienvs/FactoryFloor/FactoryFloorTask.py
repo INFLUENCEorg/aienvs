@@ -11,8 +11,8 @@ class FactoryFloorTask():
         """
         Initializes the task, places it at (0,0)
         """
-        if not isinstance(newpos, ndarray):
-            raise ValueError("newpos must be numpy array but got " + str(type(newpos)))
+        #if not isinstance(newpos, ndarray):
+        #    raise ValueError("newpos must be numpy array but got " + str(type(newpos)))
         self.pos = newpos
         self._id = FactoryFloorTask._taskIdCounter
         FactoryFloorTask._taskIdCounter += 1
@@ -29,5 +29,5 @@ class FactoryFloorTask():
         """
         return self.pos
     
-    def __str__(self):
-     return "Task " + str(self._id) + " pos " + str(self.pos)
+    #def __str__(self):
+     #return "Task " + str(self._id) + " pos " + str(self.pos)

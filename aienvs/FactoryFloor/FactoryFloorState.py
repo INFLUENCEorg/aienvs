@@ -22,14 +22,14 @@ class FactoryFloorState():
     def getMap(self):
         return self._map
     
-    def __str__(self):
+    def __hash__(self):
         """
         for hashing
         """
-        return str(encodeStateAsArray(self))
+        return hash(toTuple(encodeStateAsArray(self)))
 
     def __eq__(self, other):
-        return str(self)==str(other)
+        return (encodeStateAsArray(self)==encodeStateAsArray(other)).all()
 
 
 def encodeStateAsArray(state:FactoryFloorState):
