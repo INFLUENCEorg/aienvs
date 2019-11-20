@@ -62,6 +62,9 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
             episodeRewards.append(episodeReward)
             logging.info("Episode return: " + str(episodeReward))
             episodeCount += 1
+            from pympler import asizeof
+            print("the agent: {}".format(asizeof.asizeof(self._agent)))
+            print("the environment: {}".format(asizeof.asizeof(self._env)))
     
         try:    
             return episodeRewards
