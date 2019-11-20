@@ -78,6 +78,17 @@ class SumoGymAdapter(Env):
         done = self.ldm.isSimulationFinished()
         global_reward = self._computeGlobalReward()
 
+        # if done:
+        #     from pympler import asizeof
+        #     print("size of taken actions:", asizeof.asizeof(self._takenActions))
+        #     print("size of yellow timer:", asizeof.asizeof(self._yellowTimer))
+        #     print("size of tlphases:", asizeof.asizeof(self._tlphases))
+        #     print("size of parameters:", asizeof.asizeof(self._parameters))
+        #     print("size of action space:", asizeof.asizeof(self._action_space))
+        #     print("size of ldm:", asizeof.asizeof(self.ldm))
+        #     print("size of chosen action:", asizeof.asizeof(self._chosen_action))
+        #     print(self._takenActions)
+
         # as in openai gym, last one is the info list
         return obs, global_reward, done, []
 
@@ -213,11 +224,11 @@ class SumoGymAdapter(Env):
             action = self._intToPhaseString(intersectionId, actions.get(intersectionId))
             # Retrieve the action that was taken the previous step
             try:
-                prev_action = self._takenActions[intersectionId][-1]
+                prev_action = self._takenActions[intersectionId]
             except KeyError:
                 # If KeyError, this is the first time any action was taken for this intersection
                 prev_action = action
-                self._takenActions.update({intersectionId:[]})
+                self._takenActions.update({intersectionId:action})
                 self._yellowTimer.update({intersectionId:0})
 
             # Check if the given action is different from the previous action
@@ -227,7 +238,7 @@ class SumoGymAdapter(Env):
 
             # Set traffic lights
             self.ldm.setRedYellowGreenState(intersectionId, action)
-            self._takenActions[intersectionId].append(action)
+            self._takenActions[intersectionId] = action
 
     def _correct_action(self, prev_action, action, timer):
 
