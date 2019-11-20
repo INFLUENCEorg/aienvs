@@ -125,9 +125,9 @@ class SumoHelper(object):
         Generates vehicles for each possible route in the scenario and writes
         them to file. Returns the location of the sumocfg file.
         """
-        logging.info(('The seed being used for route generation: {}'.format(seed)))
+        logging.debug(('The seed being used for route generation: {}'.format(seed)))
         random.seed(seed)
-        
+
         car_list = []
         car_sum = 0
 
@@ -153,7 +153,7 @@ class SumoHelper(object):
                           "actual number of cars is {}, which may indicate"
                           " a bug.".format(expected_value, car_sum))
 
-    def __del__(self): 
+    def __del__(self):
         if(self.parameters['generate_conf']):
             if ('sumocfg_file' in locals()):
                 os.remove(self.sumocfg_file)
