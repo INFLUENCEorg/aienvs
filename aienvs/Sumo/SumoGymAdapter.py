@@ -78,16 +78,16 @@ class SumoGymAdapter(Env):
         done = self.ldm.isSimulationFinished()
         global_reward = self._computeGlobalReward()
 
-        # if done:
-        #     from pympler import asizeof
-        #     print("size of taken actions:", asizeof.asizeof(self._takenActions))
-        #     print("size of yellow timer:", asizeof.asizeof(self._yellowTimer))
-        #     print("size of tlphases:", asizeof.asizeof(self._tlphases))
-        #     print("size of parameters:", asizeof.asizeof(self._parameters))
-        #     print("size of action space:", asizeof.asizeof(self._action_space))
-        #     print("size of ldm:", asizeof.asizeof(self.ldm))
-        #     print("size of chosen action:", asizeof.asizeof(self._chosen_action))
-        #     print(self._takenActions)
+        if done:
+            from pympler import asizeof
+            print("size of taken actions:", asizeof.asizeof(self._takenActions))
+            print("size of yellow timer:", asizeof.asizeof(self._yellowTimer))
+            print("size of tlphases:", asizeof.asizeof(self._tlphases))
+            print("size of parameters:", asizeof.asizeof(self._parameters))
+            print("size of action space:", asizeof.asizeof(self._action_space))
+            print("size of ldm:", asizeof.asizeof(self.ldm))
+            print("size of chosen action:", asizeof.asizeof(self._chosen_action))
+            print(self._takenActions)
 
         # as in openai gym, last one is the info list
         return obs, global_reward, done, []

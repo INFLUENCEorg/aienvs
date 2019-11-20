@@ -62,11 +62,13 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
             episodeRewards.append(episodeReward)
             logging.info("Episode return: " + str(episodeReward))
             episodeCount += 1
-            # from pympler import asizeof
-            # print("the agent: {}".format(asizeof.asizeof(self._agent)))
-            # print("the environment: {}".format(asizeof.asizeof(self._env)))
-            # print("the agent without environment: {}".format(asizeof.asizeof(self._agent)-asizeof.asizeof(self._env)))
-
+            from pympler import asizeof
+            logging.info("episode rewards: {}".format(asizeof.asizeof(episodeRewards)))
+            logging.info("the agent: {}".format(asizeof.asizeof(self._agent)))
+            logging.info("the environment: {}".format(asizeof.asizeof(self._env)))
+            logging.info("the agent without environment: {}".format(asizeof.asizeof(self._agent)-asizeof.asizeof(self._env)))
+            logging.info("the environment itself: {}".format(asizeof.asizeof(self)))
+            logging.info("the episode: {}".format(asizeof.asizeof(episode)))
         try:
             return episodeRewards
         except ValueError as err:
