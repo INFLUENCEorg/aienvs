@@ -49,7 +49,7 @@ class GroupingRobots(Env):
         self._parameters.update(parameters)
 
         self.seed(self._parameters['seed'])
-        self._state = WorldState({}, BasicMap(self._parameters['map']), self._parameters['steps'])
+        self._state = WorldState({}, BasicMap(self._parameters['map']), 0)
 
         for item in self._parameters['robots']:
             pos = item['pos']
@@ -93,7 +93,7 @@ class GroupingRobots(Env):
             oldline = oldline[:pos[0]] + char + oldline[(pos[0] + 1):]
             themap[pos[1]] = oldline
         # print row 0 at the bottom
-        print("\n".join(themap.reverse())) 
+        print("\n".join(themap[::-1])) 
         
     def close(self):
         pass  
