@@ -59,7 +59,8 @@ class GroupingRobots(Env):
                     raise ValueError("position vector must be length 2 but got " + str(pos))
                 robot = Robot(robotId, array(pos))
             elif pos == 'random':
-                robot = Robot(robotId, self._state.getFreeWithoutRobot())
+                newpos = random.choice(self._state.getFreeWithoutRobot())
+                robot = Robot(robotId, array(newpos))
             else:
                 raise ValueError("Unknown robot position, expected list but got " + str(type(pos)))
             self._state = self._state.withRobot(robot)
@@ -68,7 +69,7 @@ class GroupingRobots(Env):
 
     # Override
     def step(self, actions:dict):
-        for robot in self._state.robots.values():
+        for robot in self._state.getRobots():
             rid = robot.getId()
             if rid in actions.keys():
                 self._state = self._state.withAction(robot, actions[rid])

@@ -63,7 +63,7 @@ class WorldState:
             
         return newstate
     
-    def withAction(self, robot:Robot, action) -> 'WorldState':
+    def withAction(self, robot:Robot, action:int) -> 'WorldState':
         """
         robot tries to execute given action.
         @param robot a Robot
@@ -140,7 +140,8 @@ class WorldState:
         """
         @return all robots at given position
         """
-        return [robot for robot in self._state.getRobots() if pos.array_equal(robot.getPosition)]
+        return [robot for robot in self._robots.values() \
+                if array_equal(pos, robot.getPosition())]
 
     def _newPos(self, pos:ndarray, action):
         """

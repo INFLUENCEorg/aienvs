@@ -12,8 +12,8 @@ class Robot():
         @param pos tuple (x,y) with initial robot position.
         Initializes the robot
         """
-        if not isinstance(pos, ndarray):
-            raise ValueError("pos must be numpy array but got " + str(type(pos)))
+        if not isinstance(pos, ndarray) or len(pos.shape) != 1:
+            raise ValueError("pos must be 1-dimensional numpy array but got " + str(type(pos)))
         self._id = robotId
         self._pos = pos
 
