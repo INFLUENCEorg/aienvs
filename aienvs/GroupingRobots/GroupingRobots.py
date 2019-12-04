@@ -93,7 +93,8 @@ class GroupingRobots(Env):
             oldline = oldline[:pos[0]] + char + oldline[(pos[0] + 1):]
             themap[pos[1]] = oldline
         # print row 0 at the bottom
-        print("\n".join(themap[::-1])) 
+        print(("\n".join(themap[::-1]))) 
+        print("----- reward:" + str(self._state.getReward()) + " -----\n")
         
     def close(self):
         pass  
