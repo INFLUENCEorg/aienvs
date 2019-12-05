@@ -66,14 +66,20 @@ class PackedSpace(ModifiedActionSpace):
         @action a normal (not yet packed) action. Must be a Dict
         with the keys the entity labels. 
         Notice that this is a convenience function to support
-        others (eg QCoordinator) in handling a PackedSpace 
+        others (eg QCoordinator) in handling a PackedSpace. 
+        @return a packed version of the given action in the unpacked space.
+        For instance, if action ={'a':1, 'b':3,'c':2}  and this is 
+        the packed space {'a_b':['a','b']} then the action may be packed
+        to something like {'a_b':55, 'c':2}
         '''
-        raise NotImplemented
+        return { entity:subspace.getIndexOf(action) \
+                for entity, subspace in self._subdicts.items()}
 
     # Override
     def unpack(self, action:OrderedDict) -> OrderedDict:
         '''
-        @action a packed action. Must be OrderedDict with the keys
+        @action a packed action. Utility function.
+        action must be OrderedDict with the keys
         the packed-entity labels.
         @return an unpacked version of the packed action
         '''
