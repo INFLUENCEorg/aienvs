@@ -253,7 +253,7 @@ class TupleSpaceDecorator(DecoratedSpace):
         return tuple(res)
 
     def getIndexOf(self, value:int):
-        raise NotImplemented
+        raise NotImplemented  # not yet
 
 
 class BoxSpaceDecorator(DecoratedSpace):
@@ -270,7 +270,7 @@ class BoxSpaceDecorator(DecoratedSpace):
         raise Exception("Box space can not be sampled discretely")
 
     def getIndexOf(self, value:int):
-        raise NotImplemented
+        raise Exception("Box space can not be sampled discretely")
 
 
 class MultiBinarySpaceDecorator(DecoratedSpace):
@@ -286,4 +286,4 @@ class MultiBinarySpaceDecorator(DecoratedSpace):
         return array(DecoratedSpace.numberToList(n, [2] * self.getSpace().n))
 
     def getIndexOf(self, value:int):
-        raise NotImplemented
+        raise NotImplemented  # possible but not yet done.
