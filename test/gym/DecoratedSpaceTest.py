@@ -40,6 +40,7 @@ class DecoratedSpaceTest(LoggedTestCase):
         self.assertEquals(5, space.getSize())
         self.assertEquals([], space.getSubSpaces())
         self.assertEquals(2, space.getById(2))
+        self.assertEquals(2, space.getIndexOf(2))
 
     def test_Dict(self):
         space = DecoratedSpace.create(Dict({'a':Discrete(5), 'b':Discrete(2)}))
@@ -47,6 +48,8 @@ class DecoratedSpaceTest(LoggedTestCase):
         self.assertEquals(2, len(space.getSubSpaces()))
         space.getById(8)  # smoke test 
         self.assertEquals({'a':3, 'b':1}, space.getById(8))
+        self.assertEquals(8, space.getIndexOf({'a':3, 'b':1}))
+        self.assertEquals(8, space.getIndexOf({ 'b':1, 'a':3 }))
         
     def test_emptyDict(self):
         space = DecoratedSpace.create(Dict({}))
@@ -57,6 +60,7 @@ class DecoratedSpaceTest(LoggedTestCase):
         self.assertEquals(70, space.getSize())
         self.assertEquals(2, len(space.getSubSpaces()))
         self.assertEquals({'p':{'a':4, 'b':0}, 'q':3}, space.getById(34))
+        self.assertEquals(34, space.getIndexOf({'p':{'a':4, 'b':0}, 'q':3}))
         
     def test_Box(self):
         space = DecoratedSpace.create(Box(low=-1.0, high=2.0, shape=(3, 4)))
@@ -68,6 +72,7 @@ class DecoratedSpaceTest(LoggedTestCase):
         self.assertEquals(30, space.getSize())
         self.assertEquals([], space.getSubSpaces())
         self.assertEquals([2, 1, 2], list(space.getById(27)))
+        self.assertEquals(27, space.getIndexOf([2, 1, 2]))
 
     def test_Tuple(self):
         space = DecoratedSpace.create(Tuple((Discrete(2), Discrete(3))))

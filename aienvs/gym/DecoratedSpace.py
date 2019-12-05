@@ -5,6 +5,7 @@ from math import floor
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 from numpy import array
+from _testbuffer import ndarray
 
 
 class DecoratedSpace(ABC):
@@ -172,17 +173,25 @@ class DictSpaceDecorator(DecoratedSpace):
         return size
     
     def getById(self, n:int):
-        nrList = DecoratedSpace.numberToList(n, [space.getSize() \
-                                       for space in self.getSubSpaces()])
+        nrList = DecoratedSpace.numberToList(n, self._getSubSizes())
         nrList = list(zip(self.getIds(), nrList))
         return OrderedDict([(id, self.getSubSpace(id).getById(m)) \
                             for id, m in nrList])
 
-    def getIndexOf(self, value):
-        raise NotImplementedError
+    def getIndexOf(self, value:OrderedDict):
+        # collect values in proper order
+        values = [self.getSubSpace(id).getIndexOf(value[id]) \
+                        for id in self.getIds()]
+        return DecoratedSpace.listToNumber(values, self._getSubSizes())
 
     def get(self, id:str):
         return self.getSubSpace(id)
+    
+    def _getSubSizes(self) -> list:
+        '''
+        @return list of sizes of all subspaces, in proper order
+        '''
+        return [space.getSize() for space in self.getSubSpaces()]
 
 
 class DiscreteSpaceDecorator(DecoratedSpace):
@@ -216,8 +225,8 @@ class MultiDiscreteSpaceDecorator(DecoratedSpace):
     def getById(self, n:int):
         return array(DecoratedSpace.numberToList(n, self.getSpace().nvec))
 
-    def getIndexOf(self, value:int):
-        raise NotImplemented
+    def getIndexOf(self, values:ndarray):
+        return DecoratedSpace.listToNumber(values, self.getSpace().nvec)
 
     
 class TupleSpaceDecorator(DecoratedSpace):
