@@ -1,8 +1,23 @@
-from ..LoggedTestCase import LoggedTestCase
+from test.LoggedTestCase import LoggedTestCase
 from unittest.mock import Mock
 from aienvs.gym.DecoratedSpace import DecoratedSpace
 from gym.spaces import Space, Dict, Discrete, MultiDiscrete, Box, Tuple, MultiBinary
 import math
+
+'''
+first element of each list: the space dimensions
+second element: the selected element in the space
+third element: the integer number of that selected element
+''' 
+numberListTestValues = [
+    [[2, 2, 3], [0, 1, 2], 10],
+    [[2, 2, 3], [1, 1, 2], 11],
+    [[2, 2, 3], [0, 0, 0], 0],
+    [[18, 2], [2, 1], 20],
+    [[2, 18], [0, 10], 20],
+    [[2, 18], [0, 15], 30],
+    [[2, 18], [1, 16], 33]
+    ];
 
 
 class DecoratedSpaceTest(LoggedTestCase):
@@ -13,13 +28,12 @@ class DecoratedSpaceTest(LoggedTestCase):
     '''
 
     def test_numberToList(self):
-        self.assertEquals([0, 1, 2], DecoratedSpace.numberToList(self, 10, [2, 2, 3]))
-        self.assertEquals([1, 1, 2], DecoratedSpace.numberToList(self, 11, [2, 2, 3]))
-        self.assertEquals([0, 0, 0], DecoratedSpace.numberToList(self, 0, [2, 2, 3]))
-        self.assertEquals([2, 1], DecoratedSpace.numberToList(self, 20, [18, 2]))
-        self.assertEquals([0, 10], DecoratedSpace.numberToList(self, 20, [2, 18]))
-        self.assertEquals([0, 15], DecoratedSpace.numberToList(self, 30, [2, 18]))
-        self.assertEquals([1, 16], DecoratedSpace.numberToList(self, 33, [2, 18]))
+        for val in numberListTestValues:
+            self.assertEqual(val[1], DecoratedSpace.numberToList(val[2], val[0]))
+
+    def test_listToNumber(self):
+        for val in numberListTestValues:
+            self.assertEqual(val[2], DecoratedSpace.listToNumber(val[1], val[0]))
 
     def test_Discrete(self):
         space = DecoratedSpace.create(Discrete(5))

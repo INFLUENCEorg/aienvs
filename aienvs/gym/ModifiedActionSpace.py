@@ -18,6 +18,13 @@ class ModifiedActionSpace(ABC, Dict):
         pass
     
     @abstractmethod
+    def pack(self, action: OrderedDict) -> OrderedDict:
+        '''
+        @return: an original action converted into a packed version
+        '''
+        pass
+    
+    @abstractmethod
     def getOriginalSpace(self) -> OrderedDict: 
         '''
         The original actionspace 

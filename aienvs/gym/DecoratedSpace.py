@@ -11,6 +11,10 @@ class DecoratedSpace(ABC):
     '''
     Decorates gym spaces with extra functionality to make it possible
     to handle all spaces in a generic way.
+    
+    Gym actions do not have a proper type. 
+    A gym Discrete returns int actions, Dict returns OrderedDict actions,
+    etc. Let's call these GYMACT
     '''
 
     def __init__(self, space:Dict):
@@ -80,15 +84,23 @@ class DecoratedSpace(ABC):
         return []
 
     @abstractmethod
-    def getById(self, n:int):
+    def getById(self, n:int):  # -> GYMACT
         '''
         @return: the nth element of this space.
         n>=0, n < getSize().
         Returned object is similar to what you
         would get with sample, but more controlled. 
         '''
+        
+    @abstractmethod
+    def getIndexOf(self, value):
+        '''
+        @param value a GYMACT
+        @return the index N of the given value in this space.
+        '''
 
-    def numberToList(self, n:int, subsizes:list):
+    @staticmethod
+    def numberToList(n:int, subsizes:list) -> list:
         '''
         convert an int into a list of numbers.
         subsizes contains the maximum value of each number of the return list
@@ -104,6 +116,22 @@ class DecoratedSpace(ABC):
             selection.append(n % max)
             n = floor(n / max)
         return selection
+    
+    @staticmethod
+    def listToNumber(values:list, subsizes:list) -> int:
+        '''
+        @param values a list of values. The length of this list must equal
+        subsizes length, and for all elements N ,
+        0<= values[N] < subsizes[N]. This is NOT checked for efficiency.
+        @return single number representing the indices. This is the reverse
+        operation of numberToList.
+        '''
+        number = 0;
+        indexvalue = 1
+        for index in range(len(values)):
+            number = number + indexvalue * values[index]
+            indexvalue = indexvalue * subsizes[index]
+        return number
 
     # calling other methods from self._gymspace
     def __getattr__(self, attr):
@@ -144,9 +172,14 @@ class DictSpaceDecorator(DecoratedSpace):
         return size
     
     def getById(self, n:int):
-        nrList = self.numberToList(n, [space.getSize() for space in self.getSubSpaces()])
+        nrList = DecoratedSpace.numberToList(n, [space.getSize() \
+                                       for space in self.getSubSpaces()])
         nrList = list(zip(self.getIds(), nrList))
-        return OrderedDict([(id, self.getSubSpace(id).getById(m)) for id, m in nrList])
+        return OrderedDict([(id, self.getSubSpace(id).getById(m)) \
+                            for id, m in nrList])
+
+    def getIndexOf(self, value):
+        raise NotImplementedError
 
     def get(self, id:str):
         return self.getSubSpace(id)
@@ -164,6 +197,9 @@ class DiscreteSpaceDecorator(DecoratedSpace):
     def getById(self, n:int):
         return n
 
+    def getIndexOf(self, value:int):
+        return value
+
 
 class MultiDiscreteSpaceDecorator(DecoratedSpace):
     '''
@@ -178,9 +214,12 @@ class MultiDiscreteSpaceDecorator(DecoratedSpace):
         return size
 
     def getById(self, n:int):
-        return array(self.numberToList(n, self.getSpace().nvec))
+        return array(DecoratedSpace.numberToList(n, self.getSpace().nvec))
 
+    def getIndexOf(self, value:int):
+        raise NotImplemented
 
+    
 class TupleSpaceDecorator(DecoratedSpace):
     '''
     Decorates a spaces.Tuple
@@ -198,11 +237,14 @@ class TupleSpaceDecorator(DecoratedSpace):
 
     def getById(self, n:int):
         subspaces = self.getSubSpaces()
-        nrList = self.numberToList(n, [space.getSize() for space in subspaces])
+        nrList = DecoratedSpace.numberToList(n, [space.getSize() for space in subspaces])
         res = []
         for i in range(0, len(subspaces)):
             res.append(subspaces[i].getById(nrList[i]))
         return tuple(res)
+
+    def getIndexOf(self, value:int):
+        raise NotImplemented
 
 
 class BoxSpaceDecorator(DecoratedSpace):
@@ -218,6 +260,9 @@ class BoxSpaceDecorator(DecoratedSpace):
     def getById(self, n:int):
         raise Exception("Box space can not be sampled discretely")
 
+    def getIndexOf(self, value:int):
+        raise NotImplemented
+
 
 class MultiBinarySpaceDecorator(DecoratedSpace):
     '''
@@ -229,4 +274,7 @@ class MultiBinarySpaceDecorator(DecoratedSpace):
         return 2 ** self.getSpace().n
 
     def getById(self, n:int):
-        return array(self.numberToList(n, [2] * self.getSpace().n))
+        return array(DecoratedSpace.numberToList(n, [2] * self.getSpace().n))
+
+    def getIndexOf(self, value:int):
+        raise NotImplemented

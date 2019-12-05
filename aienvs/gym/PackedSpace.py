@@ -7,8 +7,9 @@ from _collections import OrderedDict
 
 class PackedSpace(ModifiedActionSpace):
     '''
-    combines several keys from the original space into 
-    a single key. This appears to the outside
+    Modifies a Gym Dict space. Combines several 
+    keys from the original space into 
+    a new single key. This appears to the outside
     as a Dict with the keys merged.
     But you can call unpack to convert an action
     in this packed space back into an action
@@ -49,14 +50,33 @@ class PackedSpace(ModifiedActionSpace):
         @param subids a list of key/ids in our Dict that 
         have to be merged into a Discrete.
         @return DictSpaceDecorator that contains only the subid's
-        from the original space. 
+        from the original space. For instance if subids=['a','b']
+        then we return a decorated Dict space {'a':space a, 'b':space b}
+        where space a and b are original gym Spaces.
+        
         '''
         newdict = { id:space \
                    for id, space in self._originalspace.getSpace().spaces.items() \
                    if id in subids }
         return DictSpaceDecorator(Dict(newdict))
-    
-    def unpack(self, action: OrderedDict) -> OrderedDict:
+
+    # Override
+    def pack(self, action:Dict) -> OrderedDict:
+        '''
+        @action a normal (not yet packed) action. Must be a Dict
+        with the keys the entity labels. 
+        Notice that this is a convenience function to support
+        others (eg QCoordinator) in handling a PackedSpace 
+        '''
+        raise NotImplemented
+
+    # Override
+    def unpack(self, action:OrderedDict) -> OrderedDict:
+        '''
+        @action a packed action. Must be OrderedDict with the keys
+        the packed-entity labels.
+        @return an unpacked version of the packed action
+        '''
         newactions = {}
         for actid, value in action.items():
             if actid in self._subdicts:
