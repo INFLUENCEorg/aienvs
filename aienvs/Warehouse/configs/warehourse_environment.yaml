@@ -1,0 +1,10 @@
+warehouse:
+  n_rows: 37
+  n_columns: 30
+  n_robots_row: 6
+  n_robots_column: 6
+  distance_between_shelves: 6
+  robot_domain_size: [5, 5]
+  prob_item_appears: 0.2
+  learning_robot_id: 0 # the learning robot
+  max_n_items: 10
