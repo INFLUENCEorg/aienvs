@@ -54,7 +54,7 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
             self._env.seed(self._getSeed())
             obs = self._env.reset()
             episode = Episode(self._agent, self._env, obs, self._render, self._renderDelay)
-            # episode.addListener(self)
+            episode.addListener(self)
             episodeSteps, episodeReward = episode.run()
             logging.info("New episode")
             steps += episodeSteps
@@ -62,7 +62,6 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
             episodeRewards.append(episodeReward)
             logging.info("Episode return: " + str(episodeReward))
             episodeCount += 1
-            self.notifyAll({steps: episodeReward})
             # from pympler import asizeof
             # logging.info("episode rewards: {}".format(asizeof.asizeof(episodeRewards)))
             # logging.info("the agent: {}".format(asizeof.asizeof(self._agent)))

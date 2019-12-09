@@ -10,7 +10,7 @@ class Episode(DefaultRunner, DefaultListenable):
     Contains all info to run an episode (single run till environment is done)
     """
 
-    def __init__(self, agent, env: Env, initialObs, render:bool=False, renderDelay=0):
+    def __init__(self, agent, env: Env, initialObs, render:bool=False, renderDelay=0, doneStep=False):
         """
         @param agent an AgentComponent holding an agent
         @param env the openai gym Env that we are running in
@@ -23,20 +23,15 @@ class Episode(DefaultRunner, DefaultListenable):
         self._initialObs = initialObs
         self._render = render
         self._renderDelay = renderDelay
+        self._doneStep = doneStep
 
     def step(self, obs, globalReward, done):
         """
         One step of the RL loop
         """
-
         actions = self._agent.step(obs, globalReward, done)
         self.notifyAll({'actions':actions, 'observation': obs, 'reward':globalReward, 'done':done})
-
         obs, globalReward, done, info = self._env.step(actions)
-
-        # Jinke: when done, send the final transition to the agent
-        if done:
-            self._agent.step(obs, globalReward, done)
 
         return obs, globalReward, done
 
@@ -57,6 +52,8 @@ class Episode(DefaultRunner, DefaultListenable):
             totalReward += globalReward
 
             if done:
+                if self._doneStep:
+                    self._agent.step(obs, globalReward, done)
                 break
 
             if self._render:
