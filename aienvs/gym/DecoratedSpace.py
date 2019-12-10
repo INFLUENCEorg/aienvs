@@ -5,7 +5,6 @@ from math import floor
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 from numpy import array
-from _testbuffer import ndarray
 
 
 class DecoratedSpace(ABC):
@@ -225,7 +224,7 @@ class MultiDiscreteSpaceDecorator(DecoratedSpace):
     def getById(self, n:int):
         return array(DecoratedSpace.numberToList(n, self.getSpace().nvec))
 
-    def getIndexOf(self, values:ndarray):
+    def getIndexOf(self, values):
         return DecoratedSpace.listToNumber(values, self.getSpace().nvec)
 
     
