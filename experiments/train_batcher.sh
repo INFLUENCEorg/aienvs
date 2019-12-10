@@ -23,8 +23,6 @@
 # Set mail type to 'END' to receive a mail when the job finishes (with usage statistics)
 #SBATCH --mail-type=END
 
-#SBATCH --gres=gpu
-
 # Your job commands go below here
 
 # Uncomment these lines when your job requires this software
