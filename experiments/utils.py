@@ -50,8 +50,8 @@ def classification_model(shape=(4,4,4)):
   #  model.add(Dense(192, activation='relu'))
  #   model.add(Dense(128, input_dim=1, activation='relu'))
   #  model.add(Dense(128, activation='relu'))
-    model.add(Dense(64, activation='relu'))
-    model.add(Dense(16, activation='relu'))
+    model.add(Dense(32, activation='relu'))
+ #   model.add(Dense(16, activation='relu'))
     model.add(Dense(5, activation='softmax'))
 
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
