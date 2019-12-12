@@ -1,3 +1,0 @@
-robotIds: [robot1, robot2, robot3, robot4]
-batchSize: 400
-epochs: 100
