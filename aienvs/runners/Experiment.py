@@ -53,7 +53,7 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
         while steps < self._maxSteps:
             self._env.seed(self._getSeed())
             obs = self._env.reset()
-            episode = Episode(self._agent, self._env, obs, self._render, self._renderDelay)
+            episode = Episode(self._agent, self._env, obs, self._render, self._renderDelay, doneStep=True)
             episode.addListener(self)
             episodeSteps, episodeReward = episode.run()
             logging.info("New episode")
@@ -62,13 +62,7 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
             episodeRewards.append(episodeReward)
             logging.info("Episode return: " + str(episodeReward))
             episodeCount += 1
-            # from pympler import asizeof
-            # logging.info("episode rewards: {}".format(asizeof.asizeof(episodeRewards)))
-            # logging.info("the agent: {}".format(asizeof.asizeof(self._agent)))
-            # logging.info("the environment: {}".format(asizeof.asizeof(self._env)))
-            # logging.info("the agent without environment: {}".format(asizeof.asizeof(self._agent)-asizeof.asizeof(self._env)))
-            # logging.info("the experiment itself: {}".format(asizeof.asizeof(self)))
-            # logging.info("the episode: {}".format(asizeof.asizeof(episode)))
+            self.notifyAll({"key":"episodic_return", "step": steps, "episode": episodeCount, "episodic_return": episodeReward})
         try:
             return episodeRewards
         except ValueError as err:

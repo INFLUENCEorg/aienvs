@@ -820,8 +820,9 @@ class LdmMatrixState(State):
     def update_state(self):
         return self._ldm.getMapSliceByCorners(self.bottomLeftCoords, self.topRightCoords)
     
-    def size(self) -> list: 
+    def size(self) -> tuple: 
         """
         returns the size of the matrix as a list of 2 elements.
+        Jinke's notes: This method is problematic.
         """
         return [self.topRightCoords[0] - self.bottomLeftCoords[0], self.topRightCoords[1] - self.bottomLeftCoords[1] ]
