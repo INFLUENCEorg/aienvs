@@ -18,6 +18,7 @@ pip3 install wheel
 With that, you can build the library build using
 ```
 ./build.sh
+```
 (or sudo ./build.sh depending on your user privileges)
 
 WARNING: It may be that some python libraries need to be installed manually (via pip3 install..),
