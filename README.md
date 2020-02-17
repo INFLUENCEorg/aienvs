@@ -38,11 +38,11 @@ Setup goes like this
 * Follow the venv setup procedure as above (we assume you want to use a venv in PyDev, you can also use it without if you prefer).
 * Install PyDev into Eclipse
 * Add an interpreter 
- * Window/Preferences; go to PyDev/Interpreters/Python Interpreter
- * "Browse for python/pypy exe". Cancel the dialog (it does not work) and instead manually add the path to your python interpreter ```......./venv/bin/python```
- * Click ok.
+    * Window/Preferences; go to PyDev/Interpreters/Python Interpreter
+    * "Browse for python/pypy exe". Cancel the dialog (it does not work) and instead manually add the path to your python interpreter ```......./venv/bin/python```
+    * Click ok.
 * Set up the python path for Eclipse (it's not automatically recognising it as you would expect)
- * Right click on the aienvs project folder in the package explorer and select PyDev-PYTHONPATH.
- * In the Source Folders tab, add tha aienvs root as source folder
- * In the External Libraries tab, add ```..../sumo/tools``` (tools dir inside your sumo installation) as source folder. 
+    * Right click on the aienvs project folder in the package explorer and select PyDev-PYTHONPATH.
+    * In the Source Folders tab, add tha aienvs root as source folder
+    * In the External Libraries tab, add ```..../sumo/tools``` (tools dir inside your sumo installation) as source folder. 
 * In your debug/run settings, you may have to add an environment variable SUMO_HOME als pointing to ```...../sumo```.
