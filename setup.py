@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 import sys, os.path
+from glob import glob
 
 setup(name='aienvs',
     version='0.1',
@@ -13,8 +14,13 @@ setup(name='aienvs',
     package_data={'':['*.xml', '*.sumocfg', '*.txt']},
     packages=[ 'aienvs', 'aienvs/gym', 'aienvs/runners' ,
               'aienvs/loggers', 'scenarios',
-              'aienvs/Sumo', 'aienvs/FactoryFloor', 'aienvs/listener'
+              'aienvs/Sumo', 'aienvs/FactoryFloor', 'aienvs/listener',
+              'aienvs/GroupingRobots', 'aienvs/Warehouse'
     ],
+    data_files=[
+                ('scenarios', glob('scenarios/**/*.*', recursive=True))
+    ],
+    
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
