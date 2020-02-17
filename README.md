@@ -5,6 +5,7 @@ Repository for Influence project environments
 * Ubuntu Linux
 * Built version of SUMO (download from sourceforge.net/projects/sumo).
 * Add the sumo/tools directory to your pythonpath.
+* Set the SUMO_HOME environment variable to point to your sumo directory
 
 ### Build the library ###
 To build the library, you need to have version 40.6.2 or later of setuptools, plus wheel. To ensure, run
