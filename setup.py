@@ -20,6 +20,6 @@ setup(name='aienvs',
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=[  'gym', 'pyyaml', 'numpy', 'networkx', 'gym[atari]']
+    install_requires=[  'gym', 'pyyaml', 'numpy', 'networkx', 'gym[atari]', 'matplotlib']
 
 )

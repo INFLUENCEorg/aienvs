@@ -22,8 +22,8 @@ class testFactoryGraph(LoggedTestCase):
         # bing lazy, using map is easier than mocking it.
         map = Map(['...', '.*.', '...'], .8)
         g = FactoryGraph(map)
-        self.assertTrue(g.has_node('[0 0]'))
-        self.assertTrue(g.has_edge('[0 0]', '[0 1]'))
-        self.assertFalse(g.has_node('[1 1]'))
-        self.assertFalse(g.has_edge('[0 1]', '[1 1]'))
+        self.assertTrue(g.has_node((0, 0)))
+        self.assertTrue(g.has_edge((0, 0), (0, 1)))
+        self.assertFalse(g.has_node((1, 1)))
+        self.assertFalse(g.has_edge((0, 1), (1, 1)))
         
