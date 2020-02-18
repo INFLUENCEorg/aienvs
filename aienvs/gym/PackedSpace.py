@@ -1,7 +1,6 @@
-from gym.spaces import Space, Dict, Discrete
+from gym.spaces import Dict
 from aienvs.gym.DecoratedSpace import DecoratedSpace, DictSpaceDecorator
 from aienvs.gym.ModifiedActionSpace import ModifiedActionSpace
-from aienvs.gym.DecoratedSpace import DictSpaceDecorator
 from _collections import OrderedDict
 
 
@@ -33,11 +32,11 @@ class PackedSpace(ModifiedActionSpace):
         self._subdicts = {}
         newdict = actionspace.spaces.copy()
         # now replace keys according to packing instructions.
-        for id in packing:
-            subdict = self._createSubspace(packing[id])
-            self._subdicts[id] = subdict
-            newdict[id] = subdict.getSpace()
-            for oldkey in packing[id]:
+        for sid in packing:
+            subdict = self._createSubspace(packing[sid])
+            self._subdicts[sid] = subdict
+            newdict[sid] = subdict.getSpace()
+            for oldkey in packing[sid]:
                 if not oldkey in newdict:
                     raise Exception("Packing instruction " + str(packing) + " refers unknown key " + oldkey)
                 newdict.pop(oldkey)
@@ -55,9 +54,9 @@ class PackedSpace(ModifiedActionSpace):
         where space a and b are original gym Spaces.
         
         '''
-        newdict = { id:space \
-                   for id, space in self._originalspace.getSpace().spaces.items() \
-                   if id in subids }
+        newdict = { sid:space \
+                   for sid, space in self._originalspace.getSpace().spaces.items() \
+                   if sid in subids }
         return DictSpaceDecorator(Dict(newdict))
 
     # Override
@@ -96,6 +95,6 @@ class PackedSpace(ModifiedActionSpace):
     def getOriginalSpace(self) -> OrderedDict: 
         return self._originalspace.getSpace()
 
-    def get(self, id):
-        return self._subdicts[id]
+    def get(self, sid):
+        return self._subdicts[sid]
     
