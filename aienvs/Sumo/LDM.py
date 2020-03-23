@@ -188,8 +188,16 @@ class ldm():
         self.setResolutionInPixelsPerMeter( 1./metersPerPixelWidth, 1./metersPerPixelHeight )
 
     def setPositionOfTrafficLights( self, lightsPositions ):
-        for lightID in lightsPositions.keys():
-            self.setPositionOfTrafficHeads( lightID, lightsPositions.get(lightID) )
+        # compute the positions of light heads automatically in case they are not given explicitly
+        for lightID in self._lightids:
+            if lightID in lightsPositions:
+                self.setPositionOfTrafficHeads( lightID, lightsPositions.get(lightID) )
+            else:
+                coordinates = []
+                for laneID in self.SUMO_client.trafficlight.getControlledLanes(lightID):
+                    coordinate = self.SUMO_client.lane.getShape(laneID)[1]
+                    coordinates.append(coordinate)
+                self.setPositionOfTrafficHeads(lightID, coordinates)
 
     def setPositionOfTrafficHeads( self, lightID, positionsInMeters ):
         self._tlPositions[lightID] = positionsInMeters
@@ -406,7 +414,6 @@ class ldm():
         update the trafficlights cache
         I guess the lightupdate is according to https://sumo.dlr.de/wiki/TraCI/Traffic_Lights_Value_Retrieval
         """
-
         for lightid in lightupdates:
             lightstate = lightupdates[lightid][self.SUMO_client.constants.TL_RED_YELLOW_GREEN_STATE]
             if(self._verbose):
