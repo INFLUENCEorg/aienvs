@@ -19,7 +19,8 @@ class GridSumoEnv(SumoGymAdapter):
     def create_scenario(grid_shape, lane_length, folder_path):
 
         scenario_name = "grid_{}x{}".format(grid_shape[0], grid_shape[1])
-        os.mkdir(folder_path)
+        if not os.path.exists(folder_path):
+            os.mkdir(folder_path)
 
         # generate node xml file
         content = '<?xml version="1.0" encoding="UTF-8"?>\n'
