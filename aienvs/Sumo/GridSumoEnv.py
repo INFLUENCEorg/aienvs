@@ -136,11 +136,11 @@ class GridSumoEnv(SumoGymAdapter):
             for colID in range(1, grid_shape[0]+1):
                 ID = "l_{}_{}".format(colID, rowID)
                 content += '   <tlLogic id="{}" type="static" programID="0" offset="0">\n'.format(ID)
-                content += '      <phase duration="32" state="GrGr"/>'
-                content += '      <phase duration="13" state="yryr"/>'
-                content += '      <phase duration="32" state="rGrG"/>'
-                content += '      <phase duration="13" state="ryry"/>'
-                content += '   </tlLogic>'
+                content += '      <phase duration="32" state="GrGr"/>\n'
+                content += '      <phase duration="13" state="yryr"/>\n'
+                content += '      <phase duration="32" state="rGrG"/>\n'
+                content += '      <phase duration="13" state="ryry"/>\n'
+                content += '   </tlLogic>\n'
         content += '</tlLogics>\n'
 
         tllogic_file_path = os.path.join(folder_path, "{}.tll.xml".format(scenario_name))
