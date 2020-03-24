@@ -213,8 +213,7 @@ class GridSumoEnv(SumoGymAdapter):
         _parameters['box_bottom_corner'] = (0, 0)
         _parameters['box_top_corner'] = ((shape[0]+1)*lane_length, (shape[1]+1)*lane_length)
         
-        if not os.path.exists(scenario_path):
-            self.create_scenario(shape, lane_length, scenario_path)
+        self.create_scenario(shape, lane_length, scenario_path)
 
         # now automatically generate the route starts
         _parameters['route_starts'] = self.generate_route_starts(shape)
