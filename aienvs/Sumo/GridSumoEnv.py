@@ -24,7 +24,7 @@ class GridSumoEnv(SumoGymAdapter):
 
         # generate node xml file
         content = '<?xml version="1.0" encoding="UTF-8"?>\n'
-        content += '<nodes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/nodes_file.xsd">\n'
+        content += '<nodes">\n'
         # add nodes of traffic lights
         for rowID in range(1, grid_shape[1]+1):
             for colID in range(1, grid_shape[0]+1):
@@ -53,7 +53,7 @@ class GridSumoEnv(SumoGymAdapter):
 
         # generate edg xml file
         content = '<?xml version="1.0" encoding="UTF-8"?>\n'
-        content += '<edges xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/edges_file.xsd">\n'
+        content += '<edges">\n'
 
         def get_edge(from_node, to_node):
             return '   <edge id="{}_{}" from="{}" to="{}" numLanes="1" speed="70.0" />\n'.format(from_node, to_node, from_node, to_node)
@@ -106,7 +106,7 @@ class GridSumoEnv(SumoGymAdapter):
 
         # connection files
         content = '<?xml version="1.0" encoding="iso-8859-1"?>\n'
-        content += '<connections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/connections_file.xsd">\n'
+        content += '<connections">\n'
 
         # horizontal connections
         for rowID in range(1, grid_shape[1]+1):
@@ -132,7 +132,7 @@ class GridSumoEnv(SumoGymAdapter):
         
         # generate tl light file
         content = '<?xml version="1.0" encoding="UTF-8"?>\n'
-        content += '<tlLogics xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://sumo.dlr.de/xsd/tllogic_file.xsd">\n'
+        content += '<tlLogics">\n'
         for rowID in range(1, grid_shape[1]+1):
             for colID in range(1, grid_shape[0]+1):
                 ID = "l_{}_{}".format(colID, rowID)
