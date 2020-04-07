@@ -3,6 +3,7 @@ from typing import List
 from aienvs.PredatorPrey.Predator import Predator
 from aienvs.PredatorPrey.Prey import Prey
 from aienvs.BasicMap import BasicMap
+from aienvs.PredatorPrey.MovableItemOnMap import MovableItemOnMap
 
 
 class PredatorPreyState():
@@ -103,15 +104,8 @@ class PredatorPreyState():
         @act an action in [0,3] moving N,E,S or W. 
         @return new PredatorPreyState with move executed if the new pos is free
         """
-        newpred = pred.withStep(act)
-        newpos = newpred.getPosition()
-        
-        if self.isPredatorAt(newpos) or self.isPreyAt(newpos)\
-            or not self._map.isFree(newpos):
-            return self
-        
-        # replace predator in the predators list
-        preds = [newpred if p.getId() == pred.getId() else p for p in self._predators]
+        newpred = self._withStep(pred, act)
+        preds = [newpred if p.getId() == newpred.getId() else p for p in self._predators]
         return PredatorPreyState(preds, self._preys, self._map, \
             self._reward, self._step, self._maxsteps) 
 
@@ -120,10 +114,25 @@ class PredatorPreyState():
         Prey does a move action
         @act an action in [0,3] moving N,E,S or W. 
         """
-        preys = self.getPreys()
-        preys[prey.getId()] = prey.withStep(act)
+        newprey = self._withStep(prey, act)
+        preys = [newprey if p.getId() == newprey.getId() else p for p in self._preys]
         return PredatorPreyState(self._predators, preys, self._map, \
             self._reward, self._step, self._maxsteps) 
+        
+    def _withStep(self, item:MovableItemOnMap, act:int):
+        """
+        Move item with requested act and check that the new place is free.
+        @param item the item to move
+        @act an action in [0,3] moving N,E,S or W. 
+        @return item on new place if place is free, or item on old place if not
+        """
+        newitem = item.withStep(act)
+        newpos = newitem.getPosition()
+        
+        if self.isPredatorAt(newpos) or self.isPreyAt(newpos)\
+            or not self._map.isFree(newpos):
+            return item
+        return newitem
         
     def increment(self) -> 'PredatorPreyState':
         """
