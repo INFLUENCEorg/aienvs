@@ -54,13 +54,13 @@ class PredatorPreyState():
         """
         @return true iff there is a predator at given position
         """
-        return any(map(lambda pred: array_equal(pred.getPosition(), pos)), self._predators)
+        return any(map(lambda pred: array_equal(pred.getPosition(), pos), self._predators))
 
     def isPreyAt(self, pos:ndarray):
         """
         @return true iff there is a prey at given position
         """
-        return any(map(lambda prey: array_equal(prey.getPosition(), pos)), self._preys)
+        return any(map(lambda prey: array_equal(prey.getPosition(), pos), self._preys))
 
     def getAdjacentPredators(self, pos:ndarray) -> List[Predator]:
         """
@@ -178,7 +178,7 @@ class PredatorPreyState():
         for x in range(0, 5):
             for y in range(0, 5):
                 pos = array([x - 2, y - 2]) + mypos
-                if self._map.isFree(pos):
+                if not self._map.isFree(pos):
                     obstmap[y][x] = 1
                 if self.isPredatorAt(pos):
                     predmap[y][x] = 1
