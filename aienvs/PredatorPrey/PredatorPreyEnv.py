@@ -59,8 +59,8 @@ class PredatorPreyEnv(Env):
     """
     DEFAULT_PARAMETERS = {'steps':200,
                 'p':0,
-                'predators':[ {'id': "predator1", 'pos':[3, 4]}, {'id': "predator2", 'pos': 'random'}],  # initial predator positions
-                'preys':[ {'id': "prey1", 'pos':[7, 1]}, {'id': "prey2", 'pos': 'random'}],  # initial prey positions
+                'predators':[ {'id': "predator1", 'pos':[3, 4]}, {'id': "predator2", 'pos': [7, 2]}],  # initial predator positions
+                'preys':[ {'id': "prey1", 'pos':[7, 1]}, {'id': "prey2", 'pos': [1, 1]}],  # initial prey positions
                 'seed':None,
                 'returnRealState':False,
                 'map':['..........',
@@ -77,10 +77,10 @@ class PredatorPreyEnv(Env):
 
     # notice actions 0-4 are same as MovableItemOnMap
     ACTIONS = {
-        0: "UP",
-        1: "DOWN",
-        2: "LEFT",
-        3: "RIGHT",
+        0: "N",
+        1: "E",
+        2: "S",
+        3: "W",
         4: "CATCH"
     }   
 
@@ -107,7 +107,7 @@ class PredatorPreyEnv(Env):
         if self._parameters['returnRealState']:
             return s, s.getReward(), s.isFinal(), []
         else:
-            return s.getStateMatrix(), s.getReward(), s.isFinal(), []
+            return s.getObservationMatrix(), s.getReward(), s.isFinal(), []
     
     def _step(self, actions:dict):
         if(self._state.isFinal()) or (not actions):
@@ -218,7 +218,7 @@ class PredatorPreyEnv(Env):
         preys = self._state.getPreys() 
         for prey in preys: 
             adjacent = self._state.getAdjacentPredators(prey.getPosition())
-            adjacent = filter(lambda adj: self.ACTIONS[actions[adj]] == 'CATCH', adjacent)
+            adjacent = list(filter(lambda adj: self.ACTIONS[actions[adj.getId()]] == 'CATCH', adjacent))
             if len(adjacent) >= 2:
                 # remove prey and first two that catch it 
                 self._state = self._state.withCatch(prey, adjacent[0], adjacent[1]) 
