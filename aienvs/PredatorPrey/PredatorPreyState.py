@@ -67,8 +67,8 @@ class PredatorPreyState():
         @param pos a ndarray with some [x,y] position on the map
         @return all active predators that are directly N,E,S or W from given pos
         """
-        return filter(lambda pred: pred.isAdjacent(pos) and pred.isActive(), \
-                       self.getPredators())
+        return list(filter(lambda pred: pred.isAdjacent(pos) and pred.isActive(), \
+                       self.getPredators()))
 
     def withCatch(self, prey:Prey, catcher1:Predator, catcher2:Predator) -> 'PredatorPreyState':
         """

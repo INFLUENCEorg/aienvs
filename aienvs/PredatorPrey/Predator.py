@@ -7,3 +7,8 @@ class Predator(MovableItemOnMap):
     immutable.
     """
         
+    def __str__(self):
+     """
+     for hashing
+     """
+     return "Predator[" + super().__str__(self) + "]" 
