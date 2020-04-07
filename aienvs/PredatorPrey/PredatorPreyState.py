@@ -90,7 +90,7 @@ class PredatorPreyState():
         
     def withReward(self, reward:float) -> 'PredatorPreyState':
         """
-        Adds given reward 
+        @return new PredatorPreyState given reward added 
         """
         if self.isFinal():
             return self
@@ -101,10 +101,18 @@ class PredatorPreyState():
         """
         Predator does a move action
         @act an action in [0,3] moving N,E,S or W. 
+        @return new PredatorPreyState with move executed if the new pos is free
         """
-        preds = self.getPredators()
-        preds[pred.getId()] = pred.withStep(act)
-        return PredatorPreyState(preds, preds, self._map, \
+        newpred = pred.withStep(act)
+        newpos = newpred.getPosition()
+        
+        if self.isPredatorAt(newpos) or self.isPreyAt(newpos)\
+            or not self._map.isFree(newpos):
+            return self
+        
+        # replace predator in the predators list
+        preds = [newpred if p.getId() == pred.getId() else p for p in self._predators]
+        return PredatorPreyState(preds, self._preys, self._map, \
             self._reward, self._step, self._maxsteps) 
 
     def withPreyStep(self, prey: Prey, act: int) -> 'PredatorPreyState':
