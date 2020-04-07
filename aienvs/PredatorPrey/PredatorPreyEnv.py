@@ -93,10 +93,10 @@ class PredatorPreyEnv(Env):
         self._parameters.update(parameters)
 
         self.seed(self._parameters['seed'])
-        predators = [Predator(p['id'], ndarray(p['pos'], True)) for p in self._parameters['predators']]
-        preys = [Prey(p['id'], ndarray(p['pos'], True)) for p in self._parameters['preys']]
+        predators = [Predator(p['id'], array(p['pos']), True) for p in self._parameters['predators']]
+        preys = [Prey(p['id'], array(p['pos']), True) for p in self._parameters['preys']]
         map = BasicMap(self._parameters['map'])
-        self._state = PredatorPreyState(predators, preys, map, 0, 0, parameters['steps'])
+        self._state = PredatorPreyState(predators, preys, map, 0, 0, self._parameters['steps'])
         self._actSpace = spaces.Dict({pred.getId():spaces.Discrete(len(self.ACTIONS)) \
                                       for pred in self._state.getPredators()})
 
@@ -123,12 +123,12 @@ class PredatorPreyEnv(Env):
 
     # Override
     def render(self, delay=0.0, overlay=False):
-        map = self._state.getFullMap() # list of strings
+        map = self._state.getFullMap()  # list of strings
         for y in range(len(map)):
             for x in range(len(map[y])):
-                if self._state.isPredatorAt(array(x,y)):
+                if self._state.isPredatorAt(array(x, y)):
                     map[y][x] = 'P'
-                if (self._state.isPreyAt(array(x,y)):
+                if self._state.isPreyAt(array(x, y)):
                     map[y][x] = '='
         print(*map, sep="\n")
         time.sleep(delay)
@@ -222,8 +222,4 @@ class PredatorPreyEnv(Env):
             if len(adjacent) >= 2:
                 # remove prey and first two that catch it 
                 self._state = self._state.withCatch(prey, adjacent[0], adjacent[1]) 
-    
-
-   
-
     
