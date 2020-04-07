@@ -8,6 +8,7 @@ from numpy import array
 testmap = BasicMap(['...', '...', '...'])
 pred1 = Predator('pred1', array([0, 0]), True)
 pred2 = Predator('pred2', array([1, 2]), True)
+pred3 = Predator('pred2', array([1, 1]), True)
 prey1 = Predator('prey1', array([0, 1]), True)
 
 
@@ -59,4 +60,17 @@ class testPredatorPreyState(LoggedTestCase):
         self.assertEquals([pred1], env.getAdjacentPredators(array([0, 1])))
         self.assertEquals([pred2], env.getAdjacentPredators(array([1, 1])))
         self.assertEquals([], env.getAdjacentPredators(array([2, 0])))
+
+    def testWithCatchOk(self):
+        env = PredatorPreyState([pred1, pred3], [prey1], testmap, 1, 1, 2)
+        env1 = env.withCatch(prey1, pred1, pred3)
+        self.assertEqual([], env1.getPredators())
+        self.assertEqual([], env1.getPreys())
+        self.assertEqual(11, env1.getReward())  # 10 added to existing reward 1
+
+    def testWithCatchBlockedByFinal(self):
+        env = PredatorPreyState([pred1, pred3], [prey1], testmap, 1, 1, 1)
+        self.assertTrue(env.isFinal())
+        env1 = env.withCatch(prey1, pred1, pred3)
+        self.assertEqual(env, env1)
 

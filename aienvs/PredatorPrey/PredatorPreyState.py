@@ -41,6 +41,12 @@ class PredatorPreyState():
     def getPreys(self) -> List[Prey]:
         return self._preys.copy()
     
+    def getReward(self):
+        """
+        @return current total reward
+        """
+        return self._reward
+    
     def getObservationMatrix(self):
         """
         @return a gym-style dict with for each entity (predator) 
