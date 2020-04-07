@@ -20,3 +20,11 @@ class testPredatorPreyEnv(LoggedTestCase):
         env.step({'predator1': 0, 'predator2': 0})  # both North
         # that mutates env into a new env. Check positions
         self.assertEqual(str(array([3, 5])), str(env.getState().getPredators()[0].getPosition()))
+        self.assertEqual(str(array([7, 3])), str(env.getState().getPredators()[1].getPosition()))
+    
+    def testRenderSmoke(self):
+        env = PredatorPreyEnv()
+        env.render()
+        env.step({'predator1': 0, 'predator2': 0})  # both North
+        print("both predators move north")
+        env.render()

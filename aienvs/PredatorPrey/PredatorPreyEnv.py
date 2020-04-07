@@ -123,14 +123,15 @@ class PredatorPreyEnv(Env):
 
     # Override
     def render(self, delay=0.0, overlay=False):
-        map = self._state.getFullMap()  # list of strings
-        for y in range(len(map)):
-            for x in range(len(map[y])):
-                if self._state.isPredatorAt(array(x, y)):
-                    map[y][x] = 'P'
-                if self._state.isPreyAt(array(x, y)):
-                    map[y][x] = '='
-        print(*map, sep="\n")
+        themap = list(map(list, self._state.getMap().getFullMap()))  # list of list of chars
+        for y in range(len(themap)):
+            for x in range(len(themap[y])):
+                if self._state.isPredatorAt(array([x, y])):
+                    themap[y][x] = 'P'
+                if self._state.isPreyAt(array([x, y])):
+                    themap[y][x] = '='
+        themap.reverse()
+        print(*["".join(line) for line in themap], sep="\n")
         time.sleep(delay)
 
     # Override
