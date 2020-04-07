@@ -52,6 +52,19 @@ class Env(ABC):
     @property
     @abstractmethod
     def observation_space(self):
+        """
+        @return a gym object specifying the format of the possible observations.
+        The observation typically is the entire world state, because 
+        the environment offers only 1 observation method and lacks entity-specific
+        observation methods.
+        Often, the observation is a state object, in 
+        which case this usually returns CustomObjectSpace(self._state).
+        But it is also possible to have a more 'gym-compatible' observation
+        matrix by returning the standard gym objects, eg
+        a Dict (one key for each entity) with entity-specific observations
+        under each key. In that case observation_space should return 
+        the format of this observation using the gym conventions.
+        """
         pass
 
     @abstractmethod
@@ -63,7 +76,8 @@ class Env(ABC):
         @param action (dict) an action to be executed by the env. Action must be a 
         dict  as we assume action_space to be a gym Dict
         @Return:
-            observation (object): agent's observation of the current environment
+            observation (object): full observation of the current environment.
+             This should match the format returned by observation_space.
             reward (float) : amount of reward returned after previous action
             done (bool): whether the episode has ended, in which case further step() calls will return undefined results
             info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)
