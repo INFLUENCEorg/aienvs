@@ -31,13 +31,13 @@ class PredatorPreyState():
         self._step = s
         self._maxsteps = maxs
 
-    def getMap(self):
+    def getMap(self) -> BasicMap:
         return self._map
     
-    def getPredators(self):
+    def getPredators(self) -> List[Predator]:
         return self._predators.copy()
     
-    def getPreys(self):
+    def getPreys(self) -> List[Prey]:
         return self._preys.copy()
     
     def getObservationMatrix(self):
@@ -49,7 +49,7 @@ class PredatorPreyState():
         return { pred.getId(): self._getPredatorObsMatrix(pred)\
                 for pred in self._predators}
     
-    def isPredatorAt(self, pos:ndarray):
+    def isPredatorAt(self, pos:ndarray) -> bool:
         """
         @return true iff there is a predator at given position
         """
@@ -69,7 +69,7 @@ class PredatorPreyState():
         return filter(lambda pred: pred.isAdjacent(pos) and pred.isActive(), \
                        self.getPredators())
 
-    def withCatch(self, prey:Prey, catcher1:Predator, catcher2:Predator) -> PredatorPreyState:
+    def withCatch(self, prey:Prey, catcher1:Predator, catcher2:Predator) -> 'PredatorPreyState':
         """
         Execute a catch. It is assumed that all are correctly placed to do this.
         @param prey the prey that was caught
@@ -88,7 +88,7 @@ class PredatorPreyState():
         return PredatorPreyState(newpreds, newpreys, self._map, \
             self._reward + 10, self._step, self._maxsteps)
         
-    def withReward(self, reward:float) -> PredatorPreyState:
+    def withReward(self, reward:float) -> 'PredatorPreyState':
         """
         Adds given reward 
         """
@@ -97,7 +97,7 @@ class PredatorPreyState():
         return PredatorPreyState(self._predators, self._preys, self._map, \
             self._reward + reward, self._step, self._maxsteps) 
         
-    def withStep(self, pred: Predator, act: int):
+    def withStep(self, pred: Predator, act: int) -> 'PredatorPreyState':
         """
         Predator does a move action
         @act an action in [0,3] moving N,E,S or W. 
@@ -107,7 +107,7 @@ class PredatorPreyState():
         return PredatorPreyState(preds, preds, self._map, \
             self._reward, self._step, self._maxsteps) 
 
-    def withPreyStep(self, prey: Prey, act: int):
+    def withPreyStep(self, prey: Prey, act: int) -> 'PredatorPreyState':
         """
         Prey does a move action
         @act an action in [0,3] moving N,E,S or W. 
@@ -117,7 +117,7 @@ class PredatorPreyState():
         return PredatorPreyState(self._predators, preys, self._map, \
             self._reward, self._step, self._maxsteps) 
         
-    def increment(self) -> PredatorPreyState:
+    def increment(self) -> 'PredatorPreyState':
         """
         Increment the step counter
         @return new PredatorPreyState with incremented step counter.
@@ -127,7 +127,7 @@ class PredatorPreyState():
         return PredatorPreyState(self._predators, self._preys, self._map, \
                                  self._reward, self._step + 1, self._maxsteps)
     
-    def isFinal(self):
+    def isFinal(self) -> bool:
         """
         @return true if all entities have been removed or after STEPS time steps.
         NOTICE this is according to the paper. BUT if only 1 entity is left,

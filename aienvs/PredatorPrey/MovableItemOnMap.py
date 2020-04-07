@@ -44,7 +44,7 @@ class MovableItemOnMap:
         """
         return self._active
     
-    def withStep(self, action:int) -> MovableItemOnMap:
+    def withStep(self, action:int) -> 'MovableItemOnMap':
         """
         @param action the action number to be done- 0=y+1 1=y-1 2=x-1 3=x+1. 
         @return:  new MovableItemOnMap, with step applied.

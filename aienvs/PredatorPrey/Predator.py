@@ -1,4 +1,4 @@
-from aienvs.PredatorPrey import MovableItemOnMap
+from aienvs.PredatorPrey.MovableItemOnMap import MovableItemOnMap
 
 
 class Predator(MovableItemOnMap):
