@@ -83,3 +83,19 @@ class testPredatorPreyState(LoggedTestCase):
         env = PredatorPreyState([pred1, pred2], [prey1], testmap, 1, 1, 2)
         env1 = env.withStep(pred1, 1)  # east
         self.assertEqual(str(array([1, 0])), str(env1.getPredators()[0].getPosition()))
+
+    def testWithStepOutOfMap(self):
+        env = PredatorPreyState([pred1, pred2], [prey1], testmap, 1, 1, 2)
+        env1 = env.withStep(pred1, 2)  # south = out of map
+        self.assertEqual(str(array([0, 0])), str(env1.getPredators()[0].getPosition()))
+
+    def testWithStepPred2(self):
+        env = PredatorPreyState([pred1, pred2], [prey1], testmap, 1, 1, 2)
+        env1 = env.withStep(pred2, 3)  # west
+        self.assertEqual(str(array([0, 2])), str(env1.getPredators()[1].getPosition()))
+
+    def testWithStepBumpIntoPrey(self):
+        env = PredatorPreyState([pred1, pred2], [prey1], testmap, 1, 1, 2)
+        env1 = env.withStep(pred1, 0)  # north, but prey1 is at [0 1]
+        self.assertEqual(str(array([0, 0])), str(env1.getPredators()[0].getPosition()))
+
