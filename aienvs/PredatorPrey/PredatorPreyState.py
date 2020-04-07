@@ -24,8 +24,8 @@ class PredatorPreyState():
         @param s the current step count
         @param maxs the max number of steps 
         """
-        self._predators = predatorsList
-        self._preys = preyList
+        self._predators = predatorsList.copy()
+        self._preys = preyList.copy()
         self._map = themap
         self._reward = r
         self._step = s
