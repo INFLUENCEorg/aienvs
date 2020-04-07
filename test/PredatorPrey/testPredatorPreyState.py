@@ -74,3 +74,12 @@ class testPredatorPreyState(LoggedTestCase):
         env1 = env.withCatch(prey1, pred1, pred3)
         self.assertEqual(env, env1)
 
+    def testWithReward(self):
+        env = PredatorPreyState([pred1, pred2], [prey1], testmap, 1, 1, 2)
+        env1 = env.withReward(-0.5)
+        self.assertEqual(0.5, env1.getReward())  
+
+    def testWithStep(self):
+        env = PredatorPreyState([pred1, pred2], [prey1], testmap, 1, 1, 2)
+        env1 = env.withStep(pred1, 1)  # east
+        self.assertEqual(str(array([1, 0])), str(env1.getPredators()[0].getPosition()))

@@ -46,20 +46,20 @@ class MovableItemOnMap:
     
     def withStep(self, action:int) -> 'MovableItemOnMap':
         """
-        @param action the action number to be done- 0=y+1 1=y-1 2=x-1 3=x+1. 
+        @param action the action number to be done- NESW so 0=y+1 1=x+1 2=y-1 3=x-1. 
         @return:  new MovableItemOnMap, with step applied.
         This does not check any legality of the new position, so the 
         position may run off the map or on a wall.
         """
         newpos = self._pos
-        if action == 0:
+        if action == 0:  # N
             newpos = newpos + [0, 1]
-        elif action == 1:
-            newpos = newpos + [0, -1]
-        elif action == 2:
-            newpos = newpos + [-1, 0]
-        elif action == 3:
+        elif action == 1:  # E
             newpos = newpos + [1, 0]
+        elif action == 2:  # S
+            newpos = newpos + [0, -1]
+        elif action == 3:  # W
+            newpos = newpos + [-1, 0]
         return MovableItemOnMap(self._id, newpos, self._active)
     
     def __eq__(self, other):
