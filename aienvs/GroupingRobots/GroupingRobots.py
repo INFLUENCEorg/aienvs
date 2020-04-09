@@ -107,6 +107,7 @@ class GroupingRobots(Env):
             themap[pos[1]] = oldline
         # print row 0 at the bottom
         print(("\n".join(themap[::-1]))) 
+        print("")
         
     def close(self):
         pass  
