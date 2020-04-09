@@ -71,7 +71,6 @@ class SumoGymAdapter(Env):
         self._action_space = self._getActionSpace()
 
         # TODO: Wouter: make state configurable ("state factory")
-        # JINKE: as far as I know, this ldm matrix state is just a memoryless wrapper that connects ldm and the environment, so it can be reused
         self._state = LdmMatrixState(self.ldm, [self._parameters['box_bottom_corner'], self._parameters['box_top_corner']], "byCorners")
 
     def step(self, actions:dict):

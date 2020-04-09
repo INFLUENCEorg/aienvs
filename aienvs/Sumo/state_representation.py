@@ -34,7 +34,7 @@ class State:
         the lanes that this state is working with
         """
         return self._lanes
-    
+
     def getMaxSpeed(self, lane):
         """
         @param lane the lane id
@@ -47,7 +47,7 @@ class State:
         @return list of strings, each string representing a valid action.
         """
         raise Exception("not implemented")
-    
+
     def update_state(self):
         """
         Updates the state to match the current state in sumo
@@ -58,8 +58,8 @@ class State:
 
 class LinearFeatureState(State):
     """
-    [sum of wait, sum of vehicle delay, number of vehicle, 
-    number of halted, average speed, average acceleration, 
+    [sum of wait, sum of vehicle delay, number of vehicle,
+    number of halted, average speed, average acceleration,
     number of emergency stop] combined with action
     as described in elise's master thesis
     only support one-light scenario
@@ -70,7 +70,7 @@ class LinearFeatureState(State):
         self._prev_speed = {}
         self._actions = ['GrGr', 'ryry', 'rGrG', 'yryr']
         self._current_state = np.zeros((len(self._actions) * len(self._ldm.getControlledLanes("0")) * 7, 1, 1))
-    
+
     def update_state(self):
         lane_states, self._prev_speed, stops = self._get_lane_states(self._prev_speed)
         state = np.array(self._get_linear_state(lane_states, self._ldm.getControlledLanes("0")))
@@ -80,7 +80,7 @@ class LinearFeatureState(State):
     # Override
     def get_action_space(self):
         return ['GrGr', 'rGrG']
-    
+
     def _get_lane_states(self, prev_speed):
         '''
         Go through the list of vehicles, and use each vehicle's state
@@ -334,7 +334,7 @@ class DenseState(State):
                 a1 += 'r'
                 a2 += 'G'
         return [a1, a2]
-    
+
     def get_height(self):
         """
         @return the height of the matrix
@@ -346,7 +346,7 @@ class DenseState(State):
         @return the width of the matrix
         """
         return self.width + 3
-    
+
     def _get_scale_factor(self, state_size):
         """
         get scale factor - the length of one cell
@@ -359,7 +359,7 @@ class DenseState(State):
         """
         one_lane = all_coordinates[0]
         return np.abs(one_lane[0][0] - one_lane[1][0]) + np.abs(one_lane[0][1] - one_lane[1][1])
- 
+
     def _add_state_matrix(self, state_matrix):
         """
         update 'current state'
@@ -819,10 +819,9 @@ class LdmMatrixState(State):
 
     def update_state(self):
         return self._ldm.getMapSliceByCorners(self.bottomLeftCoords, self.topRightCoords)
-    
-    def size(self) -> tuple: 
+
+    def size(self) -> tuple:
         """
         returns the size of the matrix as a list of 2 elements.
-        Jinke's notes: This method is problematic.
         """
         return [self.topRightCoords[0] - self.bottomLeftCoords[0], self.topRightCoords[1] - self.bottomLeftCoords[1] ]

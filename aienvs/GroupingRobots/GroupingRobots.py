@@ -32,7 +32,8 @@ class GroupingRobots(Env):
                        '....***...',
                        '....*.....',
                        '....*..*..',
-                       '.......*..']
+                       '.......*..'],
+                'doneOnFirstGrouping': False
                 }
 
     def __init__(self, parameters:dict={}):
@@ -67,6 +68,7 @@ class GroupingRobots(Env):
             self._state = self._state.withRobot(robot)
     
         self._actSpace = spaces.Dict({robot.getId():spaces.Discrete(len(self._state.ACTIONS)) for robot in self._state.getRobots()})
+        self._doneOnFirstGrouping = self._parameters['doneOnFirstGrouping']
 
     # Override
     def step(self, actions:dict):
@@ -75,9 +77,19 @@ class GroupingRobots(Env):
             if rid in actions.keys():
                 self._state = self._state.withAction(robot, actions[rid])
         global_reward = self._state.getReward()
-        self._state = self._state.withTeleport().withStep()
-        done = (self._parameters['steps'] <= self._state.getSteps())
 
+        if self._doneOnFirstGrouping is True and global_reward > 0:
+            # if done on first grouping, then done, no teleport
+            done = True
+        else:
+            # if done because of time limit, then no teleport
+            # if not done, then teleport if needed
+            # in summary, only actually teleport when grouping happens and not done on step and time limit has not been reached
+            done = (self._parameters['steps'] <= self._state.getSteps())
+            if not done:
+                self._state = self._state.withTeleport()
+
+        self._state = self._state.withStep()
         return self._state, global_reward, done, []
     
     def reset(self) -> WorldState:
@@ -95,7 +107,6 @@ class GroupingRobots(Env):
             themap[pos[1]] = oldline
         # print row 0 at the bottom
         print(("\n".join(themap[::-1]))) 
-        print("----- reward:" + str(self._state.getReward()) + " -----\n")
         
     def close(self):
         pass  
