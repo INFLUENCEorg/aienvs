@@ -64,12 +64,15 @@ class SumoGymAdapter(Env):
         tlPhasesFile = os.path.join(dirname, "../../scenarios/Sumo/", self._parameters['scene'], self._parameters['tlphasesfile'])
         self._tlphases = TrafficLightPhases(tlPhasesFile)
         self.ldm = ldm(using_libsumo=self._parameters['libsumo'])
-
         self._takenActions = {}
         self._yellowTimer = {}
         self._chosen_action = None
         self.seed(42)  # in case no seed is given
         self._action_space = self._getActionSpace()
+
+        # TODO: Wouter: make state configurable ("state factory")
+        # JINKE: as far as I know, this ldm matrix state is just a memoryless wrapper that connects ldm and the environment, so it can be reused
+        self._state = LdmMatrixState(self.ldm, [self._parameters['box_bottom_corner'], self._parameters['box_top_corner']], "byCorners")
 
     def step(self, actions:dict):
         self._set_lights(actions)
@@ -77,17 +80,6 @@ class SumoGymAdapter(Env):
         obs = self._observe()
         done = self.ldm.isSimulationFinished()
         global_reward = self._computeGlobalReward()
-
-        # if done:
-        #     from pympler import asizeof
-        #     print("size of taken actions:", asizeof.asizeof(self._takenActions))
-        #     print("size of yellow timer:", asizeof.asizeof(self._yellowTimer))
-        #     print("size of tlphases:", asizeof.asizeof(self._tlphases))
-        #     print("size of parameters:", asizeof.asizeof(self._parameters))
-        #     print("size of action space:", asizeof.asizeof(self._action_space))
-        #     print("size of ldm:", asizeof.asizeof(self.ldm))
-        #     print("size of chosen action:", asizeof.asizeof(self._chosen_action))
-        #     print(self._takenActions)
 
         # as in openai gym, last one is the info list
         return obs, global_reward, done, []
@@ -101,8 +93,6 @@ class SumoGymAdapter(Env):
 
         logging.debug("Starting SUMO environment...")
         self._startSUMO()
-        # TODO: Wouter: make state configurable ("state factory")
-        self._state = LdmMatrixState(self.ldm, [self._parameters['box_bottom_corner'], self._parameters['box_top_corner']], "byCorners")
 
         return self._observe()
 
@@ -132,6 +122,9 @@ class SumoGymAdapter(Env):
 
     @property
     def observation_space(self):
+        """
+        Jinke's Notes: THIS METHOD IS PROBLEMATIC
+        """
         size = self._state.size()
         return Box(low=0, high=np.inf, shape=(size[0], size[1]), dtype=np.int32)
         # return self._state.update_state()
