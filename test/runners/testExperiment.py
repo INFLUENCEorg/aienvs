@@ -15,9 +15,9 @@ class test_Experiment(LoggedTestCase):
         firstAction = Mock()
         exp = Experiment(agent, env, 100, None, False, 0)
         result = np.mean(exp.run())
-        
+
         self.assertEqual(3.0, result)
- 
+
     def testRun3steps(self):
         agent = Mock()
         env = Mock()
@@ -30,16 +30,17 @@ class test_Experiment(LoggedTestCase):
         result = np.mean(exp.run())
         # each episode has reward 12
         self.assertEqual(12.0 , result)
-        
+
     def testListener(self):
         agent = Mock()
         env = Mock()
         env.step = Mock(return_value=('observation', 3.0, True, {}))
         firstAction = Mock()
         exp = Experiment(agent, env, 30, None, False, 0)
-        
+
         listener = Mock()
         exp.addListener(listener)
         result = exp.run()
         # check we got 30 callbacks
+        # This fails because Jinke added an entry to the notification dictionary in Experiment.py
         self.assertEquals(30, len(listener.notifyChange.mock_calls))

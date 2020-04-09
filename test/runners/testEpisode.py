@@ -13,9 +13,9 @@ class testEpisode(LoggedTestCase):
         firstAction = Mock()
         episode = Episode(agent, env, firstAction, False, 0)
         result = episode.run()
-        
+
         self.assertEqual((1, 3.0), result)
- 
+
     def testRun3steps(self):
         agent = Mock()
         env = Mock()
@@ -25,13 +25,13 @@ class testEpisode(LoggedTestCase):
         obs = Mock()
         episode = Episode(agent, env, obs, False, 0)
         result = episode.run()
-        
+
         # sum of rewards = 12
         self.assertEqual((3, 12.0), result)
-        # if you get not enough values to unpack then 
-        # the Episode runner did not halt when env said 
+        # if you get not enough values to unpack then
+        # the Episode runner did not halt when env said
         # it was done.
-   
+
     def testListener(self):
         agent = Mock()
         agent.step = Mock()
@@ -42,10 +42,10 @@ class testEpisode(LoggedTestCase):
         env.reset.side_effect=['start_obs']
         obs = env.reset()
         episode = Episode(agent, env, obs, False, 0)
-       
+
         listener = Mock()
         episode.addListener(listener)
         result = episode.run()
-        
+        # this fails because Jinke added an entry in the notification dictionary in Episode.py
         listener.notifyChange.assert_called_once_with({'actions': {0:0}, 'observation': 'start_obs', 'reward':0, 'done':False})
-        
+
