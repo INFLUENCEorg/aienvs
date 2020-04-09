@@ -1,6 +1,7 @@
 import logging
 from gym import spaces
 from aienvs.Environment import Env
+from aienvs.gym.DecoratedSpace import DecoratedSpace
 # from numpy import set_printoptions, transpose, zeros
 from numpy import array, dstack, ndarray
 import copy

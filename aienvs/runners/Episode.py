@@ -51,12 +51,12 @@ class Episode(DefaultRunner, DefaultListenable):
             obs, globalReward, done = self.step(obs, globalReward, done)
             totalReward += globalReward
 
+            if self._render:
+                self._env.render(self._renderDelay)
+
             if done:
                 if self._doneStep:
                     self._agent.step(obs, globalReward, done)
                 break
-
-            if self._render:
-                self._env.render(self._renderDelay)
 
         return steps, totalReward
