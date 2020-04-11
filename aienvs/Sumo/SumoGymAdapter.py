@@ -47,6 +47,7 @@ class SumoGymAdapter(Env):
                 'lightPositions' : {},  # specify traffic light positions
                 'scaling_factor' : 1.0,  # for rescaling the reward? ask Miguel
                 'maxConnectRetries':50,  # maximum reattempts to connect by Traci
+                'seed': None
                 }
 
     def __init__(self, parameters:dict={}):
@@ -67,18 +68,20 @@ class SumoGymAdapter(Env):
         self._takenActions = {}
         self._yellowTimer = {}
         self._chosen_action = None
-        self.seed(42)  # in case no seed is given
+        self.seed(parameters['seed'])  # in case no seed is given
         self._action_space = self._getActionSpace()
 
         # TODO: Wouter: make state configurable ("state factory")
         self._state = LdmMatrixState(self.ldm, [self._parameters['box_bottom_corner'], self._parameters['box_top_corner']], "byCorners")
 
-        # compute observation space of the environment 
-        # (JINKE: this might not be best solution)
-        # in previous implementation, the resolution is not considered
-        _s = self.reset()
+        self._observation_space = self._compute_observation_space()
+
+    def _compute_observation_space(self):
+        self._startSUMO(gui=False)
+        _s = self._observe()
         self.frame_height = _s.shape[0]
         self.frame_width = _s.shape[1]
+        return Box(low=0, high=1.0, shape=(self.frame_height, self.frame_width), dtype=np.float32)
 
     def step(self, actions:dict):
         self._set_lights(actions)
@@ -131,7 +134,7 @@ class SumoGymAdapter(Env):
         # # this is the previous method, which does not take resolution into consideration
         # size = self._state.size()
         # return Box(low=0, high=np.inf, shape=(size[0], size[1]), dtype=np.int32)
-        return Box(low=0, high=1.0, shape=(self.frame_height, self.frame_width), dtype=np.float32)
+        return self._observation_space
 
     @property
     def action_space(self):
@@ -143,12 +146,17 @@ class SumoGymAdapter(Env):
         if 'ldm' in locals():
             self.ldm.close()
 
-    def _startSUMO(self):
+    def _startSUMO(self, gui=None):
         """
         Start the connection with SUMO as a subprocess and initialize
         the traci port, generate route file.
         """
-        val = 'sumo-gui' if self._parameters['gui'] else 'sumo'
+        val = 'sumo'
+        if gui is True:
+            val = 'sumo-gui'
+        elif gui is None:
+            val = 'sumo-gui' if self._parameters['gui'] else 'sumo'
+        
         maxRetries = self._parameters['maxConnectRetries']
         sumo_binary = checkBinary(val)
 
@@ -160,7 +168,9 @@ class SumoGymAdapter(Env):
                 self._sumo_helper = SumoHelper(self._parameters, self._port, self._seed)
                 conf_file = self._sumo_helper.sumocfg_file
                 logging.debug("Configuration: " + str(conf_file))
-                sumoCmd = [sumo_binary, "-c", conf_file, "-W", "-v", "false", "--seed", str(self._seed)] # shut up SUMO
+                sumoCmd = [sumo_binary, "-c", conf_file, "-W", "-v", "false"] # shut up SUMO
+                if self._seed is not None:
+                    sumoCmd += ["--seed", str(self._seed)]
                 self.ldm.start(sumoCmd, self._port)
             except Exception as e:
                 if str(e) == "connection closed by SUMO" and maxRetries > 0:

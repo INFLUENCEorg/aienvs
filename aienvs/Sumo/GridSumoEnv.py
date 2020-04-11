@@ -202,9 +202,9 @@ class GridSumoEnv(SumoGymAdapter):
         # y_t
         # car_pr
         # car_tm
-
-        _parameters = copy.deepcopy(self.__DEFAULT_PARAMETERS)
-        _parameters.update(parameters)
+        _parameters = copy.deepcopy(self._DEFAULT_PARAMETERS) # load default parameters of SUMOGymAdaptor
+        _parameters.update(self.__DEFAULT_PARAMETERS) # load default parameters of GridSumoEnv
+        _parameters.update(parameters) # load parameters given by the user
 
         shape = _parameters['shape']
         lane_length = _parameters['lane_length']
