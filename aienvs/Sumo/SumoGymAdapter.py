@@ -73,6 +73,13 @@ class SumoGymAdapter(Env):
         # TODO: Wouter: make state configurable ("state factory")
         self._state = LdmMatrixState(self.ldm, [self._parameters['box_bottom_corner'], self._parameters['box_top_corner']], "byCorners")
 
+        # compute observation space of the environment 
+        # (JINKE: this might not be best solution)
+        # in previous implementation, the resolution is not considered
+        _s = self.reset()
+        self.frame_height = _s.shape[0]
+        self.frame_width = _s.shape[1]
+
     def step(self, actions:dict):
         self._set_lights(actions)
         self.ldm.step()
@@ -121,12 +128,10 @@ class SumoGymAdapter(Env):
 
     @property
     def observation_space(self):
-        """
-        Jinke's Notes: THIS METHOD IS PROBLEMATIC
-        """
-        size = self._state.size()
-        return Box(low=0, high=np.inf, shape=(size[0], size[1]), dtype=np.int32)
-        # return self._state.update_state()
+        # # this is the previous method, which does not take resolution into consideration
+        # size = self._state.size()
+        # return Box(low=0, high=np.inf, shape=(size[0], size[1]), dtype=np.int32)
+        return Box(low=0, high=1.0, shape=(self.frame_height, self.frame_width), dtype=np.float32)
 
     @property
     def action_space(self):

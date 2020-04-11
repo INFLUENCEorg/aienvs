@@ -17,10 +17,13 @@ class GridSumoEnv(SumoGymAdapter):
     
     @staticmethod
     def create_scenario(grid_shape, lane_length, folder_path):
-
+        
+        # only write the sceanrio files when the folder for the sceanrio does not exist before
         scenario_name = "grid_{}x{}".format(grid_shape[0], grid_shape[1])
-        if not os.path.exists(folder_path):
-            os.mkdir(folder_path)
+        if  os.path.exists(folder_path):
+            return
+        
+        os.mkdir(folder_path)
 
         # generate node xml file
         content = '<?xml version="1.0" encoding="UTF-8"?>\n'
