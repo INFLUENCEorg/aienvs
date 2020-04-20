@@ -14,15 +14,15 @@ class GridSumoEnv(SumoGymAdapter):
         'resolutionInPixelsPerMeterX': 0.1,
         'resolutionInPixelsPerMeterY': 0.1
     }
-    
+
     @staticmethod
     def create_scenario(grid_shape, lane_length, folder_path):
-        
+
         # only write the sceanrio files when the folder for the sceanrio does not exist before
         scenario_name = "grid_{}x{}".format(grid_shape[0], grid_shape[1])
         if  os.path.exists(folder_path):
             return
-        
+
         os.mkdir(folder_path)
 
         # generate node xml file
@@ -86,8 +86,8 @@ class GridSumoEnv(SumoGymAdapter):
                 to_edge = pre_to + "_{}_{}".format(colID, rowID+1)
                 content += get_edge(from_edge, to_edge)
                 content += get_edge(to_edge, from_edge)
-                
-            
+
+
         # vertical edges
         content += '</edges>\n'
         edge_file_path = os.path.join(folder_path, "{}.edg.xml".format(scenario_name))
@@ -132,7 +132,7 @@ class GridSumoEnv(SumoGymAdapter):
         connection_file_path = os.path.join(folder_path, "{}.con.xml".format(scenario_name))
         with open(connection_file_path, "w") as f:
             f.write(content)
-        
+
         # generate tl light file
         content = '<?xml version="1.0" encoding="UTF-8"?>\n'
         content += '<tlLogics>\n'
@@ -187,7 +187,7 @@ class GridSumoEnv(SumoGymAdapter):
 
     def __init__(self, parameters={}):
         # the purpose of this class is to automatically construct a grid sumo environment based on a subset of parameters
-        
+
         # what are the parameters that we can compute automatically?
         # scene - we also need to generate scene if not exist
         # tlphasefile - konwn as scene is known
@@ -196,7 +196,7 @@ class GridSumoEnv(SumoGymAdapter):
         # route stuff
 
         # what are the parameters required by this environment?
-        # shape 
+        # shape
         # resolutionInPixelsPerMeterX
         # resolutionInPixelsPerMeterY
         # y_t
@@ -208,15 +208,16 @@ class GridSumoEnv(SumoGymAdapter):
 
         shape = _parameters['shape']
         lane_length = _parameters['lane_length']
-        
+
         # construct scenario if not exist
         sceanrio = "grid_{}x{}".format(shape[0], shape[1])
-        scenario_path = os.path.join("/".join(aienvs.__file__.split("/")[:-2]), "scenarios/Sumo/{}".format(sceanrio))
+        dirname = os.path.dirname(__file__)
+        scenario_path = os.path.join(dirname, "../../scenarios/Sumo/{}".format(sceanrio))
         _parameters['scene'] = sceanrio
         _parameters['tlphasesfile'] = "{}.tll.xml".format(sceanrio)
         _parameters['box_bottom_corner'] = (0, 0)
         _parameters['box_top_corner'] = ((shape[0]+1)*lane_length, (shape[1]+1)*lane_length)
-        
+
         self.create_scenario(shape, lane_length, scenario_path)
 
         # now automatically generate the route starts
