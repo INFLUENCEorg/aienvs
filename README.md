@@ -14,7 +14,7 @@ You can verify that it succeeded by typing
 ```
 import aienvs
 ```
-in the python3 console.
+in the python3 console. No build is needed.
 
 ### Building the library ###
 If you would like to build the library, you need to have version 40.6.2 or later of setuptools, plus wheel. To ensure, run
