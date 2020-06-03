@@ -39,7 +39,7 @@ class testEpisode(LoggedTestCase):
 
         env = Mock()
         env.step = Mock(return_value=('first_obs', 3.0, True, {}))
-        env.reset.side_effect=['start_obs']
+        env.reset.side_effect = ['start_obs']
         obs = env.reset()
         episode = Episode(agent, env, obs, False, 0)
 
@@ -47,5 +47,5 @@ class testEpisode(LoggedTestCase):
         episode.addListener(listener)
         result = episode.run()
         # this fails because Jinke added an entry in the notification dictionary in Episode.py
-        listener.notifyChange.assert_called_once_with({'actions': {0:0}, 'observation': 'start_obs', 'reward':0, 'done':False})
+        listener.notifyChange.assert_called_once_with({'key':'transition', 'actions': {0:0}, 'observation': 'start_obs', 'reward':0, 'done':False})
 
