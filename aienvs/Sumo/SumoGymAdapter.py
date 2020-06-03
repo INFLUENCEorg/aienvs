@@ -47,15 +47,16 @@ class SumoGymAdapter(Env):
                 'lightPositions' : {},  # specify traffic light positions
                 'scaling_factor' : 1.0,  # for rescaling the reward? ask Miguel
                 'maxConnectRetries':50,  # maximum reattempts to connect by Traci
-                'seed': None
+                'seed': 42  # the default value matching SUMO
                 }
 
     def __init__(self, parameters:dict={}):
         """
         @param path where results go, like "Experiment ID"
-        @param parameters the configuration parameters.
+        @param partial set of parameters the configuration parameters.
         gui: whether we show a GUI.
         scenario: the path to the scenario to use
+        For non-set parameters, the _DEFAULT_PARAMETERS are used 
         """
         logging.debug(parameters)
         self._parameters = copy.deepcopy(self._DEFAULT_PARAMETERS)
@@ -68,7 +69,7 @@ class SumoGymAdapter(Env):
         self._takenActions = {}
         self._yellowTimer = {}
         self._chosen_action = None
-        self.seed(parameters['seed'])  # in case no seed is given
+        self.seed(self._parameters['seed'])  # in case no seed is given
         self._action_space = self._getActionSpace()
 
         # TODO: Wouter: make state configurable ("state factory")
@@ -168,7 +169,7 @@ class SumoGymAdapter(Env):
                 self._sumo_helper = SumoHelper(self._parameters, self._port, self._seed)
                 conf_file = self._sumo_helper.sumocfg_file
                 logging.debug("Configuration: " + str(conf_file))
-                sumoCmd = [sumo_binary, "-c", conf_file, "-W", "-v", "false"] # shut up SUMO
+                sumoCmd = [sumo_binary, "-c", conf_file, "-W", "-v", "false"]  # shut up SUMO
                 if self._seed is not None:
                     sumoCmd += ["--seed", str(self._seed)]
                 self.ldm.start(sumoCmd, self._port)
