@@ -128,8 +128,9 @@ class SumoGymAdapter(Env):
         self._seed = seed
 
     def close(self):
+        # Wouter: danger, GC should handle this automatically
         self.__del__()
-
+        
     @property
     def observation_space(self):
         # # this is the previous method, which does not take resolution into consideration
@@ -178,6 +179,7 @@ class SumoGymAdapter(Env):
                     maxRetries = maxRetries - 1
                     continue
                 else:
+                    logging.critical("LDM start failed")
                     raise
             else:
                 break

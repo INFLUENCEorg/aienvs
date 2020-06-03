@@ -29,6 +29,7 @@ class testSumoGymAdapter(LoggedTestCase):
             logging.debug("Step " + str(i))
             i += 1
             obs, global_reward, done, info = env.step(env.action_space.sample())
+        env.close()
  
     def test_new_traffic(self):
         self._runPpoLoop()
@@ -48,7 +49,7 @@ class testSumoGymAdapter(LoggedTestCase):
         for i in range(1000):
             logging.debug("Step " + str(i))
             result = env.step(env.action_space.sample())
-        # env.close() #DO WE NEED THIS?
+        env.close()  # You'll get warnings if not closing
     
     def _get_params(self) -> dict:
         """
