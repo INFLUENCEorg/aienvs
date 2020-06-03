@@ -1,4 +1,4 @@
-from LoggedTestCase import LoggedTestCase
+from test.LoggedTestCase import LoggedTestCase
 from aienvs.Environment import Env
 from unittest.mock import Mock
 from aienvs.EnvironmentFactory import createEnvironment, classForName, classForNameTyped
