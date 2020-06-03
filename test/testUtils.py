@@ -1,4 +1,4 @@
-from LoggedTestCase import LoggedTestCase
+from test.LoggedTestCase import LoggedTestCase
 
 
 class testUtils(LoggedTestCase):
