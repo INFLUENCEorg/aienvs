@@ -1,4 +1,4 @@
-from warehouse import Warehouse
+from aienvs.Warehouse.warehouse import Warehouse
 import numpy as np
 warehouse = Warehouse()
 #################### Test _place_robots function ######################
@@ -20,7 +20,7 @@ pos = warehouse.items[0].get_position()
 warehouse.robots[0]._pos = pos
 warehouse._remove_items()
 state = warehouse._get_state()
-assert state[pos[0],pos[1], 0] == 0, 'remove items test: failed'
+assert state[pos[0], pos[1], 0] == 0, 'remove items test: failed'
 print('remove items test: passed')
 ################### Test compute rewards function #####################
 warehouse = Warehouse()
@@ -64,7 +64,7 @@ for robot, initial_position in zip(warehouse.robots, initial_positions):
 initial_positions = []
 for robot in warehouse.robots:
     initial_positions.append(robot.get_position())
-actions = 2*np.ones(len(warehouse.robots), dtype=np.int)
+actions = 2 * np.ones(len(warehouse.robots), dtype=np.int)
 warehouse.step(actions)
 for robot, initial_position in zip(warehouse.robots, initial_positions):
     assert robot.get_position()[0] + 1 == initial_position[0], "action test: failed"
@@ -72,7 +72,7 @@ for robot, initial_position in zip(warehouse.robots, initial_positions):
 initial_positions = []
 for robot in warehouse.robots:
     initial_positions.append(robot.get_position())
-actions = 3*np.ones(len(warehouse.robots), dtype=np.int)
+actions = 3 * np.ones(len(warehouse.robots), dtype=np.int)
 warehouse.step(actions)
 for robot, initial_position in zip(warehouse.robots, initial_positions):
     assert robot.get_position()[0] - 1 == initial_position[0], "action test: failed"

@@ -1,7 +1,7 @@
-from warehouseItem import WarehouseItem
-from warehouseRobot import WarehouseRobot
-from warehouseState import WarehouseState
-from utils import *
+from aienvs.Warehouse.warehouseItem import WarehouseItem
+from aienvs.Warehouse.warehouseRobot import WarehouseRobot
+from aienvs.Warehouse.warehouseState import WarehouseState
+from aienvs.utils import *
 from aienvs.Environment import Env
 import numpy as np
 import copy
@@ -14,7 +14,6 @@ class Warehouse(Env):
     """
     warehouse environment
     """
-
 
     def __init__(self, parameters:dict={}):
         parameters = read_parameters('warehouse')
@@ -84,6 +83,7 @@ class Warehouse(Env):
         if overlay:
             import colorama
             colorama.init()
+
             def move_cursor(x, y):
                 print ("\x1b[{};{}H".format(y + 1, x + 1))
 
@@ -114,12 +114,12 @@ class Warehouse(Env):
         robots = []
         for i in range(self.n_robots_row):
             for j in range(self.n_robots_column):
-                robot_domain = [i*self.robot_domain_size[0],
-                                j*self.robot_domain_size[1],
-                                (i+1)*self.robot_domain_size[0],
-                                (j+1)*self.robot_domain_size[1]]
-                robot_position = [robot_domain[0] + self.robot_domain_size[0]//2,
-                                  robot_domain[1] + self.robot_domain_size[1]//2]
+                robot_domain = [i * self.robot_domain_size[0],
+                                j * self.robot_domain_size[1],
+                                (i + 1) * self.robot_domain_size[0],
+                                (j + 1) * self.robot_domain_size[1]]
+                robot_position = [robot_domain[0] + self.robot_domain_size[0] // 2,
+                                  robot_domain[1] + self.robot_domain_size[1] // 2]
                 robots.append(WarehouseRobot(self.robot_id, robot_position,
                                              robot_domain, self.max_n_items))
                 self.robot_id += 1
@@ -177,7 +177,7 @@ class Warehouse(Env):
         """
         All robots take an action in the environment.
         """
-        for action,robot in zip(actions, self.robots):
+        for action, robot in zip(actions, self.robots):
             robot.act(action)
 
     def _compute_reward(self, robot):
