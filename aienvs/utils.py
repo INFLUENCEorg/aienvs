@@ -14,6 +14,7 @@ def getParameters(filename:str) -> dict:
             parameters = yaml.safe_load(stream)['parameters']
         except yaml.YAMLError as exc:
             logging.error(exc)
+            raise
     return parameters
 
 
