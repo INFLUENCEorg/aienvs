@@ -163,7 +163,8 @@ class WorldState:
         return newpos
 
     def __eq__(self, other):
-        return self._robots == other._robots and self._map == other._map
+        return isinstance(other, dict) and '_robots' in other \
+            and self._robots == other._robots and self._map == other._map
 
     def __hash__(self) -> int:
         return hashf(self._robots) + hashf(self._map) + hashf(self._steps)
