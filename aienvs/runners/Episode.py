@@ -31,7 +31,6 @@ class Episode(DefaultRunner, DefaultListenable):
 
         actions = self._agent.step(obs, globalReward, done)
         self.notifyAll({'actions':actions, 'observation': obs, 'reward':globalReward, 'done':done})
-
         obs, globalReward, done, info = self._env.step(actions)
 
         # Jinke: when done, send the final transition to the agent
@@ -55,7 +54,6 @@ class Episode(DefaultRunner, DefaultListenable):
             steps += 1
             obs, globalReward, done = self.step(obs, globalReward, done)
             totalReward += globalReward
-
             if done:
                 break
 

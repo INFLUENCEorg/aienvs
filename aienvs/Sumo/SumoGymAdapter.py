@@ -70,7 +70,7 @@ class SumoGymAdapter(Env):
         self._chosen_action = None
         self.seed(42)  # in case no seed is given
         self._action_space = self._getActionSpace()
-
+        
     def step(self, actions:dict):
         self._set_lights(actions)
         self.ldm.step()

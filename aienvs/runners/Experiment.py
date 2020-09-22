@@ -25,7 +25,7 @@ class Experiment(DefaultRunner, DefaultListenable, Listener):
         self._env = env
         self._maxSteps = maxSteps
         self._render = render
-        self._renderDelay = 0
+        self._renderDelay = renderDelay
 
         if seedlist is not None:
             self._seedcycle=cycle(seedlist)
